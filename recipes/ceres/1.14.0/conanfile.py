@@ -10,8 +10,11 @@ class LibCeresConan(ConanFile):
 
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False]}
-    default_options = "shared=True"
+    options = {"shared": [True, False],
+               "cxsparse": [True,False],
+			  }
+    default_options = {"shared": True,
+	                   "cxsparse": True}
     exports = [
         "patches/CMakeLists.patch",
         "patches/c++17.patch"
@@ -26,7 +29,8 @@ class LibCeresConan(ConanFile):
     def requirements(self):
         self.requires("eigen/3.3.7@conan-solar/stable")
         self.requires("glog/0.4.0@conan-solar/stable")
-        self.requires("cxsparse/3.1.1@conan-solar/stable")
+        if self.options.cxsparse:
+            self.requires("cxsparse/3.1.1@conan-solar/stable")
         self.requires("common/1.0.2@conan-solar/stable")
 
     def source(self):
@@ -34,9 +38,9 @@ class LibCeresConan(ConanFile):
         os.rename("ceres-solver-" + self.upstream_version, self.source_subfolder)
 
     def build(self):
-        cxsparse_source_dir = os.path.join(self.source_folder, self.source_subfolder)
-        tools.patch(cxsparse_source_dir, "patches/CMakeLists.patch")
-        tools.patch(cxsparse_source_dir, "patches/c++17.patch")
+        ceres_source_dir = os.path.join(self.source_folder, self.source_subfolder)
+        tools.patch(ceres_source_dir, "patches/CMakeLists.patch")
+        tools.patch(ceres_source_dir, "patches/c++17.patch")
 
         # Import common flags and defines
         import common
@@ -53,7 +57,7 @@ class LibCeresConan(ConanFile):
         cmake.definitions["GLOG_PREFER_EXPORTED_GLOG_CMAKE_CONFIGURATION"] = "ON"
         cmake.definitions["LAPACK"] = "OFF"
         cmake.definitions["SUITESPARSE"] = "OFF"
-        cmake.definitions["CXSPARSE"] = "ON"
+        cmake.definitions["CXSPARSE"] = "OFF"
         cmake.definitions["GFLAGS"] = "OFF"
         cmake.definitions["MINIGLOG"] = "OFF"
         cmake.definitions["SCHUR_SPECIALIZATIONS"] = "OFF"
@@ -61,6 +65,9 @@ class LibCeresConan(ConanFile):
         cmake.definitions["BUILD_TESTING"] = "OFF"
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["CXX11"] = "ON"
+
+        if self.options.cxsparse:
+            cmake.definitions["CXSPARSE"] = "ON"
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
