@@ -164,7 +164,7 @@ class OpenCVConan(ConanFile):
             # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files
             self.requires.add('protobuf/3.5.2@bincrafters/stable')
         if self.options.eigen:
-            self.requires.add('eigen/3.3.7')
+            self.requires.add('eigen/3.3.7@conan-solar/stable')
         if self.options.gstreamer:
             self.requires.add('gstreamer/1.16.0@bincrafters/stable')
             self.requires.add('gst-plugins-base/1.16.0@bincrafters/stable')
@@ -181,7 +181,7 @@ class OpenCVConan(ConanFile):
 				# Old version: self.requires.add('harfbuzz/2.4.0@bincrafters/stable')
                 self.requires.add('harfbuzz/2.6.8')
             if self.options.glog:
-                self.requires.add('glog/0.4.0')
+                self.requires.add('glog/0.4.0@conan-solar/stable')
             if self.options.gflags:
                 self.requires.add('gflags/2.2.2')
         if self.options.parallel == "tbb":
