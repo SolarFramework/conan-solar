@@ -76,6 +76,7 @@ class OpenCVConan(ConanFile):
     description = "OpenCV is an open source computer vision and machine learning software library."
     short_paths = True
     _source_subfolder = "source_subfolder"
+    _contrib_subfolder = "contrib"
     _build_subfolder = "build_subfolder"
     _cmake = None
 
@@ -100,7 +101,7 @@ class OpenCVConan(ConanFile):
 
         sha256 = "a69772f553b32427e09ffbfd0c8d5e5e47f7dab8b3ffc02851ffd7f912b76840"
         tools.get("https://github.com/opencv/opencv_contrib/archive/{}.tar.gz".format(self.version), sha256=sha256)
-        os.rename('opencv_contrib-%s' % self.version, 'contrib')
+        os.rename('opencv_contrib-%s' % self.version, self._contrib_subfolder)
 
         for directory in ['libjasper', 'libjpeg-turbo', 'libjpeg', 'libpng', 'libtiff',
                     'libwebp', 'openexr', 'protobuf', 'zlib']:
@@ -183,7 +184,7 @@ class OpenCVConan(ConanFile):
             if self.options.glog:
                 self.requires.add('glog/0.4.0@conan-solar/stable')
             if self.options.gflags:
-                self.requires.add('gflags/2.2.2')
+                self.requires.add('gflags/2.2.2@conan-solar/stable')
         if self.options.parallel == "tbb":
                 self.requires('tbb/2020.1')
 
@@ -417,7 +418,7 @@ class OpenCVConan(ConanFile):
 
         # opencv-conrib modules
         if self.options.contrib:
-            cmake.definitions['OPENCV_EXTRA_MODULES_PATH'] = os.path.join(self.build_folder, 'contrib', 'modules')
+            cmake.definitions['OPENCV_EXTRA_MODULES_PATH'] = os.path.join(self.build_folder, self._contrib_subfolder, 'modules')
             cmake.definitions['OPENCV_ENABLE_NONFREE'] = self.options.nonfree
 
             # OpenCV doesn't use find_package for freetype & harfbuzz, so let's specify them
@@ -464,7 +465,7 @@ class OpenCVConan(ConanFile):
         if self._use_mingw:
             tools.replace_in_file(os.path.join(self._source_subfolder, 'cmake', 'OpenCVPCHSupport.cmake'),
                 "ocv_is_opencv_directory(__result ${item})", "set(__result TRUE)")
-
+		
         tools.patch(base_path=self._source_subfolder,
             patch_file=os.path.join("patches", "0001-fix-FindOpenJPEG-doesnt-exist.patch"))
 
