@@ -1,0 +1,23 @@
+Description: Fix rpaths for Linux and macOS to run protoc
+Author: Ircad-IHU RD <rd@ircad.fr>
+Version: 3.7.1
+
+diff --git a/cmake/protoc.cmake b/cmake/protoc.cmake
+index bb160f4..bbc8ec0 100644
+--- a/cmake/protoc.cmake
++++ b/cmake/protoc.cmake
+@@ -8,6 +8,14 @@ set(protoc_rc_files
+ )
+ endif()
+ 
++if (APPLE)
++    set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
++else()
++    set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
++endif()
++
++set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
++
+ add_executable(protoc ${protoc_files} ${protoc_rc_files})
+ target_link_libraries(protoc libprotobuf libprotoc)
+ add_executable(protobuf::protoc ALIAS protoc)
