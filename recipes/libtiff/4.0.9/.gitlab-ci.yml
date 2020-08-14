@@ -1,0 +1,9 @@
+stages:
+  - lint
+  - build
+
+include:
+  # Python linter jobs
+  - remote: 'https://git.ircad.fr/conan/conan/raw/dev/gitlab-ci/jobs/lint-flake8.yml'
+  # MSVC 2019 jobs
+  - remote: 'https://git.ircad.fr/conan/conan/raw/dev/gitlab-ci/jobs/msvc2019/build-msvc2019.yml'
