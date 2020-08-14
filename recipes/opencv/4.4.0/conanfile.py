@@ -143,17 +143,17 @@ class OpenCVConan(ConanFile):
             # NOTE : use the same libjpeg implementation as jasper uses
             # otherwise, jpeg_create_decompress will fail on version check
             if self.options.jpegturbo:
-                self.requires.add('libjpeg-turbo/2.0.4')
+                self.requires.add('libjpeg-turbo/2.0.4@conan-solar/stable')
             else:
-                self.requires.add('libjpeg/9d')
+                self.requires.add('libjpeg/9d@conan-solar/stable')
         if self.options.tiff:
             self.requires.add('libtiff/4.0.9@conan-solar/stable')
         if self.options.webp:
-            self.requires.add('libwebp/1.0.3')
+            self.requires.add('libwebp/1.0.3@conan-solar/stable')
         if self.options.png:
             self.requires.add('libpng/1.6.37@conan-solar/stable')
         if self.options.jpeg2000 == "openjpeg":
-            self.requires.add('openjpeg/2.3.1')
+            self.requires.add('openjpeg/2.3.1@conan-solar/stable')
         if self.options.jpeg2000 == "jasper":
             self.requires.add('jasper/2.0.14')
             self.options["jasper"].jpegturbo = self.options.jpegturbo
@@ -163,7 +163,7 @@ class OpenCVConan(ConanFile):
         if self.options.protobuf:
             # NOTE : version should be the same as used in OpenCV release,
             # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files
-            self.requires.add('protobuf/3.7.1@conan-solar/stable')
+            self.requires.add('protobuf/3.5.2@conan-solar/stable')
         if self.options.eigen:
             self.requires.add('eigen/3.3.7@conan-solar/stable')
         if self.options.gstreamer:
@@ -177,7 +177,7 @@ class OpenCVConan(ConanFile):
             self.requires.add('lapack/3.7.1@conan/stable')
         if self.options.contrib:
             if self.options.freetype:
-                self.requires.add('freetype/2.10.1')
+                self.requires.add('freetype/2.10.1@conan-solar/stable')
             if self.options.harfbuzz:
 				# Old version: self.requires.add('harfbuzz/2.4.0@bincrafters/stable')
                 self.requires.add('harfbuzz/2.6.8')
