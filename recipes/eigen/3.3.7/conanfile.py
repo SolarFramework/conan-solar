@@ -27,8 +27,8 @@ class LibEigenConan(ConanFile):
         self.requires("common/1.0.2@conan-solar/stable")
 
     def source(self):
-        tools.get("https://bitbucket.org/eigen/eigen/get/{0}.tar.gz".format(self.upstream_version))
-        os.rename(glob("eigen-eigen-*")[0], self.source_subfolder)
+        tools.get("https://gitlab.com/libeigen/eigen/-/archive/{0}/eigen-{0}.tar.gz".format(self.upstream_version))
+        os.rename(glob("eigen-*")[0], self.source_subfolder)
 
     def build(self):
         # Import common flags and defines
