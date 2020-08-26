@@ -681,6 +681,7 @@ class BoostConan(ConanFile):
     @property
     def _ar(self):
         if "AR" in os.environ:
+            self.output.info("AR environment: %s" % os.environ["AR"])
             return os.environ["AR"]
         if tools.is_apple_os(self.settings.os) and self.settings.compiler == "apple-clang":
             return tools.XCRun(self.settings).ar
