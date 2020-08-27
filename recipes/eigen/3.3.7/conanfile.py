@@ -30,6 +30,11 @@ class LibEigenConan(ConanFile):
         tools.get("https://gitlab.com/libeigen/eigen/-/archive/{0}/eigen-{0}.tar.gz".format(self.upstream_version))
         os.rename(glob("eigen-*")[0], self.source_subfolder)
 
+    @property
+    def _android_arch(self):
+        arch = str(self.settings.arch)
+        return tools.to_android_abi(arch)
+
     def build(self):
         # Import common flags and defines
         import common
@@ -56,3 +61,9 @@ class LibEigenConan(ConanFile):
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
         self.cpp_info.includedirs.append('include/eigen3')
+		if self.settings.os == 'Android':
+            if not self.options.shared:
+                self.cpp_info.includedirs.append(
+                    os.path.join('sdk', 'native', 'jni', 'include'))
+                self.cpp_info.libdirs.append(
+                    os.path.join('sdk', 'native', 'staticlibs', self._android_arch))
