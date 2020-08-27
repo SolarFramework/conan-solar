@@ -4,7 +4,7 @@ from conans import ConanFile, CMake, tools
 
 class Libg2oConan(ConanFile):
     name = "g2o"
-    upstream_version = "20200410"
+    upstream_version = "master"
     package_revision = ""
     version = "{0}{1}".format(upstream_version, package_revision)
 
@@ -28,14 +28,17 @@ class Libg2oConan(ConanFile):
 
     def requirements(self):
         self.requires("eigen/3.3.7@conan-solar/stable")
-        if self.options.csparse:
-            self.requires("cxsparse/3.1.1@conan-solar/stable")
         self.requires("common/1.0.2@conan-solar/stable")
 
     def source(self):
-        tools.get("https://github.com/RainerKuemmerle/g2o/archive/{0}_git.tar.gz".format(self.upstream_version))
-        os.rename("g2o-" + self.upstream_version + "_git", self.source_subfolder)
+        tools.get("https://github.com/RainerKuemmerle/g2o/archive/{0}.tar.gz".format(self.upstream_version))
+        os.rename("g2o-" + self.upstream_version, self.source_subfolder)
 
+    @property
+    def _android_arch(self):
+        arch = str(self.settings.arch)
+        return tools.to_android_abi(arch)
+		
     def build(self):
         g2o_source_dir = os.path.join(self.source_folder, self.source_subfolder)
 
@@ -63,7 +66,7 @@ class Libg2oConan(ConanFile):
             cmake.definitions["G2O_USE_OPENGL"] = "ON"
 			
         if self.options.csparse:
-            cmake.definitions["G2O_USE_CPSARSE"] = "ON"
+            cmake.definitions["G2O_USE_CSPARSE"] = "ON"
             cmake.definitions["BUILD_CSPARSE"] = "ON"
 
         if not tools.os_info.is_windows:
@@ -82,3 +85,10 @@ class Libg2oConan(ConanFile):
 
         # Fix all hard coded path to conan package in all .cmake files
         common.fix_conan_path(self, self.package_folder, '*.cmake')
+		
+        if self.settings.os == 'Android':
+            if not self.options.shared:
+                self.cpp_info.includedirs.append(
+                    os.path.join('sdk', 'native', 'jni', 'include'))
+                self.cpp_info.libdirs.append(
+                    os.path.join('sdk', 'native', 'staticlibs', self._android_arch))

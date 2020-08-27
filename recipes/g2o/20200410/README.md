@@ -1,3 +1,3 @@
-# conan-ceres
+# conan-g2o
 
-Conan package for ceres library
+Conan package for g2o library
