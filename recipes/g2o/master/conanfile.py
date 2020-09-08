@@ -12,11 +12,15 @@ class Libg2oConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False],
                "csparse": [True,False],
-               "opengl": [True,False]			   
+               "opengl": [True,False],
+               "apps":[True,False],
+               "examples":[True,False]			   
 			  }
     default_options = {"shared": True,
 	                   "csparse": True,
-                       "opengl": False}
+                       "opengl": False,
+                       "apps":False,
+                       "examples":False}
     exports = [
     ]
     url = "https://github.com/Solar-Framework/conan-solar/recipes/g2o/20200410"
@@ -54,23 +58,16 @@ class Libg2oConan(ConanFile):
 
         cmake = CMake(self)
 
-        cmake.definitions["G20_BUILD_APPS"] = "OFF"
-        cmake.definitions["G20_BUILD_EXAMPLES"] = "OFF"
-        cmake.definitions["G2O_USE_OPENGL"] = "OFF"
-        cmake.definitions["G2O_USE_CSPARSE"] = "OFF"
-        cmake.definitions["BUILD_CSPARSE"] = "OFF"
-        cmake.definitions["BUILD_LGPL_SHARED_LIBS"] = "OFF"
-        cmake.definitions["BUILD_SHARED_LIBS"] = "OFF"
-
-        if self.options.opengl:
-            cmake.definitions["G2O_USE_OPENGL"] = "ON"
-			
-        if self.options.csparse:
-            cmake.definitions["G2O_USE_CSPARSE"] = "ON"
-            cmake.definitions["BUILD_CSPARSE"] = "ON"
+        cmake.definitions["BUILD_LGPL_SHARED_LIBS"] = False
+        cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
+        cmake.definitions["G2O_USE_OPENGL"] = self.options.opengl
+        cmake.definitions["G2O_USE_CSPARSE"] = self.options.csparse
+        cmake.definitions["BUILD_CSPARSE"] = self.options.csparse
+        cmake.definitions["G2O_BUILD_APPS"] = self.options.apps
+        cmake.definitions["G2O_BUILD_EXAMPLES"] = self.options.examples
 
         if not tools.os_info.is_windows:
-            cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
+            cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
 
         cmake.configure()
         cmake.build()
