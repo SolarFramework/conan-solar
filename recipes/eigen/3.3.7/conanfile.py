@@ -62,9 +62,3 @@ class LibEigenConan(ConanFile):
         self.cpp_info.libs = tools.collect_libs(self)
         self.cpp_info.includedirs.append('include/eigen3')
         
-        if self.settings.os == 'Android':
-            if not self.options.shared:
-                self.cpp_info.includedirs.append(
-                    os.path.join('sdk', 'native', 'jni', 'include'))
-                self.cpp_info.libdirs.append(
-                    os.path.join('sdk', 'native', 'staticlibs', self._android_arch))
