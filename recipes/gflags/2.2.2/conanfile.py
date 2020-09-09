@@ -6,20 +6,14 @@ class GflagsConan(ConanFile):
     name = "gflags"
     description = "The gflags package contains a C++ library that implements commandline flags processing"
     topics = ("conan", "gflags", "cli", "flags", "commandline")
-    url = "https://github.com/Solar-Framework/conan-solar/recipes/gflags"
-    homepage = "https://gflags.github.io/gflags/"
+    url = "https://github.com/Solar-Framework/conan-solar/recipes/gflags/2.2.2"
+    homepage = "https://github.com/gflags/gflags"
     license = 'BSD-3-Clause'
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False],
-               "fPIC": [True, False], 
-			   "nothreads": [True, False], 
-			   "namespace": "ANY"}
-    default_options = {"shared": True, 
-	                   "fPIC": True, 
-					   "nothreads": True, 
-					   "namespace": 'gflags'}
+    options = {"shared": [True, False], "fPIC": [True, False], "nothreads": [True, False], "namespace": "ANY"}
+    default_options = {'shared': False, 'fPIC': True, 'nothreads': True, 'namespace': 'gflags'}
 
     @property
     def _source_subfolder(self):
