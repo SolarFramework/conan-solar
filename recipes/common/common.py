@@ -26,7 +26,7 @@ def get_c_flags(**kwargs):
         else:
             # CPU with 64-bit extensions, MMX, SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2,
             # POPCNT, AVX, AES, PCLMUL, FSGSBASE instruction set support.
-            flags = '-march=sandybridge'
+            flags = '-march=native'
             flags += ' -mtune=generic'
             flags += ' -mfpmath=sse'
             return flags
