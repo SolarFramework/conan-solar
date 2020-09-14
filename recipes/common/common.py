@@ -170,10 +170,6 @@ def generate_cmake_wrapper(**kwargs):
         cmake_wrapper.write('endif()\n')
         cmake_wrapper.write('conan_basic_setup()\n')
 
-        # Add common flags
-        cmake_wrapper.write(
-            'add_compile_options(' + get_cxx_flags() + ')\n'
-        )
 
         # Disable warnings and error because of warnings
         cmake_wrapper.write(
