@@ -232,6 +232,9 @@ class OpenCVConan(ConanFile):
         cmake.definitions['OPENCV_LICENSES_INSTALL_PATH'] = "licenses"
         cmake.definitions['BUILD_opencv_apps'] = False
 
+        if self.settings.os == 'Android':
+            cmake.definitions['BUILD_opencv_world'] = True
+
         # Compiler configuration
         if self.settings.compiler == 'Visual Studio':
             cmake.definitions['BUILD_WITH_STATIC_CRT'] = 'MT' in str(
