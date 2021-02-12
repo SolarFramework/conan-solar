@@ -179,8 +179,6 @@ class BoostConan(ConanFile):
         os.rename("boost_%s" % self.version.replace(".", "_"), self._source_subfolder)
         for patch in self.conan_data["patches"].get(self.version, []):
             tools.patch(**patch)
-        tools.patch(base_path=self._source_subfolder,
-            patch_file=os.path.join("patches", "android-remove-version-suffix-from-shared-libs.patch"))
 
     ##################### BUILDING METHODS ###########################
 

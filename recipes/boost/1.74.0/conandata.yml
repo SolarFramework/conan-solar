@@ -93,3 +93,6 @@ patches:
       base_path: "source_subfolder"
     - patch_file: "patches/python_base_prefix_since_1_74.patch"
       base_path: "source_subfolder"
+    - patch_file: "patches/android-remove-version-suffix-from-shared-libs.patch"
+      base_path: "source_subfolder"
+      
