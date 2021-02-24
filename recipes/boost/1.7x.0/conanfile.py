@@ -142,6 +142,7 @@ class BoostConan(ConanFile):
         return {
             "gcc": 6,
             "clang": 6,
+            "apple-clang": 12,  # guess
             "Visual Studio": 14,  # guess
         }.get(str(self.settings.compiler))
 
@@ -151,6 +152,7 @@ class BoostConan(ConanFile):
         return {
             "gcc": 5,
             "clang": 5,
+            "apple-clang": 12,  # guess
             "Visual Studio": 14,  # guess
         }.get(str(self.settings.compiler))
 
@@ -236,7 +238,6 @@ class BoostConan(ConanFile):
                 self.options.without_fiber = True
                 self.options.without_json = True
                 self.options.without_nowide = True
-
 
         # Remove options not supported by this version of boost
         for dep_name in CONFIGURE_OPTIONS:
@@ -1329,6 +1330,7 @@ class BoostConan(ConanFile):
                         if requirement != self.options.i18n_backend:
                             continue
                     self.cpp_info.components[module].requires.append("{0}::{0}".format(conan_requirement))
+
             for incomplete_component in incomplete_components:
                 self.output.warn("Boost component '{0}' is missing libraries. Try building boost with '-o boost:without_{0}'.".format(incomplete_component))
 
