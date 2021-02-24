@@ -369,7 +369,7 @@ class BoostConan(ConanFile):
         if self._with_icu:
             self.requires("icu/68.1")
         elif self._with_iconv:
-            self.requires("libiconv/1.16@conan-solar/stable")
+            self.requires("libiconv/1.16")
 
     def package_id(self):
         if self.options.header_only:
