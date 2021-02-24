@@ -61,7 +61,7 @@ class OpenCVConan(ConanFile):
                        "freetype": True,
                        "harfbuzz": True,
                        "eigen": True,
-		       "gapi": True,
+                       "gapi": True,
                        "glog": True,
                        "gflags": True,
                        "gstreamer": False,
@@ -93,6 +93,9 @@ class OpenCVConan(ConanFile):
             del self.options.harfbuzz
             del self.options.glog
             del self.options.gflags
+        else:
+            self.options["glog"].shared = self.options.shared
+            self.options["gflags"].shared = self.options.shared
 
     def source(self):
         sha256 = "bb95acd849e458be7f7024d17968568d1ccd2f0681d47fd60d34ffb4b8c52563"
