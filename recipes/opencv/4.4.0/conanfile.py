@@ -63,7 +63,7 @@ class OpenCVConan(ConanFile):
                        "freetype": True,
                        "harfbuzz": True,
                        "eigen": True,
-					   "gapi": True,
+                       "gapi": True,
                        "glog": True,
                        "gflags": True,
                        "gstreamer": False,
@@ -156,7 +156,7 @@ class OpenCVConan(ConanFile):
             else:
                 self.requires.add('libjpeg/9d@conan-solar/stable')
         if self.options.tiff:
-            self.requires.add('libtiff/4.0.9@conan-solar/stable')
+            self.requires.add('libtiff/4.2.0')
         if self.options.webp:
             self.requires.add('libwebp/1.0.3@conan-solar/stable')
         if self.options.png:
@@ -177,11 +177,12 @@ class OpenCVConan(ConanFile):
         if self.options.eigen:
             self.requires.add('eigen/3.3.7@conan-solar/stable')
         if self.options.gstreamer:
-            self.requires.add('gstreamer/1.16.0@bincrafters/stable')
+            self.requires.add('gstreamer/1.16.2')
             self.requires.add('gst-plugins-base/1.16.0@bincrafters/stable')
         if self.options.openblas:
             self.requires.add('openblas/0.3.7')
         if self.options.ffmpeg:
+ #           self.add_libraries_from_pc('ffmpeg')
             self.requires.add('ffmpeg/4.2.1@bincrafters/stable')
         if self.options.lapack:
             self.requires.add('lapack/3.7.1@conan/stable')
@@ -209,21 +210,40 @@ class OpenCVConan(ConanFile):
 
     def _gather_libs(self, p):
         libs = self.deps_cpp_info[p].libs + self.deps_cpp_info[p].system_libs
-        if not getattr(self.options[p],'shared', False):
+        shared=False
+        try:
+            shared = getattr(self.options[p], 'shared', False)
+#if not getattr(self.options[p],'shared', False):
+        except Exception:
+            self.output.info("%s has no option shared" %p)
+        if not shared:
             for dep in self.deps_cpp_info[p].public_deps:
                 libs += self._gather_libs(dep)
         return libs
 
     def _gather_lib_paths(self, p):
         lib_paths = self.deps_cpp_info[p].lib_paths
-        if not getattr(self.options[p],'shared', False):
+        shared=False
+        try:
+            shared = getattr(self.options[p],'shared', False)
+        except Exception:
+            self.output.info("%s has no option shared" %p)
+#if not getattr(self.options[p],'shared', False):
+        if not shared:
             for dep in self.deps_cpp_info[p].public_deps:
                 lib_paths += self._gather_lib_paths(dep)
+        
         return lib_paths
 
     def _gather_include_paths(self, p):
         include_paths = self.deps_cpp_info[p].include_paths
-        if not getattr(self.options[p],'shared', False):
+ #      if not getattr(self.options[p],'shared', False):
+        shared=False
+        try:
+            shared = getattr(self.options[p],'shared', False)
+        except Exception:
+            self.output.info("%s has no option shared" %p)
+        if not shared:
             for dep in self.deps_cpp_info[p].public_deps:
                 include_paths += self._gather_include_paths(dep)
         return include_paths

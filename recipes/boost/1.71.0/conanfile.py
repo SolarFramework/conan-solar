@@ -6,6 +6,7 @@ from conans.errors import ConanException
 from conans.errors import ConanInvalidConfiguration
 import os
 import sys
+import shlex
 import shutil
 
 try:
@@ -140,8 +141,12 @@ class BoostConan(ConanFile):
                 if not self.options.get_safe('without_%s' % lib):
                     raise ConanInvalidConfiguration("Boost '%s' library requires multi threading" % lib)
 
+        if self.settings.compiler == "Visual Studio" and "MT" in self.settings.compiler.runtime and self.options.shared:
+            raise ConanInvalidConfiguration("Boost can not be built as shared library with MT runtime.")
+
     def build_requirements(self):
-        self.build_requires("b2/4.2.0")
+        if not self.options.header_only:
+            self.build_requires("b2/4.2.0")
 
     def requirements(self):
         if self._zip_bzip2_requires_needed:
@@ -150,11 +155,11 @@ class BoostConan(ConanFile):
             if self.options.bzip2:
                 self.requires("bzip2/1.0.8")
             if self.options.lzma:
-                self.requires("xz_utils/5.2.4")
+                self.requires("xz_utils/5.2.5")
             if self.options.zstd:
-                self.requires("zstd/1.4.3")
+                self.requires("zstd/1.4.5")
         if self.options.i18n_backend == 'icu':
-            self.requires("icu/64.2")
+            self.requires("icu/67.1")
 
     def package_id(self):
         if self.options.header_only:
@@ -643,7 +648,7 @@ class BoostConan(ConanFile):
         flags.append(cxx_flags)
 
         if self.options.extra_b2_flags:
-            flags.append(str(self.options.extra_b2_flags))
+            flags.extend(shlex.split(str(self.options.extra_b2_flags)))
 
         flags.extend(["install",
                       "--prefix=%s" % self.package_folder,
@@ -681,7 +686,6 @@ class BoostConan(ConanFile):
     @property
     def _ar(self):
         if "AR" in os.environ:
-            self.output.info("AR environment: %s" % os.environ["AR"])
             return os.environ["AR"]
         if tools.is_apple_os(self.settings.os) and self.settings.compiler == "apple-clang":
             return tools.XCRun(self.settings).ar
@@ -908,6 +912,7 @@ class BoostConan(ConanFile):
                 self.cpp_info.defines.append("_GLIBCXX_USE_CXX11_ABI=%s" % self._gnu_cxx11_abi)
 
         if not self.options.header_only:
+            self.output.info("not header_only")
             if self.options.error_code_header_only:
                 self.cpp_info.defines.append("BOOST_ERROR_CODE_HEADER_ONLY")
 
@@ -916,6 +921,7 @@ class BoostConan(ConanFile):
                     self.cpp_info.defines.append("BOOST_PYTHON_STATIC_LIB")
 
             if self._is_msvc or self._is_clang_cl:
+                self.output.info("mscv or clang")
                 if not self.options.magic_autolink:
                     # DISABLES AUTO LINKING! NO SMART AND MAGIC DECISIONS THANKS!
                     self.cpp_info.defines.append("BOOST_ALL_NO_LIB")
@@ -928,6 +934,7 @@ class BoostConan(ConanFile):
                     self.output.info("Enabled magic autolinking (smart and magic decisions)")
 
                 # https://github.com/conan-community/conan-boost/issues/127#issuecomment-404750974
+                self.output.info("Append bcrypt")
                 self.cpp_info.system_libs.append("bcrypt")
             elif self.settings.os == "Linux":
                 # https://github.com/conan-community/community/issues/135
