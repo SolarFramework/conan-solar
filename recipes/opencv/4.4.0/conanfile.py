@@ -15,6 +15,7 @@ class OpenCVConan(ConanFile):
               "image-processing", "deep-learning")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
+               "world": [True, False],
                "fPIC": [True, False],
                "contrib": [True, False],
                "jpeg": [True, False],
@@ -43,6 +44,7 @@ class OpenCVConan(ConanFile):
                "parallel": ["tbb", "openmp", None],
                "quirc": [True, False]}
     default_options = {"shared": False,
+                       "world": False,
                        "fPIC": True,
                        "contrib": False,
                        "jpeg": True,
@@ -96,6 +98,10 @@ class OpenCVConan(ConanFile):
         else:
             self.options["glog"].shared = self.options.shared
             self.options["gflags"].shared = self.options.shared
+
+        if self.settings.os == 'Android' and not self.options.world:
+            self.output.warn("Android: forcing 'world' = True")
+            self.options.world = True
 
     def source(self):
         sha256 = "bb95acd849e458be7f7024d17968568d1ccd2f0681d47fd60d34ffb4b8c52563"
@@ -167,6 +173,7 @@ class OpenCVConan(ConanFile):
             # NOTE : version should be the same as used in OpenCV release,
             # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files
             self.requires.add('protobuf/3.5.2@conan-solar/stable')
+            #self.requires.add('protobuf/3.5.2@bincrafters/stable')
         if self.options.eigen:
             self.requires.add('eigen/3.3.7@conan-solar/stable')
         if self.options.gstreamer:
@@ -255,8 +262,14 @@ class OpenCVConan(ConanFile):
         cmake.definitions['OPENCV_LICENSES_INSTALL_PATH'] = "licenses"
         cmake.definitions['BUILD_opencv_apps'] = False
 
-        if self.settings.os == 'Android':
-            cmake.definitions['BUILD_opencv_world'] = True
+        cmake.definitions['BUILD_opencv_world'] = self.options.world
+
+        cmake.definitions['BUILD_ANDROID_PROJECTS'] = False
+        cmake.definitions['BUILD_ANDROID_EXAMPLES'] = False
+        cmake.definitions['INSTALL_ANDROID_EXAMPLES'] = False
+        cmake.definitions['ANDROID_EXAMPLES_WITH_LIBS'] = False
+        cmake.definitions['BUILD_FAT_JAVA_LIB'] = False
+        cmake.definitions['BUILD_ANDROID_SERVICE'] = False
 
         # Compiler configuration
         if self.settings.compiler == 'Visual Studio':
@@ -494,6 +507,8 @@ class OpenCVConan(ConanFile):
 		
         tools.patch(base_path=self._source_subfolder,
             patch_file=os.path.join("patches", "0001-fix-FindOpenJPEG-doesnt-exist.patch"))
+#        tools.patch(base_path=self._source_subfolder,
+#          patch_file=os.path.join("patches", "0002-fix-android-logger-link-error-protobuf.patch"))
 
         cmake = self._configure_cmake()
         cmake.build()
@@ -515,86 +530,88 @@ class OpenCVConan(ConanFile):
         self.cpp_info.exelinkflags.extend(pkg_config.libs_only_other)
 
     def package_info(self):
-        opencv_libs = ["stitching",
-                       "photo",
-                       "video",
-                       "ml",
-                       "calib3d",
-                       "features2d",
-                       "highgui",
-                       "videoio",
-                       "flann",
-                       "imgcodecs",
-                       "objdetect",
-                       "dnn",
-                       "imgproc",
-                       "core"]
+        if self.options.world:
+            opencv_libs = ["world"]
+        else:
+            opencv_libs = ["stitching",
+                            "photo",
+                            "video",
+                            "ml",
+                            "calib3d",
+                            "features2d",
+                            "highgui",
+                            "videoio",
+                            "flann",
+                            "imgcodecs",
+                            "objdetect",
+                            "dnn",
+                            "imgproc",
+                            "core"]
+            if not self.options.protobuf:
+                opencv_libs.remove("dnn")
 
-        if not self.options.protobuf:
-            opencv_libs.remove("dnn")
+            if self.settings.os == 'Emscripten':
+                opencv_libs.remove("videoio")
 
-        if self.settings.os == 'Emscripten':
-            opencv_libs.remove("videoio")
+            if self.settings.os != 'Android' and self.options.gapi:
+                # gapi depends on ade but ade disabled for Android
+                # https://github.com/opencv/opencv/blob/4.0.1/modules/gapi/cmake/DownloadADE.cmake#L2
+                opencv_libs.append("gapi")
 
-        if self.settings.os != 'Android' and self.options.gapi:
-            # gapi depends on ade but ade disabled for Android
-            # https://github.com/opencv/opencv/blob/4.0.1/modules/gapi/cmake/DownloadADE.cmake#L2
-            opencv_libs.append("gapi")
+            if self.options.contrib:
+                opencv_libs = [
+                    "aruco",
+                    "bgsegm",
+                    "bioinspired",
+                    "ccalib",
+                    "datasets",
+                    "dpm",
+                    "face",
+                    "freetype",
+                    "fuzzy",
+                    "hfs",
+                    "img_hash",
+                    "line_descriptor",
+                    "optflow",
+                    "phase_unwrapping",
+                    "plot",
+                    "reg",
+                    "rgbd",
+                    "saliency",
+                    "shape",
+                    "stereo",
+                    "structured_light",
+                    "superres",
+                    "surface_matching",
+                    "tracking",
+                    "videostab",
+                    "xfeatures2d",
+                    "ximgproc",
+                    "xobjdetect",
+                    "xphoto",
+                    "sfm"] + opencv_libs
 
-        if self.options.contrib:
-            opencv_libs = [
-                "aruco",
-                "bgsegm",
-                "bioinspired",
-                "ccalib",
-                "datasets",
-                "dpm",
-                "face",
-                "freetype",
-                "fuzzy",
-                "hfs",
-                "img_hash",
-                "line_descriptor",
-                "optflow",
-                "phase_unwrapping",
-                "plot",
-                "reg",
-                "rgbd",
-                "saliency",
-                "shape",
-                "stereo",
-                "structured_light",
-                "superres",
-                "surface_matching",
-                "tracking",
-                "videostab",
-                "xfeatures2d",
-                "ximgproc",
-                "xobjdetect",
-                "xphoto",
-                "sfm"] + opencv_libs
+                if not self.options.freetype or not self.options.harfbuzz:
+                    opencv_libs.remove("freetype")
+                if not self.options.eigen or not self.options.glog or not self.options.gflags:
+                    opencv_libs.remove("sfm")
+                if str(self.settings.os) in ["iOS", "watchOS", "tvOS"]:
+                    opencv_libs.remove("superres")
 
-            if not self.options.freetype or not self.options.harfbuzz:
-                opencv_libs.remove("freetype")
-            if not self.options.eigen or not self.options.glog or not self.options.gflags:
-                opencv_libs.remove("sfm")
-            if str(self.settings.os) in ["iOS", "watchOS", "tvOS"]:
-                opencv_libs.remove("superres")
-
-        if self.options.cuda:
-            opencv_libs = ["cudaarithm",
-                            "cudabgsegm",
-                            "cudacodec",
-                            "cudafeatures2d",
-                            "cudafilters",
-                            "cudaimgproc",
-                            "cudalegacy",
-                            "cudaobjdetect",
-                            "cudaoptflow",
-                            "cudastereo",
-                            "cudawarping",
-                            "cudev"
-                            ] + opencv_libs
+            if self.options.cuda:
+                opencv_libs = ["cudaarithm",
+                                "cudabgsegm",
+                                "cudacodec",
+                                "cudafeatures2d",
+                                "cudafilters",
+                                "cudaimgproc",
+                                "cudalegacy",
+                                "cudaobjdetect",
+                                "cudaoptflow",
+                                "cudastereo",
+                                "cudawarping",
+                                "cudev"
+                                ] + opencv_libs
 
         suffix = 'd' if self.settings.build_type == 'Debug' and self.settings.os == "Windows" else ''
         version = self.version.replace(
