@@ -1,0 +1,5 @@
+This recipe has been forked from conan-center-index
+
+url: https://github.com/conan-io/conan-center-index
+branch: master
+commit: ec3b4215476c4423c3c2ddd4b7994cd1cdc6c2e2

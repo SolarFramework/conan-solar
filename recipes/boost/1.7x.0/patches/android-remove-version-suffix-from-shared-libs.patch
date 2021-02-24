@@ -1,0 +1,13 @@
+diff --git a/boostcpp.jam b/boostcpp.jam
+index 2994017..2225f75 100644
+--- a/boostcpp.jam
++++ b/boostcpp.jam
+@@ -207,7 +207,7 @@ rule tag ( name : type ? : property-set )
+         # libFoo.1.2.3.dylib format. AIX linkers do not accept version suffixes
+         # either. Pgi compilers can not accept a library with version suffix.
+         if $(type) = SHARED_LIB &&
+-          ! [ $(property-set).get <target-os> ] in windows cygwin darwin aix &&
++          ! [ $(property-set).get <target-os> ] in android windows cygwin darwin aix &&
+           ! [ $(property-set).get <toolset> ] in pgi
+         {
+             result = $(result).$(BOOST_VERSION)  ;

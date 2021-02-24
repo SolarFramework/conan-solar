@@ -99,6 +99,8 @@ patches:
       base_path: "source_subfolder"
     - patch_file: "patches/python_base_prefix_since_1_74.patch"
       base_path: "source_subfolder"
+    - patch_file: "patches/android-remove-version-suffix-from-shared-libs.patch"
+      base_path: "source_subfolder"
   1.75.0:
     - patch_file: "patches/boost_build_qcc_fix_debug_build_parameter_since_1_74.patch"
       base_path: "source_subfolder"
