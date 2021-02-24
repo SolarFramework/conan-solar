@@ -95,6 +95,10 @@ class OpenCVConan(ConanFile):
             del self.options.harfbuzz
             del self.options.glog
             del self.options.gflags
+        else:
+            self.options["glog"].shared = self.options.shared
+            self.options["gflags"].shared = self.options.shared
+
         if self.settings.os == 'Android' and not self.options.world:
             self.output.warn("Android: forcing 'world' = True")
             self.options.world = True
