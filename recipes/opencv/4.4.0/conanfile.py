@@ -95,6 +95,9 @@ class OpenCVConan(ConanFile):
             del self.options.harfbuzz
             del self.options.glog
             del self.options.gflags
+        if self.settings.os == 'Android' and not self.options.world:
+            self.output.warn("Android: forcing 'world' = True")
+            self.options.world = True
 
     def source(self):
         sha256 = "bb95acd849e458be7f7024d17968568d1ccd2f0681d47fd60d34ffb4b8c52563"
@@ -106,7 +109,7 @@ class OpenCVConan(ConanFile):
         os.rename('opencv_contrib-%s' % self.version, self._contrib_subfolder)
 
         for directory in ['libjasper', 'libjpeg-turbo', 'libjpeg', 'libpng', 'libtiff',
-                    'libwebp', 'openexr', 'zlib']:
+                    'libwebp', 'openexr', 'protobuf', 'zlib']:
             tools.rmdir(os.path.join(self._source_subfolder, '3rdparty', directory))
 
     def config_options(self):
@@ -162,11 +165,11 @@ class OpenCVConan(ConanFile):
         if not tools.cross_building(self.settings) and self.options.openexr:
             # OpenEXR currently doesn't support cross-building
             self.requires.add('openexr/2.3.0@conan-solar/stable')
-       # if self.options.protobuf:
-       #     # NOTE : version should be the same as used in OpenCV release,
-       #     # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files
-       #     self.requires.add('protobuf/3.5.2@conan-solar/stable')
-       #     #self.requires.add('protobuf/3.5.2@bincrafters/stable')
+        if self.options.protobuf:
+            # NOTE : version should be the same as used in OpenCV release,
+            # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files
+            self.requires.add('protobuf/3.5.2@conan-solar/stable')
+            #self.requires.add('protobuf/3.5.2@bincrafters/stable')
         if self.options.eigen:
             self.requires.add('eigen/3.3.7@conan-solar/stable')
         if self.options.gstreamer:
@@ -233,6 +236,7 @@ class OpenCVConan(ConanFile):
         cmake.definitions['OPENCV_3P_LIB_INSTALL_PATH'] = "lib"
         cmake.definitions['OPENCV_OTHER_INSTALL_PATH'] = "res"
         cmake.definitions['OPENCV_LICENSES_INSTALL_PATH'] = "licenses"
+        cmake.definitions['BUILD_opencv_apps'] = False
 
         cmake.definitions['BUILD_opencv_world'] = self.options.world
 
@@ -382,8 +386,8 @@ class OpenCVConan(ConanFile):
         cmake.definitions['BUILD_PNG'] = False
         cmake.definitions['WITH_PNG'] = self.options.png
 
-#        # Protobuf
-#        cmake.definitions['BUILD_PROTOBUF'] = False
+        # Protobuf
+        cmake.definitions['BUILD_PROTOBUF'] = False
         cmake.definitions['PROTOBUF_UPDATE_FILES'] = False
         cmake.definitions['WITH_PROTOBUF'] = self.options.protobuf
         if self.options.protobuf and self.settings.compiler == 'Visual Studio' and self.options.shared:
@@ -479,8 +483,8 @@ class OpenCVConan(ConanFile):
 		
         tools.patch(base_path=self._source_subfolder,
             patch_file=os.path.join("patches", "0001-fix-FindOpenJPEG-doesnt-exist.patch"))
-        tools.patch(base_path=self._source_subfolder,
-           patch_file=os.path.join("patches", "0002-fix-android-logger-link-error-protobuf.patch"))
+#        tools.patch(base_path=self._source_subfolder,
+#          patch_file=os.path.join("patches", "0002-fix-android-logger-link-error-protobuf.patch"))
 
         cmake = self._configure_cmake()
         cmake.build()
