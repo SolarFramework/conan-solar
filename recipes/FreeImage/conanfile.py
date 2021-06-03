@@ -42,8 +42,8 @@ class FreeimsageConan(ConanFile):
     #FILE_SHA = 'f41379682f9ada94ea7b34fe86bf9ee00935a3147be41b6569c9605a53e438fd'
     
     def requirements(self):
-        self.requires ("zlib/1.2.11@conan-solar/stable")
-        self.requires ("libpng/1.6.37@conan-solar/stable")
+        self.requires ("zlib/1.2.11")
+        self.requires ("libpng/1.6.37")
         #self.requires ("libjpeg/9d") #vcpkg use libjpeg-turbo-2.0.6
         #self.requires ("libjpeg-turbo/2.0.6")
         self.requires ("libtiff/4.2.0") #vcpkg use 4.1.0
