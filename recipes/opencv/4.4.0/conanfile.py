@@ -158,7 +158,7 @@ class OpenCVConan(ConanFile):
         if self.options.tiff:
             self.requires.add('libtiff/4.2.0')
         if self.options.webp:
-            self.requires.add('libwebp/1.0.3@conan-solar/stable')
+            self.requires.add('libwebp/1.1.0')
         if self.options.png:
             self.requires.add('libpng/1.6.37@conan-solar/stable')
         if self.options.jpeg2000 == "openjpeg":
@@ -168,7 +168,7 @@ class OpenCVConan(ConanFile):
             self.options["jasper"].jpegturbo = self.options.jpegturbo
         if not tools.cross_building(self.settings) and self.options.openexr:
             # OpenEXR currently doesn't support cross-building
-            self.requires.add('openexr/2.3.0@conan-solar/stable')
+            self.requires.add('openexr/2.5.4')
         if self.options.protobuf:
             # NOTE : version should be the same as used in OpenCV release,
             # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files

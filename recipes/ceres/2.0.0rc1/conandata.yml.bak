@@ -1,0 +1,9 @@
+sources:
+  "2.0.0rc1":
+    url: https://github.com/ceres-solver/ceres-solver/archive/2.0.0rc1.tar.gz
+    sha256: D1EA36006459B93601C63340965946B80E5E0E973A90C9A89E89260F536E1DA2
+patches:
+  "2.0.0rc1":
+    - patch_file: "patches/find-libraries-conan.patch"
+      base_path: "source_subfolder"
+     
