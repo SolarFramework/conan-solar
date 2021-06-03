@@ -147,7 +147,7 @@ class OpenCVConan(ConanFile):
                     installer.install(package)
 
     def requirements(self):
-        self.requires.add('zlib/1.2.11@conan-solar/stable')
+        self.requires.add('zlib/1.2.11')
         if self.options.jpeg:
             # NOTE : use the same libjpeg implementation as jasper uses
             # otherwise, jpeg_create_decompress will fail on version check
@@ -160,7 +160,7 @@ class OpenCVConan(ConanFile):
         if self.options.webp:
             self.requires.add('libwebp/1.1.0')
         if self.options.png:
-            self.requires.add('libpng/1.6.37@conan-solar/stable')
+            self.requires.add('libpng/1.6.37')
         if self.options.jpeg2000 == "openjpeg":
             self.requires.add('openjpeg/2.3.1@conan-solar/stable')
         if self.options.jpeg2000 == "jasper":
