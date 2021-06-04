@@ -114,20 +114,8 @@ class ColmapConan(ConanFile):
         
         self.cpp_info.names["cmake_find_package"] = "colmap"
         self.cpp_info.names["cmake_find_package_multi"] = "colmap"
-        self.cpp_info.includedirs = ["include", 
-                                        os.path.join("include","colmap" "base"), 
-                                        os.path.join("include","colmap" "cont²rollers"),
-                                        os.path.join("include","colmap" "estimators"),
-                                        #os.path.join("include","colmap" "exe"),
-                                        os.path.join("include","colmap" "feature"),
-                                        #os.path.join("include","colmap" "lib"),
-                                        os.path.join("include","colmap" "mvs"),
-                                        os.path.join("include","colmap" "optim"),
-                                        os.path.join("include","colmap" "retrieval"),
-                                        os.path.join("include","colmap" "sfm"),
-                                        os.path.join("include","colmap" "tools"),
-                                        os.path.join("include","colmap" "ui"),
-                                        os.path.join("include","colmap" "util")]
+        self.cpp_info.includedirs = [os.path.join("include","colmap"), 
+                                     os.path.join("include","colmap","lib")]
         self.cpp_info.libs = tools.collect_libs(self)
 
 
