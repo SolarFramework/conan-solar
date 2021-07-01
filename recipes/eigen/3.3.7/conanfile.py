@@ -59,6 +59,6 @@ class LibEigenConan(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = [] #tools.collect_libs(self)
         self.cpp_info.includedirs.append('include/eigen3')
         
