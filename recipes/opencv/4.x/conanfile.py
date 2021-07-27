@@ -30,6 +30,7 @@ class OpenCVConan(ConanFile):
         "with_eigen": [True, False],
         "with_webp": [True, False],
         "with_gtk": [True, False],
+        "gtk_version": ["system", "3"], 
         "with_quirc": [True, False],
         "with_cuda": [True, False],
         "with_cublas": [True, False],
@@ -56,6 +57,7 @@ class OpenCVConan(ConanFile):
         "with_eigen": True,
         "with_webp": True,
         "with_gtk": True,
+        "gtk_version": "3",
         "with_quirc": True,
         "with_cuda": False,
         "with_cublas": False,
@@ -143,7 +145,10 @@ class OpenCVConan(ConanFile):
         if self.options.with_quirc:
             self.requires("quirc/1.1")
         if self.options.get_safe("with_gtk"):
-            self.requires("gtk/system")
+            if (self.options.gtk_version == "system")
+                self.requires("gtk/system")
+            else
+                self.requires("gtk/3.24.24")
         if self.options.dnn:
             self.requires("protobuf/3.17.1")
         if self.options.ffmpeg:
