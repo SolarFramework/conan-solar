@@ -14,13 +14,16 @@ class Libg2oConan(ConanFile):
                "csparse": [True,False],
                "opengl": [True,False],
                "apps":[True,False],
-               "examples":[True,False]			   
+               "examples":[True,False],
+               "openmp":[True, False]			   
 			  }
     default_options = {"shared": True,
 	                   "csparse": True,
                        "opengl": False,
                        "apps":False,
-                       "examples":False}
+                       "examples":False,
+                       "openmp":False
+                      }
     exports = [
     ]
     url = "https://github.com/Solar-Framework/conan-solar/recipes/g2o/20200410"
@@ -65,6 +68,8 @@ class Libg2oConan(ConanFile):
         cmake.definitions["BUILD_CSPARSE"] = self.options.csparse
         cmake.definitions["G2O_BUILD_APPS"] = self.options.apps
         cmake.definitions["G2O_BUILD_EXAMPLES"] = self.options.examples
+        cmake.definitions["G2O_USE_OPENMP"] = self.options.openmp
+        cmake.definitions["CMAKE_DEBUG_POSTFIX"] = ""
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
