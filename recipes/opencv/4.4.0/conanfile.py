@@ -183,7 +183,7 @@ class OpenCVConan(ConanFile):
             self.requires.add('openblas/0.3.7')
         if self.options.ffmpeg:
  #           self.add_libraries_from_pc('ffmpeg')
-            self.requires.add('ffmpeg/4.2.1@bincrafters/stable')
+            self.requires.add('ffmpeg/4.2.1@conan-solar/stable')
         if self.options.lapack:
             self.requires.add('lapack/3.7.1@conan/stable')
         if self.options.contrib:
