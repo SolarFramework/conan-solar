@@ -533,7 +533,7 @@ class OpenCVConan(ConanFile):
                 {"target": "opencv_highgui",    "lib": "highgui",    "requires": ["opencv_core", "opencv_imgproc", "opencv_imgcodecs", "opencv_videoio"] + freetype() + eigen() + gtk()},
                 {"target": "opencv_objdetect",  "lib": "objdetect",  "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + quirc()},
                 {"target": "opencv_stitching",  "lib": "stitching",  "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + xfeatures2d() + eigen()},
-                {"target": "opencv_video",      "lib": "video",      "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen()},
+                {"target": "opencv_video",      "lib": "video",      "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + ffmpeg()},
             ]
             if self.options.dnn:
                 opencv_components.extend([
@@ -604,11 +604,6 @@ class OpenCVConan(ConanFile):
                     {"target": "opencv_cudastereo",     "lib": "cudastereo",        "requires": ["opencv_core", "opencv_calib3d"] + eigen()},
                     {"target": "opencv_cudawarping",    "lib": "cudawarping",       "requires": ["opencv_core", "opencv_imgproc"] + eigen()},
                     {"target": "opencv_cudev",          "lib": "cudev",             "requires": [] + eigen()},
-                ])
-
-            if self.options.with_ffmpeg:
-                opencv_components.extend([
-                    {"target": "opencv_videoio_ffmpeg", "lib": "ffmpeg", "requires": ["opencv_core", "opencv_imgproc"] + ffmpeg()}
                 ])
 
         return opencv_components
