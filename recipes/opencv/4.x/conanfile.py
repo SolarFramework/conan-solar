@@ -39,7 +39,7 @@ class OpenCVConan(ConanFile):
         "neon": [True, False],
         "dnn": [True, False],
         "detect_cpu_baseline": [True, False],
-        "ffmpeg": [True, False]
+        "with_ffmpeg": [True, False]
     }
     default_options = {
         "shared": False,
@@ -66,7 +66,7 @@ class OpenCVConan(ConanFile):
         "neon": True,
         "dnn": True,
         "detect_cpu_baseline": False,
-        "ffmpeg": False
+        "with_ffmpeg": False
     }
 
     short_paths = True
@@ -145,13 +145,13 @@ class OpenCVConan(ConanFile):
         if self.options.with_quirc:
             self.requires("quirc/1.1")
         if self.options.get_safe("with_gtk"):
-            if (self.options.gtk_version == "system")
+            if (self.options.gtk_version == "system"):
                 self.requires("gtk/system")
-            else
+            else:
                 self.requires("gtk/3.24.24")
         if self.options.dnn:
             self.requires("protobuf/3.17.1")
-        if self.options.ffmpeg:
+        if self.options.with_ffmpeg:
             self.requires.add('ffmpeg/4.2.1@conan-solar/stable')
 
     def validate(self):
@@ -211,6 +211,33 @@ class OpenCVConan(ConanFile):
                 tools.replace_in_file(find_protobuf,
                                       'if(TARGET "${Protobuf_LIBRARIES}")',
                                       'if(FALSE)  # patch: disable if(TARGET "${Protobuf_LIBRARIES}")')
+    def _gather_libs(self, p):
+        libs = self.deps_cpp_info[p].libs + self.deps_cpp_info[p].system_libs
+        shared=False
+        try:
+            shared = getattr(self.options[p], 'shared', False)
+        #if not getattr(self.options[p],'shared', False):
+        except Exception:
+            self.output.info("%s has no option shared" %p)
+        if not shared:
+            for dep in self.deps_cpp_info[p].public_deps:
+                libs += self._gather_libs(dep)
+        return libs
+
+    def _gather_include_paths(self, p):
+        include_paths = self.deps_cpp_info[p].include_paths
+ #      if not getattr(self.options[p],'shared', False):
+        shared=False
+        try:
+            shared = getattr(self.options[p],'shared', False)
+        except Exception:
+            self.output.info("%s has no option shared" %p)
+        if not shared:
+            for dep in self.deps_cpp_info[p].public_deps:
+                include_paths += self._gather_include_paths(dep)
+        self.output.info("gathered include paths : %s" %include_paths)
+        return include_paths
+
 
     def _configure_cmake(self):
         if self._cmake:
@@ -351,8 +378,8 @@ class OpenCVConan(ConanFile):
         self._cmake.definitions["ENABLE_PIC"] = self.options.get_safe("fPIC", True)
         
         # FFMPEG
-        self._cmake.definitions['WITH_FFMPEG'] = self.options.ffmpeg
-        if self.options.ffmpeg:
+        self._cmake.definitions['WITH_FFMPEG'] = self.options.with_ffmpeg
+        if self.options.with_ffmpeg:
             self._cmake.definitions['HAVE_FFMPEG'] = True
             self._cmake.definitions['HAVE_FFMPEG_WRAPPER'] = False
             self._cmake.definitions['OPENCV_FFMPEG_SKIP_BUILD_CHECK'] = True
@@ -360,9 +387,18 @@ class OpenCVConan(ConanFile):
             self._cmake.definitions['OPENCV_FFMPEG_USE_FIND_PACKAGE'] = False
             self._cmake.definitions['OPENCV_INSTALL_FFMPEG_DOWNLOAD_SCRIPT'] = False
             for lib in ['avcodec', 'avformat', 'avutil', 'swscale', 'avresample']:
-                self._cmake.definitions['FFMPEG_lib%s_VERSION' % lib] = self.deps_cpp_info['ffmpeg'].version
-            self._cmake.definitions['FFMPEG_LIBRARIES'] = ';'.join(self._gather_libs('ffmpeg'))
-            self._cmake.definitions['FFMPEG_INCLUDE_DIRS'] = ';'.join(self._gather_include_paths('ffmpeg'))
+                # TODO: Get the linux version and not the one from the release, or pathc the cmakefile to accept version > 4.0.0
+                version = "55.0.0" #self.deps_cpp_info['ffmpeg'].version
+                self._cmake.definitions['FFMPEG_lib%s_VERSION' % lib] = version
+                self.output.info("%s version: %s" % (lib,version))            
+            
+            libs = self._gather_libs('ffmpeg')
+            self.output.info("ffmpeg gathered libs : %s" %libs)
+            self._cmake.definitions['FFMPEG_LIBRARIES'] = ';'.join(libs)
+            
+            include_paths = self._gather_include_paths('ffmpeg')
+            self.output.info("ffmpeg gathered include paths : %s" %include_paths)
+            self._cmake.definitions['FFMPEG_INCLUDE_DIRS'] = ';'.join(include_paths)
 
         if self.settings.compiler == "Visual Studio":
             self._cmake.definitions["BUILD_WITH_STATIC_CRT"] = "MT" in str(self.settings.compiler.runtime)
@@ -432,7 +468,7 @@ class OpenCVConan(ConanFile):
         if not self.options.get_safe("with_gtk", False):
             return False
         gtk_version = self.deps_cpp_info["gtk"].version
-        if gtk_version == "system":
+        if (gtk_version == "system"):
             return self.options["gtk"].version == 2
         else:
             return tools.Version(gtk_version) < "3.0.0"
@@ -475,11 +511,14 @@ class OpenCVConan(ConanFile):
         def freetype():
             return ["freetype::freetype"] if self.options.get_safe("contrib_freetype") else []
 
+        def ffmpeg():
+            return ["ffmpeg::ffmpeg"] if self.options.get_safe("with_ffmpeg") else []
+
         def xfeatures2d():
             return ["opencv_xfeatures2d"] if self.options.contrib else []
 
         if self.options.world:
-            opencv_components = {"target": "opencv_world", "lib": "world", "requires": []}
+            opencv_components = [{"target": "opencv_world", "lib": "world", "requires": ["zlib::zlib"] + parallel() + eigen() + imageformats_deps() + freetype() + gtk() + quirc() + ffmpeg() + protobuf() }]
         else:
             opencv_components = [
                 {"target": "opencv_core",       "lib": "core",       "requires": ["zlib::zlib"] + parallel() + eigen()},
@@ -494,7 +533,7 @@ class OpenCVConan(ConanFile):
                 {"target": "opencv_highgui",    "lib": "highgui",    "requires": ["opencv_core", "opencv_imgproc", "opencv_imgcodecs", "opencv_videoio"] + freetype() + eigen() + gtk()},
                 {"target": "opencv_objdetect",  "lib": "objdetect",  "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + quirc()},
                 {"target": "opencv_stitching",  "lib": "stitching",  "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + xfeatures2d() + eigen()},
-                {"target": "opencv_video",      "lib": "video",      "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen()},
+                {"target": "opencv_video",      "lib": "video",      "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + ffmpeg()},
             ]
             if self.options.dnn:
                 opencv_components.extend([
