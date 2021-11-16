@@ -30,21 +30,3 @@ The built binaries will be located by default in your `~/.conan/data` by default
 
 If you want to select another location for the build output, edit `run.sh`. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
