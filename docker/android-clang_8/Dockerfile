@@ -1,8 +1,6 @@
 
 FROM conanio/android-clang8
 
-LABEL maintainer="Luis Martinez de Bartolome <luism@jfrog.com>"
-
 ARG CONAN_VERSION
 
 ENV ANDROID_ABI=arm64-v8a \
