@@ -35,7 +35,7 @@ class ColmapConan(ConanFile):
         return tools.to_android_abi(arch)
 
     def _patch_sources(self):
-        for patch in self.conan_data["patches"][self.version]:
+        for patch in self.conan_data.get("patches", {}).get(self.version, []):
             tools.patch(**patch)
 
     def build(self):

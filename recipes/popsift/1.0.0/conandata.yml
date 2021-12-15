@@ -1,4 +1,7 @@
 sources:
+  "fix-vlFeatCompliance3":
+      url: https://github.com/alicevision/popsift/archive/refs/heads/fix/vlFeatCompliance3.tar.gz
+      sha256: 3E3AE95B011B04DC025B690E28287495E528FD78B1EBB1531BCA369FC9E3E448
   "1.0.0-rc3":
       url: https://github.com/alicevision/popsift/archive/v1.0.0-rc3.tar.gz
       sha256: 4EA6DF4A85133F78540DBFBF3AB7A1F583831E4D4F68CDBA2002E8D26C060D95
@@ -7,4 +10,6 @@ patches:
     - patch_file: "patches/suppress_deprecated_cuda_sm_warnings.patch"
       base_path: "source_subfolder"
     - patch_file: "patches/fix_MSVC_runtime_library_bug.patch"
-      base_path: "source_subfolder"      
+      base_path: "source_subfolder" 
+  
+  
