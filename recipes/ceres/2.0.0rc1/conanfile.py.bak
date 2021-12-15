@@ -44,7 +44,6 @@ class ceressolverConan(ConanFile):
             self._cmake.definitions["GFLAGS"] = self.options.use_gflags
             self._cmake.definitions["BUILD_EXAMPLES"] = False           #Requires gflags
             self._cmake.definitions["BUILD_TESTING"] = False            #Requires gflags
-            self._cmake.definitions["BUILD_BENCHMARKS"] = False          
             self._cmake.definitions["BUILD_DOCUMENTATION"] = False      #Requires python modules Sphinx and sphinx-rtd-theme
             self._cmake.definitions["CUSTOM_BLAS"] = self.options.use_custom_blas
             self._cmake.definitions["EIGEN_PREFER_EXPORTED_EIGEN_CMAKE_CONFIGURATION"] = False    #Set to false to Force CMake to use the conan-generated dependencies
@@ -52,7 +51,7 @@ class ceressolverConan(ConanFile):
             self._cmake.definitions["GFLAGS_PREFER_EXPORTED_GFLAGS_CMAKE_CONFIGURATION"] = False  #Set to false to Force CMake to use the conan-generated dependencies
             self._cmake.definitions["EIGENSPARSE"] = self.options.use_eigen_sparse
             self._cmake.definitions["SUITESPARSE"] = False  #Optional. Not sufpported right now because SuiteSparse is not part of conan-index
-            self._cmake.definitions["CXSPARSE"] = self.options.use_cxsparse  
+            self._cmake.definitions["CXPARSE"] = self.options.use_cxsparse  
             self._cmake.definitions["LAPACK"] = False       #Optional. Not supported right now because LAPACK is not part of conan-index
             self._cmake.definitions["OPENMP"] = False     
             self._cmake.definitions["MINIGLOG"] = not self.options.use_glog
@@ -93,10 +92,6 @@ class ceressolverConan(ConanFile):
         tools.get(**self.conan_data["sources"][self.version])
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
-        
-        os.remove(os.path.join(self._source_subfolder, "cmake/FindCXSparse.cmake"))
-        os.remove(os.path.join(self._source_subfolder, "cmake/FindGlog.cmake"))
-        os.remove(os.path.join(self._source_subfolder, "cmake/FindSuiteSparse.cmake"))
 
     def build(self):
         #Make sure that cmake finds gflags is use_gflags=True

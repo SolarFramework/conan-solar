@@ -78,16 +78,16 @@ class ceressolverConan(ConanFile):
             raise ConanInvalidConfiguration("To depend on glog built with gflags (Default behavior) set use_gflags=True, otherwise Ceres may fail to link due to missing gflags symbols.")
 
     def requirements(self):
-        self.requires("eigen/3.3.7@conan-solar/stable")
+        self.requires("eigen/3.3.7")
         if self.options.use_glog:
-            self.requires("glog/0.4.0@conan-solar/stable")
+            self.requires("glog/0.4.0")
         if self.options.use_gflags:
-            self.requires("gflags/2.2.2@conan-solar/stable")
+            self.requires("gflags/2.2.2")
             self.options["gflags"].nothreads = False
         if self.options.use_TBB:
             self.requires("tbb/2020.0")
         if self.options.use_cxsparse:
-            self.requires("cxsparse/3.1.1@conan-solar/stable")
+            self.requires("cxsparse/3.1.1")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])

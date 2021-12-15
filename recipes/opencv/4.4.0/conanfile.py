@@ -147,7 +147,7 @@ class OpenCVConan(ConanFile):
                     installer.install(package)
 
     def requirements(self):
-        self.requires.add('zlib/1.2.11@conan-solar/stable')
+        self.requires.add('zlib/1.2.11')
         if self.options.jpeg:
             # NOTE : use the same libjpeg implementation as jasper uses
             # otherwise, jpeg_create_decompress will fail on version check
@@ -158,9 +158,9 @@ class OpenCVConan(ConanFile):
         if self.options.tiff:
             self.requires.add('libtiff/4.2.0')
         if self.options.webp:
-            self.requires.add('libwebp/1.0.3@conan-solar/stable')
+            self.requires.add('libwebp/1.1.0')
         if self.options.png:
-            self.requires.add('libpng/1.6.37@conan-solar/stable')
+            self.requires.add('libpng/1.6.37')
         if self.options.jpeg2000 == "openjpeg":
             self.requires.add('openjpeg/2.3.1@conan-solar/stable')
         if self.options.jpeg2000 == "jasper":
@@ -168,7 +168,7 @@ class OpenCVConan(ConanFile):
             self.options["jasper"].jpegturbo = self.options.jpegturbo
         if not tools.cross_building(self.settings) and self.options.openexr:
             # OpenEXR currently doesn't support cross-building
-            self.requires.add('openexr/2.3.0@conan-solar/stable')
+            self.requires.add('openexr/2.5.4')
         if self.options.protobuf:
             # NOTE : version should be the same as used in OpenCV release,
             # otherwise, PROTOBUF_UPDATE_FILES should be set to re-generate files

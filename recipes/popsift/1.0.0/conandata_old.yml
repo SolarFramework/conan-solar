@@ -1,0 +1,4 @@
+sources:
+  "3.6":
+    - sha256: EA22D026A3B13D339551319F4562FE1471B7232433695970704669755031A192
+      url: https://github.com/colmap/colmap/archive/3.6.tar.gz

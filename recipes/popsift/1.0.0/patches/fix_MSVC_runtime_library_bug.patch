@@ -1,0 +1,29 @@
+From 122e8268410d7546490357aa87d35aed7f6cbb18 Mon Sep 17 00:00:00 2001
+From: "BCOM\\jroyan" <jerome.royan@b-com.com>
+Date: Tue, 4 May 2021 19:36:35 +0200
+Subject: [PATCH] Fix issue related to MSVC runtime library
+
+---
+ CMakeLists.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f39f2fe..772ac91 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -140,9 +140,10 @@ if(MSVC)
+     set(PopSift_MVSC_LINKER "/MT")
+   endif()
+   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+-      set(PopSift_MVSC_LINKER "${PopSift_MVSC_LINKER}d")
++    list(APPEND CUDA_NVCC_FLAGS_DEBUG   -Xcompiler ${PopSift_MVSC_LINKER}d)
++  else()
++    list(APPEND CUDA_NVCC_FLAGS_RELEASE   -Xcompiler ${PopSift_MVSC_LINKER})
+   endif()
+-  list(APPEND CUDA_NVCC_FLAGS   -Xcompiler ${PopSift_MVSC_LINKER})
+ endif()
+ 
+ # default stream per-thread implies that each host thread has one non-synchronizing 0-stream
+-- 
+2.29.2.windows.2
+
