@@ -35,11 +35,15 @@ class OpenCVConan(ConanFile):
         "with_cuda": [True, False],
         "with_cublas": [True, False],
         "with_cufft": [True, False],
+        "with_cudnn": [True, False],
         "with_v4l": [True, False],
         "neon": [True, False],
         "dnn": [True, False],
+        "dnn_cuda": [True, False],
         "detect_cpu_baseline": [True, False],
-        "with_ffmpeg": [True, False]
+        "with_ffmpeg": [True, False],
+        "with_gstreamer": [True, False],
+        "with_openvino": [True, False]
     }
     default_options = {
         "shared": False,
@@ -62,11 +66,15 @@ class OpenCVConan(ConanFile):
         "with_cuda": False,
         "with_cublas": False,
         "with_cufft": False,
+        "with_cudnn": False,
         "with_v4l": False,
         "neon": True,
         "dnn": True,
+        "dnn_cuda": False,
         "detect_cpu_baseline": False,
-        "with_ffmpeg": False
+        "with_ffmpeg": False,
+        "with_gstreamer": False,
+        "with_openvino": False
     }
 
     short_paths = True
@@ -102,9 +110,13 @@ class OpenCVConan(ConanFile):
         if not self.options.contrib:
             del self.options.contrib_freetype
             del self.options.contrib_sfm
+        if not self.options.dnn:
+            del self.options.dnn_cuda
         if not self.options.with_cuda:
             del self.options.with_cublas
+            del self.options.with_cudnn
             del self.options.with_cufft
+            del self.options.dnn_cuda
         self.options["libtiff"].jpeg = self.options.with_jpeg
         self.options["jasper"].with_libjpeg = self.options.with_jpeg
 
@@ -152,7 +164,15 @@ class OpenCVConan(ConanFile):
         if self.options.dnn:
             self.requires("protobuf/3.17.1")
         if self.options.with_ffmpeg:
-            self.requires.add('ffmpeg/4.2.1@conan-solar/stable')
+            self.requires.add('ffmpeg/4.2.1')
+            self.options["ffmpeg"].shared = self.options.shared
+            #TODO : issue with libvpx on Windows!
+            self.options["ffmpeg"].with_libvpx = False
+        if self.options.with_gstreamer:
+            self.requires.add('gstreamer/1.18.4')
+            self.options["gstreamer"].shared = self.options.shared
+            self.requires.add('gst-plugins-base/1.18.4')
+            self.options["gst-plugins-base"].shared = self.options.shared
 
     def validate(self):
         if self.settings.compiler == "Visual Studio" and \
@@ -162,7 +182,12 @@ class OpenCVConan(ConanFile):
             raise ConanInvalidConfiguration("Clang 3.x can build OpenCV 4.x due an internal bug.")
         if self.options.with_cuda and not self.options.contrib:
             raise ConanInvalidConfiguration("contrib must be enabled for cuda")
-
+        if self.options.get_safe("dnn_cuda", False) and \
+            (not self.options.with_cuda or not self.options.contrib or not self.options.with_cublas or not self.options.with_cudnn):
+            raise ConanInvalidConfiguration("with_cublas, with_cudnn and contrib must be enabled for dnn_cuda")
+        if self.options.with_openvino and os.environ.get('INTEL_OPENVINO_DIR') is None:
+            raise ConanInvalidConfiguration("call setupvars.bat/sh script for initialize Intel OpenVino environnement variables (more information on https://github.com/opencv/opencv/wiki/Intel%27s-Deep-Learning-Inference-Engine-backend#build-opencv-from-source)")
+            
     def build_requirements(self):
         if self.options.dnn and hasattr(self, "settings_build"):
             self.build_requires("protobuf/3.17.1")
@@ -187,7 +212,7 @@ class OpenCVConan(ConanFile):
             tools.replace_in_file(find_openexr, "SET(OPENEXR_LIBSEARCH_SUFFIXES x64/Release x64 x64/Debug)", "")
             tools.replace_in_file(find_openexr, "SET(OPENEXR_LIBSEARCH_SUFFIXES Win32/Release Win32 Win32/Debug)", "")
 
-        tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"), "ANDROID OR NOT UNIX", "FALSE")
+        tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"), "ANDROID OR NOT UNIX", "FALSE")        
         tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"), "elseif(EMSCRIPTEN)", "elseif(QNXNTO)\nelseif(EMSCRIPTEN)")
         tools.replace_in_file(os.path.join(self._source_subfolder, "modules", "imgcodecs", "CMakeLists.txt"), "JASPER_", "Jasper_")
 
@@ -351,6 +376,7 @@ class OpenCVConan(ConanFile):
         if self.options.dnn:
             self._cmake.definitions["PROTOBUF_UPDATE_FILES"] = True
             self._cmake.definitions["BUILD_opencv_dnn"] = True
+        self._cmake.definitions["OPENCV_DNN_CUDA"] = self.options.get_safe("dnn_cuda", False)
 
         if self.options.contrib:
             self._cmake.definitions['OPENCV_EXTRA_MODULES_PATH'] = os.path.join(self.build_folder, self._contrib_folder, 'modules')
@@ -374,6 +400,7 @@ class OpenCVConan(ConanFile):
             self._cmake.definitions["CUDA_NVCC_FLAGS"] = "--expt-relaxed-constexpr"
         self._cmake.definitions["WITH_CUBLAS"] = self.options.get_safe("with_cublas", False)
         self._cmake.definitions["WITH_CUFFT"] = self.options.get_safe("with_cufft", False)
+        self._cmake.definitions["WITH_CUDNN"] = self.options.get_safe("with_cudnn", False)
 
         self._cmake.definitions["ENABLE_PIC"] = self.options.get_safe("fPIC", True)
         
@@ -399,6 +426,35 @@ class OpenCVConan(ConanFile):
             include_paths = self._gather_include_paths('ffmpeg')
             self.output.info("ffmpeg gathered include paths : %s" %include_paths)
             self._cmake.definitions['FFMPEG_INCLUDE_DIRS'] = ';'.join(include_paths)
+
+        # Gstreamer
+        self._cmake.definitions['WITH_GSTREAMER'] = self.options.with_gstreamer
+        if self.options.with_gstreamer:
+            self._cmake.definitions['HAVE_GSTREAMER'] = True
+            self._cmake.definitions['GSTREAMER_VERSION'] = self.deps_cpp_info['gstreamer'].version
+            libs = []
+            includes = []
+            for dep in ['pcre', 'libffi', 'gettext', 'glib', 'gstreamer', 'gst-plugins-base']:
+                if dep in self.deps_cpp_info.deps:
+                    libs.extend(self.deps_cpp_info[dep].libs)
+                    includes.extend(self.deps_cpp_info[dep].include_paths)
+            self._cmake.definitions['GSTREAMER_LIBRARIES'] = ';'.join(libs)
+            self._cmake.definitions['GSTREAMER_INCLUDE_DIRS'] = ';'.join(includes)
+            
+            #libs = self._gather_libs('gstreamer')
+            #self.output.info("gstreamer gathered libs : %s" %libs)
+            #self._cmake.definitions['GSTREAMER_LIBRARIES'] = ';'.join(libs)
+            
+            #include_paths = self._gather_include_paths('gstreamer')
+            #self.output.info("gstreamer gathered include paths : %s" %include_paths)
+            #self._cmake.definitions['GSTREAMER_INCLUDE_DIRS'] = ';'.join(include_paths)
+
+        #OpenVino
+        self._cmake.definitions["WITH_INF_ENGINE"] = self.options.with_openvino
+        if self.options.with_openvino:
+            self._cmake.definitions["ENABLE_CXX11"] = True
+            #activate NGRAPH https://github.com/opencv/opencv/issues/18040
+            self._cmake.definitions["WITH_NGRAPH"] = True
 
         if self.settings.compiler == "Visual Studio":
             self._cmake.definitions["BUILD_WITH_STATIC_CRT"] = "MT" in str(self.settings.compiler.runtime)
@@ -514,6 +570,12 @@ class OpenCVConan(ConanFile):
         def ffmpeg():
             return ["ffmpeg::ffmpeg"] if self.options.get_safe("with_ffmpeg") else []
 
+        def gstreamer():
+            return ["gstreamer::gstreamer"] if self.options.get_safe("with_gstreamer") else []
+
+        def gstpluginbase():
+            return ["gst-plugins-base::gst-plugins-base"] if self.options.get_safe("with_gstreamer") else []
+
         def xfeatures2d():
             return ["opencv_xfeatures2d"] if self.options.contrib else []
 
@@ -533,7 +595,7 @@ class OpenCVConan(ConanFile):
                 {"target": "opencv_highgui",    "lib": "highgui",    "requires": ["opencv_core", "opencv_imgproc", "opencv_imgcodecs", "opencv_videoio"] + freetype() + eigen() + gtk()},
                 {"target": "opencv_objdetect",  "lib": "objdetect",  "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + quirc()},
                 {"target": "opencv_stitching",  "lib": "stitching",  "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + xfeatures2d() + eigen()},
-                {"target": "opencv_video",      "lib": "video",      "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + ffmpeg()},
+                {"target": "opencv_video",      "lib": "video",      "requires": ["opencv_core", "opencv_flann", "opencv_imgproc", "opencv_features2d", "opencv_calib3d"] + eigen() + ffmpeg() + gstreamer() + gstpluginbase()},
             ]
             if self.options.dnn:
                 opencv_components.extend([
