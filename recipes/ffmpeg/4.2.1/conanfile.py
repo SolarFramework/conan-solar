@@ -138,7 +138,7 @@ class FFMpegConan(ConanFile):
         if self.options.iconv:
             self.requires("libiconv/1.16")
         if self.options.freetype:
-            self.requires("freetype/2.10.4")
+            self.requires("freetype/2.11.1")
         if self.options.openjpeg:
             self.requires("openjpeg/2.4.0")
         if self.options.openh264:
@@ -170,7 +170,7 @@ class FFMpegConan(ConanFile):
                 self.requires("intel_media_sdk/2018R2_1@bincrafters/stable")
         if self.settings.os == "Linux":
             if self.options.alsa:
-                self.requires("libalsa/1.1.9")
+                self.requires("libalsa/1.2.5.1")
             if self.options.xcb:
                 self.requires("xorg/system")
             if self.options.pulse:

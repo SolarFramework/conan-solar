@@ -166,8 +166,9 @@ class OpenCVConan(ConanFile):
         if self.options.with_ffmpeg:
             self.requires.add('ffmpeg/4.2.1')
             self.options["ffmpeg"].shared = self.options.shared
-            #TODO : issue with libvpx on Windows!
-            self.options["ffmpeg"].with_libvpx = False
+            if self.settings.os == "Windows":
+                #TODO : issue with libvpx on Windows!
+                self.options["ffmpeg"].with_libvpx = False
         if self.options.with_gstreamer:
             self.requires.add('gstreamer/1.18.4')
             self.options["gstreamer"].shared = self.options.shared
