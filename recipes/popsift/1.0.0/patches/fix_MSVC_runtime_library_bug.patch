@@ -11,7 +11,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index f39f2fe..772ac91 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -140,9 +140,10 @@ if(MSVC)
+@@ -140,7 +140,8 @@ if(MSVC)
      set(PopSift_MVSC_LINKER "/MT")
    endif()
    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -22,8 +22,6 @@ index f39f2fe..772ac91 100755
    endif()
 -  list(APPEND CUDA_NVCC_FLAGS   -Xcompiler ${PopSift_MVSC_LINKER})
  endif()
- 
- # default stream per-thread implies that each host thread has one non-synchronizing 0-stream
 -- 
 2.29.2.windows.2
 

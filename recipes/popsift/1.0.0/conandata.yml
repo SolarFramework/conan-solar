@@ -11,5 +11,7 @@ patches:
       base_path: "source_subfolder"
     - patch_file: "patches/fix_MSVC_runtime_library_bug.patch"
       base_path: "source_subfolder" 
-  
+  "fix-vlFeatCompliance3":
+    - patch_file: "patches/fix_MSVC_runtime_library_bug.patch"
+      base_path: "source_subfolder"
   
