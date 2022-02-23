@@ -2,8 +2,8 @@
 
 optimization for manage video backend and Dnn
 tested with  
-- ffmpeg 4.2.1
-- gstreamer 1.8.4 and gst-plugin-base 1.8.4
+- ffmpeg 4.4.4
+- gstreamer 1.9.2 and gst-plugin-base 1.9.2
 - Intel Openvino 2021.4.1
 - Nvidia Cuda 11.5 / Nvidia cudnn 8.3.1.22 
 
@@ -13,23 +13,20 @@ Use `conancenter` recipe
 or
 `conan-solar` recipe with : 
 
-	conan create . 4.2.1@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True 
+	conan create . 4.4.4@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True 
 
 *Windows issue :*
-- with  `libvpx` ?! then add `-o with_libvpx=False` on cmd line. (libvpx seems to be not used on linux). tried with libvpx 1.9.0 and 1.10.0.
+- with  `libvpx` ?! then add `-o with_libvpx=False` on cmd line. (libvpx seems to be not used on linux). tried with libvpx 1.9.0, 1.10.0, and 1.11.0
 - libvpx dependency has been disabled in opencv recipe.
 
 ## gstreamer and gst-plugin-base
 
 Gstreamer and Gst-plugin-base recipes have been added.
-Currently tested with 1.8.4 version
+Currently tested with 1.9.2 version
 
 Use each `conan-solar` recipe with : 
 	
-	conan create . 1.18.4@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True
-
-- fix : 
-	- some conflicts version with glib version on linux (harfbuzz), so need to set up glib in 2.69.3 in gstreamer.
+	conan create . 1.9.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True
 
 ## Intel Openvino
 
@@ -102,19 +99,19 @@ Information to add cudnn in opencv's conan recipe is from conancenter github :
 
 - linux
 
-		conan create . 4.5.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True -o with_gtk=True -o gtk_version=3 -o with_ffmpeg=True -o with_gstreamer=True -o with_openvino=True -o with_cuda=True -o contrib=True -o dnn_cuda=True -o with_cudnn=True -o with_cublas=True
+		conan create . 4.5.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True -o with_gtk=True -o with_ffmpeg=True -o with_gstreamer=True -o with_openvino=True -o with_cuda=True -o contrib=True -o dnn_cuda=True -o with_cudnn=True -o with_cublas=True
 
 - Windows
 
-		conan create . 4.5.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True -o gtk_version=3 -o with_ffmpeg=True -o with_gstreamer=True -o with_openvino=True -o with_cuda=True -o contrib=True -o dnn_cuda=True -o with_cudnn=True -o with_cublas=True
+		conan create . 4.5.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True -o with_ffmpeg=True -o with_gstreamer=True -o with_openvino=True -o with_cuda=True -o contrib=True -o dnn_cuda=True -o with_cudnn=True -o with_cublas=True
 
 
 explanations :
 
 - 'with_gtk' option doesn't exist on Windows !
 - 'contrib' : needed for build
-- 'with_ffmpeg' : False by default. For use ffmpeg 4.2.1 (without libvpx on Windows)
-- 'with_gstreamer' : False by default. For use gstreamer 1.8.4 (and gst-plugin-base) previously manually created
+- 'with_ffmpeg' : False by default. For use ffmpeg 4.4.4 (without libvpx on Windows)
+- 'with_gstreamer' : False by default. For use gstreamer 1.9.2 (and gst-plugin-base) previously manually created
 - 'with_openvino' : False by default. For use Intel OpenVino. defines sub Cmake variables (ENABLE_CXX11=True, and WITH_GRAPH=True) 
 - 'with_cuda' : False by default. for use cuda toolkit
 - 'dnn_cuda', 'with_cudnn', 'with_cublas' : False by default. For use Cudnn.

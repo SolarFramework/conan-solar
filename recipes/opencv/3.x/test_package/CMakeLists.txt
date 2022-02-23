@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.1)
 project(test_package)
 
-
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-find_package(gst-plugins-base CONFIG REQUIRED)
+find_package(OpenCV REQUIRED core imgproc CONFIG)
 
 add_executable(${PROJECT_NAME} test_package.cpp)
-target_link_libraries(${PROJECT_NAME} gst-plugins-base::gstreamer-plugins-base-1.0)
+target_link_libraries(${PROJECT_NAME} opencv_core opencv_imgproc)
