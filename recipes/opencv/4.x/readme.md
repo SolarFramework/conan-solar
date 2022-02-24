@@ -2,8 +2,8 @@
 
 optimization for manage video backend and Dnn
 tested with  
-- ffmpeg 4.4.4
-- gstreamer 1.9.2 and gst-plugin-base 1.9.2
+- ffmpeg 4.4
+- gstreamer 1.19.2 and gst-plugin-base 1.19.2
 - Intel Openvino 2021.4.1
 - Nvidia Cuda 11.5 / Nvidia cudnn 8.3.1.22 
 
@@ -13,7 +13,7 @@ Use `conancenter` recipe
 or
 `conan-solar` recipe with : 
 
-	conan create . 4.4.4@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True 
+	conan create . 4.4@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True 
 
 *Windows issue :*
 - with  `libvpx` ?! then add `-o with_libvpx=False` on cmd line. (libvpx seems to be not used on linux). tried with libvpx 1.9.0, 1.10.0, and 1.11.0
@@ -22,11 +22,11 @@ or
 ## gstreamer and gst-plugin-base
 
 Gstreamer and Gst-plugin-base recipes have been added.
-Currently tested with 1.9.2 version
+Currently tested with 1.19.2 version
 
 Use each `conan-solar` recipe with : 
 	
-	conan create . 1.9.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True
+	conan create . 1.19.2@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True
 
 ## Intel Openvino
 
