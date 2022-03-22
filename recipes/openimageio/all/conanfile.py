@@ -143,7 +143,7 @@ class OpenImageIOConan(ConanFile):
         if self.options.with_libpng:
             self.requires("libpng/1.6.37")
         if self.options.with_freetype:
-            self.requires("freetype/2.11.0")
+            self.requires("freetype/2.11.1")
         if self.options.with_hdf5:
             self.requires("hdf5/1.12.0")
         if self.options.with_opencolorio:
@@ -151,11 +151,11 @@ class OpenImageIOConan(ConanFile):
         if self.options.with_opencv:
             self.requires("opencv/4.5.3")
         if self.options.with_tbb:
-            self.requires("tbb/2020.3")
+            self.requires("onetbb/2020.3")
         if self.options.with_dicom:
             self.requires("dcmtk/3.6.6")
         if self.options.with_ffmpeg:
-            self.requires("ffmpeg/4.2.1")
+            self.requires("ffmpeg/4.4")
         # TODO: Field3D dependency
         if self.options.with_giflib:
             self.requires("giflib/5.2.1")
@@ -170,7 +170,7 @@ class OpenImageIOConan(ConanFile):
         if self.options.with_ptex:
             self.requires("ptex/2.4.0")
         if self.options.with_libwebp:
-            self.requires("libwebp/1.2.1")
+            self.requires("libwebp/1.2.2")
         # TODO: R3DSDK dependency
         # TODO: Nuke dependency
 
@@ -234,7 +234,7 @@ class OpenImageIOConan(ConanFile):
         if self.options.with_opencv:
             self.cpp_info.components["main"].requires.append("opencv::opencv")
         if self.options.with_tbb:
-            self.cpp_info.components["main"].requires.append("tbb::tbb")
+            self.cpp_info.components["main"].requires.append("onetbb::onetbb")
         if self.options.with_dicom:
             self.cpp_info.components["main"].requires.append("dcmtk::dcmtk")
         if self.options.with_ffmpeg:
