@@ -1,0 +1,742 @@
+From 26b44089024e599763531588ae0c88534c4d3d2c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?J=C3=A9rome=20ROYAN?= <jroyan@b-com.local>
+Date: Thu, 24 Mar 2022 16:30:33 +0100
+Subject: [PATCH] update for conan recipe
+
+---
+ CMakeLists.txt                      |   4 +-
+ src/cmake/compiler.cmake            |   2 +-
+ src/cmake/externalpackages.cmake    | 126 +++++++++++++++++-----------
+ src/dds.imageio/CMakeLists.txt      |   6 +-
+ src/dicom.imageio/CMakeLists.txt    |   4 +-
+ src/ffmpeg.imageio/CMakeLists.txt   |  10 +--
+ src/gif.imageio/CMakeLists.txt      |   4 +-
+ src/heif.imageio/CMakeLists.txt     |   5 +-
+ src/igrep/CMakeLists.txt            |   2 +-
+ src/iinfo/CMakeLists.txt            |   2 +-
+ src/include/CMakeLists.txt          |   3 +
+ src/jpeg.imageio/CMakeLists.txt     |   4 +-
+ src/jpeg2000.imageio/CMakeLists.txt |   6 +-
+ src/libOpenImageIO/CMakeLists.txt   |  37 ++++----
+ src/libutil/CMakeLists.txt          |  16 ++--
+ src/oiiotool/CMakeLists.txt         |   8 +-
+ src/openexr.imageio/CMakeLists.txt  |   6 +-
+ src/openvdb.imageio/CMakeLists.txt  |   7 +-
+ src/ptex.imageio/CMakeLists.txt     |   4 +-
+ src/raw.imageio/CMakeLists.txt      |   6 +-
+ src/tiff.imageio/CMakeLists.txt     |   4 +-
+ src/webp.imageio/CMakeLists.txt     |   3 +-
+ 22 files changed, 151 insertions(+), 118 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 676a7936..e675834e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -119,7 +119,7 @@ message(STATUS "Setting Namespace to: ${PROJ_NAMESPACE_V}")
+ 
+ 
+ list (APPEND CMAKE_MODULE_PATH
+-      "${PROJECT_SOURCE_DIR}/src/cmake/modules"
++      # "${PROJECT_SOURCE_DIR}/src/cmake/modules"
+       "${PROJECT_SOURCE_DIR}/src/cmake")
+ 
+ include (GNUInstallDirs)
+@@ -199,7 +199,7 @@ if (OIIO_BUILD_TOOLS AND NOT BUILD_OIIOUTIL_ONLY)
+     add_subdirectory (src/iinfo)
+     add_subdirectory (src/maketx)
+     add_subdirectory (src/oiiotool)
+-    add_subdirectory (src/testtex)
++    # add_subdirectory (src/testtex)
+     add_subdirectory (src/iv)
+ endif ()
+ 
+diff --git a/src/cmake/compiler.cmake b/src/cmake/compiler.cmake
+index 185a3fb7..189d5d4a 100644
+--- a/src/cmake/compiler.cmake
++++ b/src/cmake/compiler.cmake
+@@ -92,7 +92,7 @@ if (NOT MSVC)
+         add_compile_options ("-Wextra")
+     endif ()
+     if (STOP_ON_WARNING OR DEFINED ENV{${PROJECT_NAME}_CI})
+-        add_compile_options ("-Werror")
++        # add_compile_options ("-Werror")
+         # N.B. Force CI builds to use -Werror, even if STOP_ON_WARNING has
+         # been switched off by default, which we may do in release
+         # branches.
+diff --git a/src/cmake/externalpackages.cmake b/src/cmake/externalpackages.cmake
+index 83a1773f..c8a952ca 100644
+--- a/src/cmake/externalpackages.cmake
++++ b/src/cmake/externalpackages.cmake
+@@ -46,7 +46,7 @@ endif ()
+ if (MSVC)
+     # Not linking Boost as static libraries: either an explicit setting or LINKSTATIC is FALSE:
+     if (NOT Boost_USE_STATIC_LIBS)
+-        add_definitions (-DBOOST_ALL_DYN_LINK=1)
++        # add_definitions (-DBOOST_ALL_DYN_LINK=1)
+     endif ()
+ endif ()
+ 
+@@ -55,7 +55,7 @@ if (BOOST_CUSTOM)
+     # N.B. For a custom version, the caller had better set up the variables
+     # Boost_VERSION, Boost_INCLUDE_DIRS, Boost_LIBRARY_DIRS, Boost_LIBRARIES.
+ else ()
+-    set (Boost_COMPONENTS filesystem system thread)
++    set (Boost_COMPONENTS filesystem system thread container)
+     # The FindBoost.cmake interface is broken if it uses boost's installed
+     # cmake output (e.g. boost 1.70.0, cmake <= 3.14). Specifically it fails
+     # to set the expected variables printed below. So until that's fixed
+@@ -103,16 +103,16 @@ checked_find_package (OpenEXR REQUIRED
+ # library. This shoudn't be necessary, except for the common case of people
+ # building against Imath/OpenEXR 3.x when there is still a system-level
+ # install version of 2.x.
+-include_directories(BEFORE ${IMATH_INCLUDES} ${OPENEXR_INCLUDES})
+-if (CMAKE_COMPILER_IS_CLANG AND OPENEXR_VERSION VERSION_LESS 2.3)
++# include_directories(BEFORE ${IMATH_INCLUDES} ${OPENEXR_INCLUDES})
++if (CMAKE_COMPILER_IS_CLANG AND OpenEXR_VERSION VERSION_LESS 2.3)
+     # clang C++ >= 11 doesn't like 'register' keyword in old exr headers
+     add_compile_options (-Wno-deprecated-register)
+ endif ()
+ if (MSVC AND NOT LINKSTATIC)
+-    add_definitions (-DOPENEXR_DLL) # Is this needed for new versions?
++    # add_definitions (-DOPENEXR_DLL) # Is this needed for new versions?
+ endif ()
+ 
+-if (OPENEXR_VERSION VERSION_GREATER_EQUAL 2.5.99)
++if (OpenEXR_VERSION VERSION_GREATER_EQUAL 2.5.99)
+     set (OIIO_USING_IMATH 3)
+ else ()
+     set (OIIO_USING_IMATH 2)
+@@ -120,12 +120,15 @@ endif ()
+ 
+ 
+ # JPEG -- prefer Turbo-JPEG to regular libjpeg
+-checked_find_package (JPEGTurbo
++if (USE_JPEGTURBO)
++    checked_find_package (libjpeg-turbo REQUIRED
+                       DEFINITIONS -DUSE_JPEG_TURBO=1
+-                      PRINT       JPEG_INCLUDES JPEG_INCLUDE_DIRS
+-                                  JPEG_LIBRARIES JPEG_VERSION)
+-if (NOT JPEG_FOUND) # Try to find the non-turbo version
++                      PRINT       libjpeg-turbo_INCLUDES libjpeg-turbo_LIBRARIES)
++    add_library(JPEG::JPEG ALIAS libjpeg-turbo::libjpeg-turbo)
++elseif (USE_JPEG) # Try to find the non-turbo version
+     checked_find_package (JPEG REQUIRED)
++else ()
++    message(FATAL_ERROR "JPEG library was not found!")
+ endif ()
+ 
+ # Pugixml setup.  Normally we just use the version bundled with oiio, but
+@@ -141,53 +144,66 @@ else ()
+ endif()
+ 
+ # From pythonutils.cmake
+-find_python()
++# find_python()
+ 
+ 
+ ###########################################################################
+ # Dependencies for optional formats and features. If these are not found,
+ # we will continue building, but the related functionality will be disabled.
+ 
+-checked_find_package (PNG)
+-
+-checked_find_package (BZip2)   # Used by ffmpeg and freetype
+-if (NOT BZIP2_FOUND)
+-    set (BZIP2_LIBRARIES "")  # TODO: why does it break without this?
++if (USE_LIBPNG)
++    checked_find_package (PNG REQUIRED)
+ endif ()
+ 
+-checked_find_package (Freetype
++if (USE_FREETYPE)
++    checked_find_package (Freetype REQUIRED
+                    DEFINITIONS  -DUSE_FREETYPE=1 )
++endif ()
+ 
+-checked_find_package (OpenColorIO
++if (USE_OPENCOLORIO)
++    checked_find_package (OpenColorIO REQUIRED
+                       DEFINITIONS  -DUSE_OCIO=1 -DUSE_OPENCOLORIO=1
+                       # PREFER_CONFIG
+                       )
++endif ()
+ if (NOT OPENCOLORIO_FOUND)
+     set (OPENCOLORIO_FOUND 0)
+ endif ()
+-checked_find_package (OpenCV 3.0
++if (USE_OPENCV)
++    checked_find_package (OpenCV 3.0 REQUIRED
+                    DEFINITIONS  -DUSE_OPENCV=1)
++endif ()
+ 
+ # Intel TBB
+ set (TBB_USE_DEBUG_BUILD OFF)
+-checked_find_package (TBB 2017
++if (USE_TBB)
++    checked_find_package (TBB 2017 REQUIRED
+                       DEFINITIONS  -DUSE_TBB=1
+                       PREFER_CONFIG)
++endif ()
+ 
+-checked_find_package (DCMTK VERSION_MIN 3.6.1)  # For DICOM images
+-checked_find_package (FFmpeg VERSION_MIN 3.0)
+-checked_find_package (GIF
++if (USE_DCMTK)
++    checked_find_package (DCMTK REQUIRED VERSION_MIN 3.6.1)  # For DICOM images
++endif ()
++if (USE_FFMPEG)
++    checked_find_package (ffmpeg REQUIRED VERSION_MIN 3.0)
++endif ()
++if (USE_GIF)
++    checked_find_package (GIF REQUIRED
+                       VERSION_MIN 4
+                       RECOMMEND_MIN 5.0
+                       RECOMMEND_MIN_REASON "for stability and thread safety")
++endif ()
+ 
+ # Field3D is obsolete and we're considering it deprecated. Allow it but only
+ # if specifically requested. And disable if using a new OpenEXR/Imath that
+ # is too new to be supported by Field3D.
+ option (ENABLE_FIELD3D "Enable support for obsolete Field3D files" OFF)
+ if (ENABLE_FIELD3D)
+-    checked_find_package (Field3D
++    if (USE_FIELD3D)
++        checked_find_package (Field3D REQUIRED
+                           DEFINITIONS  -DUSE_FIELD3D=1)
++    endif ()
+     if (FIELD3D_FOUND)
+         if (OPENEXR_VERSION VERSION_LESS 3.0)
+             message (STATUS "${ColorYellow}WARNING Disabling Field3D because it is not compatible with OpenEXR ${OPENEXR_VERSION}.${ColorReset}")
+@@ -200,19 +216,23 @@ if (ENABLE_FIELD3D)
+ endif ()
+ 
+ # For HEIF/HEIC/AVIF formats
+-checked_find_package (Libheif VERSION_MIN 1.3
++if (USE_LIBHEIF)
++    checked_find_package (libheif REQUIRED VERSION_MIN 1.3
+                       RECOMMEND_MIN 1.7
+                       RECOMMEND_MIN_REASON "for AVIF support")
+-if (APPLE AND LIBHEIF_VERSION VERSION_GREATER_EQUAL 1.10 AND LIBHEIF_VERSION VERSION_LESS 1.11)
++endif ()
++if (0)
+     message (WARNING "Libheif 1.10 on Apple is known to be broken, disabling libheif support")
+     set (Libheif_FOUND 0)
+ endif ()
+ 
+-checked_find_package (LibRaw
++if (USE_LIBRAW)
++    checked_find_package (libraw REQUIRED
+                       RECOMMEND_MIN 0.18
+-                      RECOMMEND_MIN_REASON "for ACES support and better camera metadata"
+-                      PRINT LibRaw_r_LIBRARIES)
+-if (LibRaw_FOUND AND LibRaw_VERSION VERSION_LESS 0.20 AND CMAKE_CXX_STANDARD VERSION_GREATER_EQUAL 17)
++                      RECOMMEND_MIN_REASON "for ACES support and better camera metadata")
++endif ()
++
++if (0)
+     message (STATUS "${ColorYellow}WARNING When building for C++17, LibRaw should be 0.20 or higher (found ${LibRaw_VERSION}). You may get errors, depending on the compiler.${ColorReset}")
+     # Currently, we issue the above warning and let them take their chances.
+     # If we wish to disable the LibRaw<0.20/C++17 combination that may fail,
+@@ -221,19 +241,21 @@ if (LibRaw_FOUND AND LibRaw_VERSION VERSION_LESS 0.20 AND CMAKE_CXX_STANDARD VER
+     # set (LIBRAW_FOUND 0)
+ endif ()
+ 
+-checked_find_package (OpenJPEG VERSION_MIN 2.0
+-                      RECOMMEND_MIN 2.2
+-                      RECOMMEND_MIN_REASON "for multithreading support")
+-# Note: Recent OpenJPEG versions have exported cmake configs, but we don't
+-# find them reliable at all, so we stick to our FindOpenJPEG.cmake module.
++if (USE_OPENJPEG)
++    checked_find_package (OpenJPEG REQUIRED VERSION_MIN 2.0)
++endif ()
+ 
+-checked_find_package (OpenVDB
++if (USE_OPENVDB)
++    checked_find_package (OpenVDB REQUIRED
+                       VERSION_MIN 5.0
+                       DEPS         TBB
+                       DEFINITIONS  -DUSE_OPENVDB=1)
++endif ()
+ 
+-checked_find_package (Ptex PREFER_CONFIG)
+-if (NOT Ptex_FOUND OR NOT Ptex_VERSION)
++if (USE_PTEX)
++    checked_find_package (ptex REQUIRED PREFER_CONFIG)
++endif ()
++if (0)
+     # Fallback for inadequate Ptex exported configs. This will eventually
+     # disappear when we can 100% trust Ptex's exports.
+     unset (Ptex_FOUND)
+@@ -243,12 +265,18 @@ endif ()
+ checked_find_package (WebP)
+ 
+ option (USE_R3DSDK "Enable R3DSDK (RED camera) support" OFF)
+-checked_find_package (R3DSDK)  # RED camera
++if (USE_R3DSDK)
++    checked_find_package (R3DSDK REQUIRED)  # RED camera
++endif ()
+ 
+ set (NUKE_VERSION "7.0" CACHE STRING "Nuke version to target")
+-checked_find_package (Nuke)
++if (USE_NUKE)
++    checked_find_package (Nuke REQUIRED)
++endif ()
+ 
+-checked_find_package (OpenGL)   # used for iv
++if (USE_OPENGL)
++    checked_find_package (OpenGL REQUIRED)   # used for iv
++endif ()
+ 
+ # Qt -- used for iv
+ set (qt5_modules Core Gui Widgets)
+@@ -256,7 +284,9 @@ if (OPENGL_FOUND)
+     list (APPEND qt5_modules OpenGL)
+ endif ()
+ option (USE_QT "Use Qt if found" ON)
+-checked_find_package (Qt5 COMPONENTS ${qt5_modules})
++if (USE_QT)
++    checked_find_package (Qt5 REQUIRED COMPONENTS ${qt5_modules})
++endif ()
+ if (USE_QT AND NOT Qt5_FOUND AND APPLE)
+     message (STATUS "  If you think you installed qt5 with Homebrew and it still doesn't work,")
+     message (STATUS "  try:   export PATH=/usr/local/opt/qt5/bin:$PATH")
+@@ -277,13 +307,13 @@ macro (find_or_download_robin_map)
+     # for an installed version. Still prefer a copy that seems to be
+     # locally installed in this tree.
+     if (NOT BUILD_ROBINMAP_FORCE)
+-        find_package (Robinmap QUIET)
++        find_package (tsl-robin-map REQUIRED)
+     endif ()
+     # If an external copy wasn't found and we requested that missing
+     # packages be built, or we we are forcing a local copy to be built, then
+     # download and build it.
+     # Download the headers from github
+-    if ((BUILD_MISSING_ROBINMAP AND NOT ROBINMAP_FOUND) OR BUILD_ROBINMAP_FORCE)
++    if ((BUILD_MISSING_ROBINMAP AND NOT tsl-robin-map_FOUND) OR BUILD_ROBINMAP_FORCE)
+         message (STATUS "Downloading local Tessil/robin-map")
+         set (ROBINMAP_INSTALL_DIR "${PROJECT_SOURCE_DIR}/ext/robin-map")
+         set (ROBINMAP_GIT_REPOSITORY "https://github.com/Tessil/robin-map")
+@@ -301,7 +331,7 @@ macro (find_or_download_robin_map)
+         endif ()
+         set (ROBINMAP_INCLUDE_DIR "${ROBINMAP_INSTALL_DIR}/include")
+     endif ()
+-    checked_find_package (Robinmap REQUIRED)
++    checked_find_package (tsl-robin-map REQUIRED)
+ endmacro()
+ 
+ 
+@@ -311,7 +341,7 @@ endmacro()
+ option (USE_EMBEDDED_LIBSQUISH
+         "Force use of embedded Libsquish, even if external is found" OFF)
+ if (NOT USE_EMBEDDED_LIBSQUISH)
+-    checked_find_package (Libsquish)
++    checked_find_package (libsquish REQUIRED)
+ endif ()
+ 
+ 
+@@ -327,12 +357,12 @@ macro (find_or_download_fmt)
+     # for an installed version. Still prefer a copy that seems to be
+     # locally installed in this tree.
+     if (NOT BUILD_FMT_FORCE)
+-        find_package (fmt QUIET)
++        find_package (fmt REQUIRED)
+     endif ()
+     # If an external copy wasn't found and we requested that missing
+     # packages be built, or we we are forcing a local copy to be built, then
+     # download and build it.
+-    if ((BUILD_MISSING_FMT AND NOT FMT_FOUND) OR BUILD_FMT_FORCE)
++    if ((BUILD_MISSING_FMT AND NOT fmt_FOUND) OR BUILD_FMT_FORCE)
+         message (STATUS "Downloading local fmtlib/fmt")
+         set (FMT_INSTALL_DIR "${PROJECT_SOURCE_DIR}/ext/fmt")
+         set (FMT_GIT_REPOSITORY "https://github.com/fmtlib/fmt")
+diff --git a/src/dds.imageio/CMakeLists.txt b/src/dds.imageio/CMakeLists.txt
+index f98e447f..b69ec696 100644
+--- a/src/dds.imageio/CMakeLists.txt
++++ b/src/dds.imageio/CMakeLists.txt
+@@ -2,11 +2,11 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ # https://github.com/OpenImageIO/oiio
+ 
+-if (Libsquish_FOUND)
++if (libsquish_FOUND)
+     # External libsquish was found -- use it
+     add_oiio_plugin (ddsinput.cpp
+-                     INCLUDE_DIRS ${LIBSQUISH_INCLUDES}
+-                     LINK_LIBRARIES ${LIBSQUISH_LIBRARIES}
++                     # INCLUDE_DIRS ${LIBSQUISH_INCLUDES}
++                     LINK_LIBRARIES libsquish::libsquish
+                      )
+ else ()
+     # No external libsquish was found -- use the embedded version.
+diff --git a/src/dicom.imageio/CMakeLists.txt b/src/dicom.imageio/CMakeLists.txt
+index b62024ee..390594e1 100644
+--- a/src/dicom.imageio/CMakeLists.txt
++++ b/src/dicom.imageio/CMakeLists.txt
+@@ -4,8 +4,8 @@
+ 
+ if (DCMTK_FOUND)
+     add_oiio_plugin (dicominput.cpp
+-                     INCLUDE_DIRS ${DCMTK_INCLUDE_DIR}
+-                     LINK_LIBRARIES ${DCMTK_LIBRARIES}
++                     # INCLUDE_DIRS ${DCMTK_INCLUDE_DIR}
++                     LINK_LIBRARIES DCMTK::DCMTK
+                      DEFINITIONS "-DUSE_DCMTK=1")
+ else ()
+     message (WARNING "DICOM plugin will not be built, no DCMTK")
+diff --git a/src/ffmpeg.imageio/CMakeLists.txt b/src/ffmpeg.imageio/CMakeLists.txt
+index 58402060..86716acd 100644
+--- a/src/ffmpeg.imageio/CMakeLists.txt
++++ b/src/ffmpeg.imageio/CMakeLists.txt
+@@ -2,13 +2,13 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ # https://github.com/OpenImageIO/oiio
+ 
+-if (FFmpeg_FOUND)
++if (ffmpeg_FOUND)
+     add_oiio_plugin (ffmpeginput.cpp
+-                     INCLUDE_DIRS ${FFMPEG_INCLUDES}
+-                     LINK_LIBRARIES ${FFMPEG_LIBRARIES}
+-                                    ${BZIP2_LIBRARIES}
++                     # INCLUDE_DIRS ${FFMPEG_INCLUDES}
++                     LINK_LIBRARIES ffmpeg::avcodec ffmpeg::avformat ffmpeg::swscale
++                     #               ${BZIP2_LIBRARIES}
+                      DEFINITIONS "-DUSE_FFMPEG"
+-                                 "-DOIIO_FFMPEG_VERSION=\"${FFMPEG_VERSION}\"")
++                                 "-DOIIO_FFMPEG_VERSION=\"${ffmpeg_VERSION}\"")
+ else()
+     message (STATUS "FFmpeg not found: ffmpeg plugin will not be built")
+ endif()
+diff --git a/src/gif.imageio/CMakeLists.txt b/src/gif.imageio/CMakeLists.txt
+index 292a8aba..63216150 100644
+--- a/src/gif.imageio/CMakeLists.txt
++++ b/src/gif.imageio/CMakeLists.txt
+@@ -4,8 +4,8 @@
+ 
+ if (GIF_FOUND)
+     add_oiio_plugin (gifinput.cpp gifoutput.cpp
+-                     INCLUDE_DIRS ${GIF_INCLUDE_DIRS}
+-                     LINK_LIBRARIES ${GIF_LIBRARIES}
++                     # INCLUDE_DIRS ${GIF_INCLUDE_DIRS}
++                     LINK_LIBRARIES GIF::GIF
+                      DEFINITIONS "-DUSE_GIF")
+ else()
+     message (WARNING "GIF plugin will not be built")
+diff --git a/src/heif.imageio/CMakeLists.txt b/src/heif.imageio/CMakeLists.txt
+index ece763a2..accb9ba8 100644
+--- a/src/heif.imageio/CMakeLists.txt
++++ b/src/heif.imageio/CMakeLists.txt
+@@ -2,10 +2,9 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ # https://github.com/OpenImageIO/oiio
+ 
+-if (Libheif_FOUND)
++if (libheif_FOUND)
+     add_oiio_plugin (heifinput.cpp heifoutput.cpp
+-                     INCLUDE_DIRS ${LIBHEIF_INCLUDES}
+-                     LINK_LIBRARIES ${LIBHEIF_LIBRARIES}
++                     LINK_LIBRARIES libheif::libheif
+                      DEFINITIONS "-DUSE_HEIF=1")
+ else ()
+     message (WARNING "heif plugin will not be built")
+diff --git a/src/igrep/CMakeLists.txt b/src/igrep/CMakeLists.txt
+index 2b0311c3..434fcc41 100644
+--- a/src/igrep/CMakeLists.txt
++++ b/src/igrep/CMakeLists.txt
+@@ -3,5 +3,5 @@
+ # https://github.com/OpenImageIO/oiio
+ 
+ fancy_add_executable (LINK_LIBRARIES OpenImageIO
+-                                     ${Boost_LIBRARIES} # because regex
++                                     #${Boost_LIBRARIES} # because regex
+                       )
+diff --git a/src/iinfo/CMakeLists.txt b/src/iinfo/CMakeLists.txt
+index 2b0311c3..434fcc41 100644
+--- a/src/iinfo/CMakeLists.txt
++++ b/src/iinfo/CMakeLists.txt
+@@ -3,5 +3,5 @@
+ # https://github.com/OpenImageIO/oiio
+ 
+ fancy_add_executable (LINK_LIBRARIES OpenImageIO
+-                                     ${Boost_LIBRARIES} # because regex
++                                     #${Boost_LIBRARIES} # because regex
+                       )
+diff --git a/src/include/CMakeLists.txt b/src/include/CMakeLists.txt
+index 3fe63bb8..73f50214 100644
+--- a/src/include/CMakeLists.txt
++++ b/src/include/CMakeLists.txt
+@@ -56,17 +56,20 @@ install (FILES ${detail_headers}
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/detail
+          COMPONENT developer)
+ 
++set(FMT_INCLUDES "${fmt_INCLUDE_DIR}")
+ set (fmt_headers
+         ${FMT_INCLUDES}/fmt/core.h
+         ${FMT_INCLUDES}/fmt/format-inl.h
+         ${FMT_INCLUDES}/fmt/format.h
+         ${FMT_INCLUDES}/fmt/ostream.h
+         ${FMT_INCLUDES}/fmt/printf.h )
++if (0)
+ file (COPY ${fmt_headers}
+       DESTINATION ${CMAKE_BINARY_DIR}/include/OpenImageIO/detail/fmt)
+ install (FILES ${fmt_headers}
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/detail/fmt
+          COMPONENT developer)
++endif ()
+ 
+ if (NOT USE_EXTERNAL_PUGIXML)
+     set (pugixml_headers
+diff --git a/src/jpeg.imageio/CMakeLists.txt b/src/jpeg.imageio/CMakeLists.txt
+index c3289d9e..e27b227c 100644
+--- a/src/jpeg.imageio/CMakeLists.txt
++++ b/src/jpeg.imageio/CMakeLists.txt
+@@ -3,5 +3,5 @@
+ # https://github.com/OpenImageIO/oiio
+ 
+ add_oiio_plugin (jpeginput.cpp jpegoutput.cpp
+-                 INCLUDE_DIRS ${JPEG_INCLUDE_DIRS}
+-                 LINK_LIBRARIES ${JPEG_LIBRARIES})
++                 # INCLUDE_DIRS ${JPEG_INCLUDE_DIRS}
++                 LINK_LIBRARIES JPEG::JPEG)
+diff --git a/src/jpeg2000.imageio/CMakeLists.txt b/src/jpeg2000.imageio/CMakeLists.txt
+index 1f47269b..b88de4e2 100644
+--- a/src/jpeg2000.imageio/CMakeLists.txt
++++ b/src/jpeg2000.imageio/CMakeLists.txt
+@@ -2,10 +2,10 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ # https://github.com/OpenImageIO/oiio
+ 
+-if (OPENJPEG_FOUND)
++if (OpenJPEG_FOUND)
+     add_oiio_plugin (jpeg2000input.cpp jpeg2000output.cpp
+-                     INCLUDE_DIRS ${OPENJPEG_INCLUDES}
+-                     LINK_LIBRARIES ${OPENJPEG_LIBRARIES}
++                     # INCLUDE_DIRS ${OPENJPEG_INCLUDES}
++                     LINK_LIBRARIES OpenJPEG::OpenJPEG
+                      DEFINITIONS "-DUSE_OPENJPEG")
+ else()
+     message (WARNING "Jpeg-2000 plugin will not be built")
+diff --git a/src/libOpenImageIO/CMakeLists.txt b/src/libOpenImageIO/CMakeLists.txt
+index 312ae44c..d618f1d2 100644
+--- a/src/libOpenImageIO/CMakeLists.txt
++++ b/src/libOpenImageIO/CMakeLists.txt
+@@ -125,37 +125,42 @@ target_link_libraries (OpenImageIO
+         PUBLIC
+             OpenImageIO_Util
+             # For OpenEXR/Imath 3.x:
+-            $<TARGET_NAME_IF_EXISTS:Imath::Imath>
+-            $<TARGET_NAME_IF_EXISTS:Imath::Half>
++            # $<TARGET_NAME_IF_EXISTS:Imath::Imath>
++            # $<TARGET_NAME_IF_EXISTS:Imath::Half>
+             # For OpenEXR >= 2.4/2.5 with reliable exported targets
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::Imath>
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::Half>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::Imath>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::Half>
+             # For OpenEXR <= 2.3:
+-            ${ILMBASE_LIBRARIES}
++            OpenEXR::OpenEXR
+             ${GCC_ATOMIC_LIBRARIES}
+         PRIVATE
+             # For OpenEXR/Imath 3.x:
+-            $<TARGET_NAME_IF_EXISTS:OpenEXR::OpenEXR>
++            # $<TARGET_NAME_IF_EXISTS:OpenEXR::OpenEXR>
+             # For OpenEXR >= 2.4/2.5 with reliable exported targets
+-            $<TARGET_NAME_IF_EXISTS:OpenEXR::IlmImf>
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::IlmThread>
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::Iex>
++            # $<TARGET_NAME_IF_EXISTS:OpenEXR::IlmImf>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::IlmThread>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::Iex>
+             # For OpenEXR <= 2.3:
+-            ${OPENEXR_LIBRARIES}
+-            ${OpenCV_LIBRARIES}
++            # ${OPENEXR_LIBRARIES}
++            # ${OpenCV_LIBRARIES}
+             ${SANITIZE_LIBRARIES}
+             ${format_plugin_libs} # Add all the target link libraries from the plugins
++            tsl::robin_map
+             $<TARGET_NAME_IF_EXISTS:OpenColorIO::OpenColorIO>
+-            $<TARGET_NAME_IF_EXISTS:OpenColorIO::OpenColorIOHeaders>
++            # $<TARGET_NAME_IF_EXISTS:OpenColorIO::OpenColorIOHeaders>
+             $<TARGET_NAME_IF_EXISTS:pugixml::pugixml>
+-            ${BZIP2_LIBRARIES}
++            # ${BZIP2_LIBRARIES}
+             ZLIB::ZLIB
+-            ${Boost_LIBRARIES}
++            Boost::filesystem Boost::thread Boost::system Boost::container
+             ${CMAKE_DL_LIBS}
+         )
+ 
+-if (FREETYPE_FOUND)
+-    target_link_libraries (OpenImageIO PRIVATE ${FREETYPE_LIBRARIES})
++if (OpenCV_FOUND)
++    target_link_libraries (OpenImageIO PUBLIC opencv::opencv_core opencv::opencv_imgproc opencv::opencv_videoio)
++endif ()
++
++if (Freetype_FOUND)
++    target_link_libraries (OpenImageIO PRIVATE Freetype::Freetype)
+ endif()
+ 
+ if (WIN32)
+diff --git a/src/libutil/CMakeLists.txt b/src/libutil/CMakeLists.txt
+index 15ea5aa6..6499448f 100644
+--- a/src/libutil/CMakeLists.txt
++++ b/src/libutil/CMakeLists.txt
+@@ -14,19 +14,19 @@ target_include_directories (OpenImageIO_Util
+ target_link_libraries (OpenImageIO_Util
+         PUBLIC
+             # For OpenEXR/Imath 3.x:
+-            $<TARGET_NAME_IF_EXISTS:Imath::Imath>
+-            $<TARGET_NAME_IF_EXISTS:Imath::Half>
++            # $<TARGET_NAME_IF_EXISTS:Imath::Imath>
++            # $<TARGET_NAME_IF_EXISTS:Imath::Half>
+             # For OpenEXR >= 2.4/2.5 with reliable exported targets
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::Imath>
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::Half>
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::IlmThread>
+-            $<TARGET_NAME_IF_EXISTS:IlmBase::Iex>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::Imath>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::Half>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::IlmThread>
++            # $<TARGET_NAME_IF_EXISTS:IlmBase::Iex>
+             # For OpenEXR <= 2.3:
+-            ${ILMBASE_LIBRARIES}
++            OpenEXR::OpenEXR
+             ${GCC_ATOMIC_LIBRARIES}
+         PRIVATE
+             ${SANITIZE_LIBRARIES}
+-            ${Boost_LIBRARIES}
++            Boost::filesystem Boost::thread Boost::system
+             ${CMAKE_DL_LIBS}
+         )
+ 
+diff --git a/src/oiiotool/CMakeLists.txt b/src/oiiotool/CMakeLists.txt
+index 39f7fd1a..a491deb0 100644
+--- a/src/oiiotool/CMakeLists.txt
++++ b/src/oiiotool/CMakeLists.txt
+@@ -4,8 +4,8 @@
+ 
+ fancy_add_executable (LINK_LIBRARIES
+                         OpenImageIO
+-                        ${Boost_LIBRARIES} # because regex
+-                        $<TARGET_NAME_IF_EXISTS:OpenEXR::OpenEXR>
+-                        $<TARGET_NAME_IF_EXISTS:OpenEXR::IlmImf>
+-                        ${OPENEXR_LIBRARIES}
++                        Boost::container
++                        # $<$<TARGET_EXISTS:OpenEXR::OpenEXR>:OpenEXR::OpenEXR>
++                        # $<$<TARGET_EXISTS:OpenEXR::IlmImf>:OpenEXR::IlmImf>
++                        OpenEXR::OpenEXR
+                       )
+diff --git a/src/openexr.imageio/CMakeLists.txt b/src/openexr.imageio/CMakeLists.txt
+index a508ba4c..7f0d9261 100644
+--- a/src/openexr.imageio/CMakeLists.txt
++++ b/src/openexr.imageio/CMakeLists.txt
+@@ -11,8 +11,8 @@ if (OIIO_USE_EXR_C_API AND TARGET OpenEXR::OpenEXRCore)
+ endif()
+ 
+ add_oiio_plugin (${openexr_src}
+-    INCLUDE_DIRS ${OPENEXR_INCLUDES} ${IMATH_INCLUDE_DIR}/OpenEXR
+-    LINK_LIBRARIES ${OPENEXR_LIBRARIES}
+-                   $<TARGET_NAME_IF_EXISTS:OpenEXR::OpenEXRCore>
++    #INCLUDE_DIRS ${OPENEXR_INCLUDES} ${IMATH_INCLUDE_DIR}/OpenEXR
++    LINK_LIBRARIES OpenEXR::OpenEXR
++                   # $<TARGET_NAME_IF_EXISTS:OpenEXR::OpenEXRCore>
+     DEFINITIONS ${openexr_defs}
+     )
+diff --git a/src/openvdb.imageio/CMakeLists.txt b/src/openvdb.imageio/CMakeLists.txt
+index 18f05019..11607bcb 100644
+--- a/src/openvdb.imageio/CMakeLists.txt
++++ b/src/openvdb.imageio/CMakeLists.txt
+@@ -2,11 +2,8 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ # https://github.com/OpenImageIO/oiio
+ 
+-if (OpenVDB_FOUND)
++if (OpenVDB_FOUND AND TBB_FOUND)
+     add_oiio_plugin (openvdbinput.cpp
+                      INCLUDE_DIRS ${OPENVDB_INCLUDES} ${TBB_INCLUDE_DIRS}
+-                     LINK_LIBRARIES ${OPENVDB_LIBRARIES}
+-                                    ${TBB_tbb_LIBRARY}
+-                                    $<TARGET_NAME_IF_EXISTS:TBB::tbb>
+-                                    ${BOOST_LIBRARIES})
++                     LINK_LIBRARIES OpenVDB::OpenVDB TBB::TBB)
+ endif()
+diff --git a/src/ptex.imageio/CMakeLists.txt b/src/ptex.imageio/CMakeLists.txt
+index d7f0a958..cde60237 100644
+--- a/src/ptex.imageio/CMakeLists.txt
++++ b/src/ptex.imageio/CMakeLists.txt
+@@ -2,8 +2,8 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ # https://github.com/OpenImageIO/oiio
+ 
+-if (Ptex_FOUND)
++if (PTex_FOUND)
+     add_oiio_plugin (ptexinput.cpp
+-                     LINK_LIBRARIES Ptex::Ptex_dynamic ZLIB::ZLIB
++                     LINK_LIBRARIES PTex::PTex ZLIB::ZLIB
+                      DEFINITIONS "-DUSE_PTEX")
+ endif ()
+diff --git a/src/raw.imageio/CMakeLists.txt b/src/raw.imageio/CMakeLists.txt
+index 9301dd6f..290e0fb5 100644
+--- a/src/raw.imageio/CMakeLists.txt
++++ b/src/raw.imageio/CMakeLists.txt
+@@ -4,9 +4,9 @@
+ 
+ if (LIBRAW_FOUND)
+     add_oiio_plugin (rawinput.cpp
+-                     INCLUDE_DIRS ${LibRaw_INCLUDE_DIR}
+-                     LINK_LIBRARIES ${LibRaw_r_LIBRARIES}
+-                     DEFINITIONS "-DUSE_LIBRAW=1" ${LibRaw_r_DEFINITIONS})
++                     #INCLUDE_DIRS ${LibRaw_INCLUDE_DIR}
++                     LINK_LIBRARIES libraw::libraw
++                     DEFINITIONS "-DUSE_LIBRAW=1")
+ else ()
+     message (WARNING "Raw plugin will not be built")
+ endif ()
+diff --git a/src/tiff.imageio/CMakeLists.txt b/src/tiff.imageio/CMakeLists.txt
+index 912a32df..fb366ed4 100644
+--- a/src/tiff.imageio/CMakeLists.txt
++++ b/src/tiff.imageio/CMakeLists.txt
+@@ -3,6 +3,6 @@
+ # https://github.com/OpenImageIO/oiio
+ 
+ add_oiio_plugin (tiffinput.cpp tiffoutput.cpp
+-                 INCLUDE_DIRS ${TIFF_INCLUDE_DIR}
+-                 LINK_LIBRARIES ${TIFF_LIBRARIES} ${JPEG_LIBRARIES}
++                 #INCLUDE_DIRS ${TIFF_INCLUDE_DIR}
++                 LINK_LIBRARIES TIFF::TIFF JPEG::JPEG
+                                 ZLIB::ZLIB)
+diff --git a/src/webp.imageio/CMakeLists.txt b/src/webp.imageio/CMakeLists.txt
+index 4fbaeb02..d800a0e6 100644
+--- a/src/webp.imageio/CMakeLists.txt
++++ b/src/webp.imageio/CMakeLists.txt
+@@ -4,8 +4,7 @@
+ 
+ if (WebP_FOUND)
+     add_oiio_plugin (webpinput.cpp webpoutput.cpp
+-                     INCLUDE_DIRS ${WEBP_INCLUDES}
+-                     LINK_LIBRARIES ${WEBP_LIBRARIES}
++                     LINK_LIBRARIES WebP::WebP
+                      DEFINITIONS "-DUSE_WEBP=1")
+ else ()
+     message (STATUS "WebP plugin will not be built")
+diff --git a/src/include/OpenImageIO/detail/fmt.h b/src/include/OpenImageIO/detail/fmt.h
+index 12ecd2ca..8877d75c 100644
+--- a/src/include/OpenImageIO/detail/fmt.h
++++ b/src/include/OpenImageIO/detail/fmt.h
+@@ -34,9 +34,9 @@
+ #    pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+ #endif
+ 
+-#include <OpenImageIO/detail/fmt/format.h>
+-#include <OpenImageIO/detail/fmt/ostream.h>
+-#include <OpenImageIO/detail/fmt/printf.h>
++#include <fmt/format.h>
++#include <fmt/ostream.h>
++#include <fmt/printf.h>
+ 
+ #if OIIO_GNUC_VERSION >= 70000
+ #    pragma GCC diagnostic pop
+-- 
+2.29.2.windows.2
+
