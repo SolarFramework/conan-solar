@@ -2,6 +2,9 @@ sources:
   "3.6":
       url: https://github.com/colmap/colmap/archive/3.6.tar.gz
       sha256: EA22D026A3B13D339551319F4562FE1471B7232433695970704669755031A192
+  "3.7":
+      url: https://github.com/colmap/colmap/archive/3.7.tar.gz
+      sha256: CEB7CCA204550D65B890CD0082C66F4BC69193DAF9DA64616D8147A46B76CC55
 patches:
   "3.6":
   - patch_file: "patches/patch_cmakelists.patch"
@@ -11,5 +14,8 @@ patches:
   - patch_file: "patches/patch_siftGPU_msvc2019.patch"
     base_path: source_subfolder
   - patch_file: "patches/patch_msvc_exename.patch"
+    base_path: source_subfolder
+  "3.7":
+  - patch_file: "patches/patch_colmap_3_7.patch"
     base_path: source_subfolder
     

@@ -34,11 +34,11 @@ class ColmapConan(ConanFile):
 
     def requirements(self):
         self.requires("ceres-solver/2.0.0@conan-solar/stable")
-        #self.requires("glog/0.4.0") # depends with ceres
-        #self.requires("gflags/2.2.2@conan-solar/stable")  # depends with ceres
-        self.requires("boost/1.75.0")
-        self.requires("FreeImage/3.18.0@conan-solar/stable")
-        self.requires("qt/5.15.2@bincrafters/stable")
+#        self.requires("glog/0.4.0") # depends with ceres
+#        self.requires("gflags/2.2.2")  # depends with ceres
+        self.requires("boost/1.74.0")
+        self.requires("freeimage/3.18.0")
+        self.requires("qt/5.15.2")
         if self.options.with_opengl:
             self.requires("glew/2.2.0")
             self.requires("opengl/system")
@@ -46,18 +46,13 @@ class ColmapConan(ConanFile):
         
         # Or adjust any other available option
         self.options["qt"].with_zstd = False
+        #use glog for ceres, instead there are some conflicts between miniglog of ceres and glog of colmap
         self.options["ceres-solver"].use_glog = True
         self.options["ceres-solver"].use_gflags = True
-        self.options["ceres-solver"].use_cxsparse = False
         # TODO keep ?!
-        self.options["boost"].zlib=False
-        self.options["boost"].bzip2=False
-        self.options["boost"].numa=False
         
-        self.options["flann"].shared = self.options.shared
-        self.options["boost"].shared = self.options.shared
-        self.options["ceres-solver"].shared = self.options.shared
-        self.options["FreeImage"].shared = self.options.shared
+        # self.options["flann"].shared = self.options.shared
+        # self.options["freeimage"].shared = self.options.shared
         #todo : check other libs as shared?!
 
     def source(self):
@@ -98,6 +93,7 @@ class ColmapConan(ConanFile):
         cmake.definitions["PROFILING_ENABLED"] = self.options.with_profiling
         cmake.definitions["TEST_ENABLED"] = self.options.with_test
         cmake.definitions["SIMD_ENABLED"] = True
+        cmake.definitions["GUI_ENABLED"] = False
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
