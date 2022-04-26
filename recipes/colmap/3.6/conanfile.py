@@ -33,41 +33,33 @@ class ColmapConan(ConanFile):
     short_paths = True
 
     def requirements(self):
-        self.requires("ceres-solver/2.0.0@conan-solar/stable")
-#        self.requires("glog/0.4.0") # depends with ceres
-#        self.requires("gflags/2.2.2")  # depends with ceres
-        self.requires("boost/1.74.0")
+        self.requires("ceres-solver/2.0.0")
+        #glog directly from ceres
+        #gflags directly from ceres
+      
+        # boost in 1.74 : conflict with other because have zlib/1.2.11
+        self.requires("boost/1.75.0")
         self.requires("freeimage/3.18.0")
+        
+        #Qt for GUI - pb when no GUI
         self.requires("qt/5.15.2")
+        #No GUI then no opengl => currently pb : must have opengl dependency in source code
         if self.options.with_opengl:
             self.requires("glew/2.2.0")
             self.requires("opengl/system")
-        self.requires("flann/1.9.1@conan-solar/stable")        
-        
-        # Or adjust any other available option
-        self.options["qt"].with_zstd = False
+
+        # Flann : Conan solar recipe : same as Conan center recipe with cpp-std 17 patch
+        self.requires("flann/1.9.1")        
         #use glog for ceres, instead there are some conflicts between miniglog of ceres and glog of colmap
         self.options["ceres-solver"].use_glog = True
         self.options["ceres-solver"].use_gflags = True
-        # TODO keep ?!
         
-        # self.options["flann"].shared = self.options.shared
-        # self.options["freeimage"].shared = self.options.shared
-        #todo : check other libs as shared?!
-
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
         os.rename("colmap-{}".format(self.version), self._source_subfolder)
         
         for patch in self.conan_data["patches"][self.version]:
             tools.patch(**patch)
-        
-        # OLD replacement - now done with patches
-        #cmake_path = os.path.join(self._source_subfolder, "CMakeLists.txt")
-        #tools.replace_in_file(cmake_path, "set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)", "set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})")
-        
-        #cmakelib_path = os.path.join(self._source_subfolder, "lib/CMakeLists.txt")
-        #tools.replace_in_file(cmakelib_path, "add_subdirectory(FLANN)", "#add_subdirectory(FLANN)")
                         
     @property
     def _android_arch(self):
@@ -93,7 +85,7 @@ class ColmapConan(ConanFile):
         cmake.definitions["PROFILING_ENABLED"] = self.options.with_profiling
         cmake.definitions["TEST_ENABLED"] = self.options.with_test
         cmake.definitions["SIMD_ENABLED"] = True
-        cmake.definitions["GUI_ENABLED"] = False
+        cmake.definitions["GUI_ENABLED"] = True
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
@@ -124,9 +116,7 @@ class ColmapConan(ConanFile):
 
 
     def package(self):
-        # Retrieve common helpers
-        import common
-
+        
         # Fix all hard coded path to conan package in all .cmake files
 #        common.fix_conan_path(self, self.package_folder, '*.cmake')
         
