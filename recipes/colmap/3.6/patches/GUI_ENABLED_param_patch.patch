@@ -1,0 +1,16 @@
+diff --git a/src/feature/sift.cc b/src/feature/sift.cc
+index bc17352..d858445 100644
+--- a/src/feature/sift.cc
++++ b/src/feature/sift.cc
+@@ -36,9 +36,9 @@
+ #include <memory>
+ 
+ #include "FLANN/flann.hpp"
+-#if !defined(GUI_ENABLED) && !defined(CUDA_ENABLED)
++//#if !defined(GUI_ENABLED) && !defined(CUDA_ENABLED)
+ #include "GL/glew.h"
+-#endif
++//#endif
+ #include "SiftGPU/SiftGPU.h"
+ #include "VLFeat/covdet.h"
+ #include "VLFeat/sift.h"

@@ -19,13 +19,15 @@ class ColmapConan(ConanFile):
                "with_openmp": [True, False],
                "with_opengl": [True, False],
                "with_profiling": [True, False],
-               "with_test": [True, False]}
+               "with_test": [True, False],
+               "with_gui": [True, False]}
     default_options = {"shared": False,
                        "with_cuda": True,
                        "with_openmp": True,
                        "with_opengl": True,
                        "with_profiling": True, #colmap binary needs -lprofiler -ltcmalloc on linux
-                       "with_test": False}
+                       "with_test": False,
+                       "with_gui":False}
     exports_sources = ["CMakeLists.txt", "patches/*"]
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
@@ -42,7 +44,8 @@ class ColmapConan(ConanFile):
         self.requires("freeimage/3.18.0")
         
         #Qt for GUI - pb when no GUI
-        self.requires("qt/5.15.2")
+        if self.options.with_gui:
+            self.requires("qt/5.15.2")
         #No GUI then no opengl => currently pb : must have opengl dependency in source code
         if self.options.with_opengl:
             self.requires("glew/2.2.0")
@@ -85,7 +88,7 @@ class ColmapConan(ConanFile):
         cmake.definitions["PROFILING_ENABLED"] = self.options.with_profiling
         cmake.definitions["TEST_ENABLED"] = self.options.with_test
         cmake.definitions["SIMD_ENABLED"] = True
-        cmake.definitions["GUI_ENABLED"] = True
+        cmake.definitions["GUI_ENABLED"] = self.options.with_gui
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
