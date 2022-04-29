@@ -52,7 +52,7 @@ class ColmapConan(ConanFile):
             self.requires("opengl/system")
 
         # Flann : Conan solar recipe : same as Conan center recipe with cpp-std 17 patch
-        self.requires("flann/1.9.1")        
+        self.requires("flann/1.9.1@conan-solar/stable")        
         #use glog for ceres, instead there are some conflicts between miniglog of ceres and glog of colmap
         self.options["ceres-solver"].use_glog = True
         self.options["ceres-solver"].use_gflags = True
