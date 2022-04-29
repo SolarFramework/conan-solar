@@ -15,9 +15,13 @@ patches:
     base_path: source_subfolder
   - patch_file: "patches/patch_msvc_exename.patch"
     base_path: source_subfolder
+  - patch_file: "patches/msvc2017_patch.patch"
+    base_path: source_subfolder
   "3.7":
   - patch_file: "patches/patch_colmap_3_7.patch"
     base_path: source_subfolder
   - patch_file: "patches/GUI_ENABLED_param_patch.patch"
+    base_path: source_subfolder
+  - patch_file: "patches/msvc2017_patch.patch"
     base_path: source_subfolder
     
