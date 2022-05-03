@@ -25,7 +25,7 @@ class ColmapConan(ConanFile):
                        "with_cuda": True,
                        "with_openmp": True,
                        "with_opengl": True,
-                       "with_profiling": True, #colmap binary needs -lprofiler -ltcmalloc on linux
+                       "with_profiling": False, #colmap binary needs -lprofiler -ltcmalloc on linux
                        "with_test": False,
                        "with_gui":False}
     exports_sources = ["CMakeLists.txt", "patches/*"]
@@ -40,7 +40,7 @@ class ColmapConan(ConanFile):
         #gflags directly from ceres
       
         # boost in 1.74 : conflict with other because have zlib/1.2.11
-        self.requires("boost/1.75.0")
+        self.requires("boost/1.76.0")
         self.requires("freeimage/3.18.0")
         
         #Qt for GUI - pb when no GUI
