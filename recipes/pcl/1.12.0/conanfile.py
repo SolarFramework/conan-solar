@@ -51,13 +51,14 @@ class LibPCLConan(ConanFile):
         if tools.os_info.is_windows:
             self.options["Boost"].shared=True
 
+        self.options["flann"].embedded_lz4=True
 
     def requirements(self):
         self.requires("common/1.0.2@conan-solar/stable")
         self.requires("eigen/3.3.9")
         self.requires("boost/1.74.0")
         self.requires("flann/1.9.1@conan-solar/stable")
-        self.requires("zlib/1.2.11")
+        self.requires("zlib/1.2.12")
         if self.options.with_qt:
             self.requires("qt/5.15.2")
 

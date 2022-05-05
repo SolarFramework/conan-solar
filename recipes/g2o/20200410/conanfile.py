@@ -33,7 +33,7 @@ class Libg2oConan(ConanFile):
     short_paths = True
 
     def requirements(self):
-        self.requires("eigen/3.3.7@conan-solar/stable")
+        self.requires("eigen/3.3.9@")
         self.requires("common/1.0.2@conan-solar/stable")
 
     def source(self):
