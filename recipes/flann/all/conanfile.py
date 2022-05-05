@@ -11,17 +11,20 @@ class FlannConan(ConanFile):
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://www.cs.ubc.ca/research/flann/"
     license = "BSD-3-Clause"
-
+    exports_sources = ["patches/external-lz4-and-export-symbols.patch"]
+    
     settings = "os", "arch", "compiler", "build_type"
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
         "with_hdf5": [True, False, "deprecated"],
+        "embedded_lz4": [True, False]
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "with_hdf5": "deprecated",
+        "embedded_lz4": False
     }
 
     generators = "cmake", "cmake_find_package"
@@ -51,7 +54,8 @@ class FlannConan(ConanFile):
             self.output.warn("with_hdf5 is a deprecated option. Do not use.")
 
     def requirements(self):
-        self.requires("lz4/1.9.3")
+        if not self.options.embedded_lz4:
+            self.requires("lz4/1.9.3")
 
     def package_id(self):
         del self.info.options.with_hdf5
@@ -61,8 +65,12 @@ class FlannConan(ConanFile):
                   destination=self._source_subfolder, strip_root=True)
 
     def _patch_sources(self):
+        if not self.options.embedded_lz4:
+            tools.patch(base_path=self._source_subfolder, patch_file="patches/external-lz4-and-export-symbols.patch")
+            
         for patch in self.conan_data.get("patches", {}).get(self.version, {}):
-            tools.patch(**patch)
+                tools.patch(**patch)
+
         # Workaround issue with empty sources for a CMake target
         flann_cpp_dir = os.path.join(self._source_subfolder, "src", "cpp")
         tools.save(os.path.join(flann_cpp_dir, "empty.cpp"), "\n")
@@ -77,8 +85,9 @@ class FlannConan(ConanFile):
             'add_library(flann SHARED "")',
             'add_library(flann SHARED empty.cpp)'
         )
-        # remove embeded lz4
-        tools.rmdir(os.path.join(self._source_subfolder, "src", "cpp", "flann", "ext"))
+        if not self.options.embedded_lz4:
+            # remove embeded lz4
+            tools.rmdir(os.path.join(self._source_subfolder, "src", "cpp", "flann", "ext"))
 
     def _configure_cmake(self):
         if self._cmake is not None:
@@ -140,7 +149,8 @@ class FlannConan(ConanFile):
         self.cpp_info.components["flann_cpp"].libs = [flann_cpp_lib]
         if not self.options.shared and tools.stdcpp_library(self):
             self.cpp_info.components["flann_cpp"].system_libs.append(tools.stdcpp_library(self))
-        self.cpp_info.components["flann_cpp"].requires = ["lz4::lz4"]
+        if not self.options.embedded_lz4:
+            self.cpp_info.components["flann_cpp"].requires = ["lz4::lz4"]
 
         # flann
         flann_c_lib = "flann" if self.options.shared else "flann_s"

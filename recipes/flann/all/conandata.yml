@@ -4,7 +4,5 @@ sources:
     url: https://github.com/mariusmuja/flann/archive/1.9.1.tar.gz
 patches:
   "1.9.1":
-    - patch_file: "patches/external-lz4-and-export-symbols.patch"
-      base_path: "source_subfolder"
     - patch_file: "patches/c++17_support.patch"
       base_path: "source_subfolder"
