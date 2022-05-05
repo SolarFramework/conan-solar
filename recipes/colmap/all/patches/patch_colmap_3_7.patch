@@ -1,16 +1,5 @@
-From fdb5fe824301d1acc8c9e3d59656e11ca04a5d66 Mon Sep 17 00:00:00 2001
-From: "BCOM\\jroyan" <jerome.royan@b-com.com>
-Date: Fri, 8 Apr 2022 16:25:42 +0200
-Subject: [PATCH] Patches for conan
-
----
- CMakeLists.txt         | 25 ++++++++++++-------------
- lib/CMakeLists.txt     |  2 +-
- src/exe/CMakeLists.txt |  4 +++-
- 3 files changed, 16 insertions(+), 15 deletions(-)
-
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fbeee12..8d09d94 100755
+index 7886d36..c5a00f1 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -41,7 +41,10 @@ set(COLMAP_VERSION_NUMBER "3700")
@@ -25,9 +14,12 @@ index fbeee12..8d09d94 100755
  
  include(CheckCXXCompilerFlag)
  
-@@ -100,12 +103,13 @@ find_package(Eigen3 REQUIRED)
+@@ -98,14 +101,15 @@ find_package(Boost REQUIRED COMPONENTS
  
- find_package(FreeImage REQUIRED)
+ find_package(Eigen3 REQUIRED)
+ 
+-find_package(FreeImage REQUIRED)
++find_package(freeimage REQUIRED)
  
 -find_package(Glog REQUIRED)
 +find_package(glog REQUIRED)
@@ -119,6 +111,3 @@ index 9175e6d..ee74338 100755
  
  COLMAP_ADD_SOURCES(
      feature.h feature.cc
--- 
-2.29.2.windows.2
-
