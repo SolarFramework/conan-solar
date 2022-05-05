@@ -55,7 +55,7 @@ class LibPCLConan(ConanFile):
     def requirements(self):
         self.requires("common/1.0.2@conan-solar/stable")
         self.requires("eigen/3.3.9")
-        self.requires("boost/1.74.0")
+        self.requires("boost/1.76.0")
         self.requires("flann/1.9.1@conan-solar/stable")
         self.requires("zlib/1.2.11")
         if self.options.with_qt:
