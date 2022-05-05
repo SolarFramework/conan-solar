@@ -125,8 +125,8 @@ class OpenImageIOConan(ConanFile):
 
     def requirements(self):
         # Required libraries
-        self.requires("zlib/1.2.11")
-        self.requires("boost/1.74.0")
+        self.requires("zlib/1.2.12")
+        self.requires("boost/1.76.0")
         self.requires("libtiff/4.3.0")
         self.requires("openexr/2.5.7")
         if self.options.with_libjpeg == "libjpeg":
