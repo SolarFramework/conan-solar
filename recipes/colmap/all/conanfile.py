@@ -22,7 +22,7 @@ class ColmapConan(ConanFile):
                "with_test": [True, False],
                "with_gui": [True, False]}
     default_options = {"shared": False,
-                       "with_cuda": True,
+                       "with_cuda": False,
                        "with_openmp": True,
                        "with_opengl": True,
                        "with_profiling": False, #colmap binary needs -lprofiler -ltcmalloc on linux
@@ -56,6 +56,8 @@ class ColmapConan(ConanFile):
         #use glog for ceres, instead there are some conflicts between miniglog of ceres and glog of colmap
         self.options["ceres-solver"].use_glog = True
         self.options["ceres-solver"].use_gflags = True
+        #Colmap needs to link FreeImage in shared mode to automatically initialize plugins; http://graphics.stanford.edu/courses/cs148-10-summer/docs/FreeImage3131.pdf
+        self.options["freeimage"].shared=True
         
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
