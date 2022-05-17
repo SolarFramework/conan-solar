@@ -1,0 +1,65 @@
+diff --git a/src/aliceVision/fuseCut/CMakeLists.txt b/src/aliceVision/fuseCut/CMakeLists.txt
+index 100541ed5..7d0f17007 100644
+--- a/src/aliceVision/fuseCut/CMakeLists.txt
++++ b/src/aliceVision/fuseCut/CMakeLists.txt
+@@ -30,7 +30,7 @@ alicevision_add_library(aliceVision_fuseCut
+     aliceVision_mvsUtils
+     aliceVision_mesh
+     aliceVision_system
+-    Geogram::geogram
++    ${geogram_LIBRARIES}
+     Boost::filesystem
+     Boost::graph
+     Boost::container
+diff --git a/src/aliceVision/mesh/CMakeLists.txt b/src/aliceVision/mesh/CMakeLists.txt
+index d76aa3f3c..f61345442 100644
+--- a/src/aliceVision/mesh/CMakeLists.txt
++++ b/src/aliceVision/mesh/CMakeLists.txt
+@@ -28,7 +28,7 @@ alicevision_add_library(aliceVision_mesh
+   PUBLIC_LINKS
+     aliceVision_mvsData
+     aliceVision_mvsUtils
+-    Geogram::geogram
++    ${geogram_LIBRARIES}
+     Boost::filesystem
+   PRIVATE_LINKS
+     aliceVision_system
+diff --git a/src/software/convert/CMakeLists.txt b/src/software/convert/CMakeLists.txt
+index bf63a104b..1c4b79b2d 100644
+--- a/src/software/convert/CMakeLists.txt
++++ b/src/software/convert/CMakeLists.txt
+@@ -49,7 +49,7 @@ alicevision_add_software(aliceVision_convertMesh
+   FOLDER ${FOLDER_SOFTWARE_CONVERT}
+   LINKS aliceVision_system
+         aliceVision_numeric
+-	Geogram::geogram
++	${geogram_LIBRARIES}
+         ${Boost_LIBRARIES}
+ )
+ 
+diff --git a/src/software/pipeline/CMakeLists.txt b/src/software/pipeline/CMakeLists.txt
+index 0a8d81394..3937f28c8 100644
+--- a/src/software/pipeline/CMakeLists.txt
++++ b/src/software/pipeline/CMakeLists.txt
+@@ -371,7 +371,7 @@ if(ALICEVISION_BUILD_MVS)
+     FOLDER ${FOLDER_SOFTWARE_PIPELINE}
+     LINKS aliceVision_system
+           aliceVision_mvsUtils
+-          Geogram::geogram
++          ${geogram_LIBRARIES}
+           Boost::program_options
+           Boost::filesystem
+   )
+diff --git a/src/software/utils/CMakeLists.txt b/src/software/utils/CMakeLists.txt
+index e243bd12d..73264d2a3 100644
+--- a/src/software/utils/CMakeLists.txt
++++ b/src/software/utils/CMakeLists.txt
+@@ -260,7 +260,7 @@ alicevision_add_software(aliceVision_utils_mergeMeshes
+   FOLDER ${FOLDER_SOFTWARE_UTILS}
+   LINKS aliceVision_system
+         aliceVision_numeric
+-	Geogram::geogram
++	      ${geogram_LIBRARIES}
+         ${Boost_LIBRARIES}
+ )
+ 

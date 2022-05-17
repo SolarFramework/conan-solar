@@ -1,0 +1,6 @@
+sources:
+  "1.7.7":
+      url: https://github.com/alicevision/geogram/archive/refs/tags/v1.7.7.tar.gz
+      sha256: 7323d9f6a38fbaff3e07c47955e0c8f310906871d38171536ec8bc0758e816aa
+patches:
+  "1.7.7":

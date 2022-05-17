@@ -1,0 +1,18 @@
+diff --git a/src/dependencies/lemon/CMakeLists.txt b/src/dependencies/lemon/CMakeLists.txt
+index b8a47276c..d1084dfc2 100644
+--- a/src/dependencies/lemon/CMakeLists.txt
++++ b/src/dependencies/lemon/CMakeLists.txt
+@@ -224,7 +224,12 @@ include(CheckTypeSize)
+ CHECK_TYPE_SIZE("long long" LONG_LONG)
+ set(LEMON_HAVE_LONG_LONG ${HAVE_LONG_LONG})
+ 
+-include(FindThreads)
++if(CMAKE_SYSTEM_NAME MATCHES "Windows")
++  set(CMAKE_USE_WIN32_THREADS_INIT 1)
++#  set(Threads_FOUND TRUE)
++else()
++  include(FindThreads)
++endif()
+ 
+ if(NOT LEMON_THREADING)
+   if(CMAKE_USE_PTHREADS_INIT)
