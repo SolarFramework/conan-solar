@@ -91,7 +91,8 @@ class ColmapConan(ConanFile):
         cmake.definitions["TEST_ENABLED"] = self.options.with_test
         cmake.definitions["SIMD_ENABLED"] = True
         cmake.definitions["GUI_ENABLED"] = self.options.with_gui
-
+        #build for recent CUDA_ARCHS
+        cmake.definitions["CUDA_ARCHS"] = "7.5 8.0 8.6"
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
 
