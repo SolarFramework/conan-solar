@@ -96,6 +96,19 @@ index 54aab8d..7ed3d6e 100755
  add_subdirectory(Graclus)
  add_subdirectory(LSD)
  add_subdirectory(PBA)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index a9e4e94..3497377 100755
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -50,7 +50,7 @@ endif()
+ add_subdirectory(base)
+ add_subdirectory(controllers)
+ add_subdirectory(estimators)
+-add_subdirectory(exe)
++#add_subdirectory(exe)
+ add_subdirectory(feature)
+ add_subdirectory(mvs)
+ add_subdirectory(optim)
 diff --git a/src/exe/CMakeLists.txt b/src/exe/CMakeLists.txt
 index 9175e6d..ee74338 100755
 --- a/src/exe/CMakeLists.txt

@@ -63,11 +63,11 @@ Conan package for colmap library 3.7
 
 - Debug version :
 
-		conan create . 3.7@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=True -s ceres-solver:build_type=Release -s boost:zlib=False -s boost:bzip2=False -s boost:without_stacktrace=True -s boost:shared=True
+		conan create . 3.7@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=True -s ceres-solver:build_type=Release -o boost:zlib=False -o boost:bzip2=False -o boost:shared=True
 
 - Release version :
 
-		conan create . 3.7@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True -s boost:zlib=False -s boost:bzip2=False -s boost:without_stacktrace=True -s boost:shared=True
+		conan create . 3.7@ -tf None -s arch=x86_64 -s compiler.cppstd=17 -s build_type=Release --build=missing -o shared=True -o boost:zlib=False -o boost:bzip2=False -o boost:without_stacktrace=True -o boost:shared=True
 
 # TODO Investigations
 
