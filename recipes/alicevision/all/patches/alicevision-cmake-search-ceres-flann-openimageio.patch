@@ -1,7 +1,40 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 118281d65..2c59ab1c1 100644
+index 118281d65..51552cec2 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
+@@ -41,8 +41,8 @@ function(trilean_option NAME DESCRIPTION DEFAULT_VALUE)
+ endfunction()
+ 
+ # C++11
+-set(CMAKE_CXX_STANDARD 11)
+-set(CMAKE_CXX_STANDARD_REQUIRED ON)
++# set(CMAKE_CXX_STANDARD 11)
++# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # ==============================================================================
+ # AliceVision build options
+@@ -203,14 +203,14 @@ endif()
+ # ==============================================================================
+ # Check C++11 support
+ # ==============================================================================
+-include(CXX11)
+-check_for_cxx11_compiler(CXX11_COMPILER)
++# include(CXX11)
++# check_for_cxx11_compiler(CXX11_COMPILER)
+ 
+-if(NOT CXX11_COMPILER)
+-  message(FATAL_ERROR "The compiler does not support the CXX11 standard.")
+-endif(NOT CXX11_COMPILER)
+-set(CMAKE_CXX_STANDARD 11)
+-set(CMAKE_CXX_STANDARD_REQUIRED ON)
++# if(NOT CXX11_COMPILER)
++#   message(FATAL_ERROR "The compiler does not support the CXX11 standard.")
++# endif(NOT CXX11_COMPILER)
++# set(CMAKE_CXX_STANDARD 11)
++# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # ==============================================================================
+ # Enable code coverage generation (only with GCC)
 @@ -318,6 +318,7 @@ if(OPENIMAGEIO_FOUND OR OpenImageIO_FOUND)
      # Add DL dependency on linux
      set(OPENIMAGEIO_LIBRARIES "${OPENIMAGEIO_LIBRARIES};dl")
@@ -48,12 +81,21 @@ index 118281d65..2c59ab1c1 100644
 +#    set(FLANN_LIBRARY flann_cpp_s)
 +#  endif()
 +  set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY} ${CMAKE_MODULE_PATH})
-+  find_package(flann REQUIRED)
-+  set(FLANN_LIBRARY ${flann_LIBRARIES})
-+  set(FLANN_INCLUDE_DIRS ${flann_INCLUDE_DIR})
++  find_package(Flann REQUIRED)
++  set(FLANN_LIBRARY ${Flann_LIBRARIES})
++  set(FLANN_INCLUDE_DIRS ${Flann_INCLUDE_DIR})
  endif()
  
  # ==============================================================================
+@@ -667,7 +675,7 @@ endif()
+ # GEOGRAM
+ # ==============================================================================
+ if(ALICEVISION_BUILD_MVS)
+-  find_package(Geogram REQUIRED)
++  find_package(geogram REQUIRED)
+   message(STATUS "Geogram: ${GEOGRAM_LIBRARY}, ${GEOGRAM_INCLUDE_DIR}")
+ endif()
+ 
 diff --git a/src/cmake/Helpers.cmake b/src/cmake/Helpers.cmake
 index 9c6f192a9..b4de88b5e 100644
 --- a/src/cmake/Helpers.cmake

@@ -50,11 +50,14 @@ class GeogramConan(ConanFile):
 
         cmake = CMake(self)
         cmake.definitions["VORPALINE_BUILD_DYNAMIC"] = "ON" if self.options.shared else "OFF"
-        cmake.definitions["VORPALINE_PLATFORM"] = "Win64-vs2015"
         cmake.definitions["GEOGRAM_LIB_ONLY"] = "ON"
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
+            cmake.definitions["VORPALINE_PLATFORM"] = "Linux64-gcc"
+        
+        if tools.os_info.is_windows:
+            cmake.definitions["VORPALINE_PLATFORM"] = "Win64-vs2015"
 
         cmake.configure(build_folder=self._build_subfolder)
         cmake.build()
