@@ -21,19 +21,10 @@ class AliceVisionConan(ConanFile):
                "with_cuda": [True, False],
                "with_popsift": [True, False]
     }
-               #"with_openmp": [True, False],
-               #"with_opengl": [True, False],
-               #"with_profiling": [True, False],
-               #"with_test": [True, False]}
     default_options = { "shared": False,
                         "with_cuda": False,
                         "with_popsift": True
     }
-                       
-                       #"with_openmp": True,
-                       #"with_opengl": True,
-                       #"with_profiling": True, #colmap binary needs -lprofiler -ltcmalloc on linux
-                       #"with_test": False}
     exports_sources = ["CMakeLists.txt", "patches/*"]
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
@@ -107,13 +98,13 @@ class AliceVisionConan(ConanFile):
         self.cpp_info.libs = tools.collect_libs(self)
 
 
-    def package(self):
-        
-        if self.settings.os == 'Android':
-            if not self.options.shared:
-                self.cpp_info.includedirs.append(
-                    os.path.join('sdk', 'native', 'jni', 'include'))
-                self.cpp_info.libdirs.append(
-                    os.path.join('sdk', 'native', 'staticlibs', self._android_arch))
+#    def package(self):
+#        
+#        if self.settings.os == 'Android':
+#            if not self.options.shared:
+#                self.cpp_info.includedirs.append(
+#                    os.path.join('sdk', 'native', 'jni', 'include'))
+#                self.cpp_info.libdirs.append(
+#                    os.path.join('sdk', 'native', 'staticlibs', self._android_arch))
 
 
