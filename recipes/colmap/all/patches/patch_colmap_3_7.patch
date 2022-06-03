@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7886d36..c5a00f1 100755
+index 7886d36..d06f40f 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -41,7 +41,10 @@ set(COLMAP_VERSION_NUMBER "3700")
+@@ -41,7 +41,10 @@ set(COLMAP_VERSION_NUMBER "3800")
  # Include CMake dependencies
  ################################################################################
  
@@ -33,18 +33,35 @@ index 7886d36..c5a00f1 100755
  
  if(CGAL_ENABLED)
      set(CGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE TRUE)
-@@ -291,6 +295,10 @@ if(Qt5_FOUND)
-         if(CUDA_ENABLED AND NOT IS_MSVC)
-             set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fPIC")
-         endif()
-+# define only if cuda is not installed
-+        if (NOT WIN32)
-+            add_definitions(-fPIC)
-+        endif()
-     endif()
+@@ -285,18 +289,19 @@ else()
+ endif()
  
+ if(Qt5_FOUND)
+-    # Qt5 was built with -reduce-relocations.
+-    if(Qt5_POSITION_INDEPENDENT_CODE)
+-        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+-        if(CUDA_ENABLED AND NOT IS_MSVC)
+-            set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fPIC")
+-        endif()
+-    endif()
+-
      # Enable automatic compilation of Qt resource files.
-@@ -319,13 +327,7 @@ set(COLMAP_LINK_DIRS
+     set(CMAKE_AUTORCC ON)
+ endif()
+ 
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
++if(CUDA_ENABLED AND NOT IS_MSVC)
++    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fPIC")
++endif()
++
++if (NOT WIN32)
++    add_definitions(-fPIC)
++endif()
++
+ ################################################################################
+ # Add sources
+ ################################################################################
+@@ -319,13 +324,7 @@ set(COLMAP_LINK_DIRS
  
  set(COLMAP_EXTERNAL_LIBRARIES
      ${CMAKE_DL_LIBS}
@@ -59,7 +76,7 @@ index 7886d36..c5a00f1 100755
  )
  
  if(OPENMP_FOUND)
-@@ -348,7 +350,6 @@ if(UNIX)
+@@ -348,7 +347,6 @@ if(UNIX)
  endif()
  
  set(COLMAP_INTERNAL_LIBRARIES
@@ -67,7 +84,7 @@ index 7886d36..c5a00f1 100755
      graclus
      lsd
      pba
-@@ -374,7 +375,6 @@ add_subdirectory(src)
+@@ -374,7 +372,6 @@ add_subdirectory(src)
  # Generate source groups for Visual Studio, XCode, etc.
  ################################################################################
  
@@ -75,7 +92,7 @@ index 7886d36..c5a00f1 100755
  COLMAP_ADD_SOURCE_DIR(lib/Graclus LIB_GRACLUS_SRCS *.h *.c)
  COLMAP_ADD_SOURCE_DIR(lib/LSD LIB_LSD_SRCS *.h *.c)
  COLMAP_ADD_SOURCE_DIR(lib/PBA LIB_PBA_SRCS *.h *.cpp *.cu)
-@@ -401,7 +401,6 @@ COLMAP_ADD_SOURCE_DIR(src/util UTIL_SRCS *.h *.cc)
+@@ -401,7 +398,6 @@ COLMAP_ADD_SOURCE_DIR(src/util UTIL_SRCS *.h *.cc)
  # intellisense can't find any of the included files).
  add_library(
      ${COLMAP_SRC_ROOT_FOLDER}
