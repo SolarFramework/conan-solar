@@ -1,0 +1,13 @@
+diff --git a/src/optim/loransac.h b/src/optim/loransac.h
+index eebd31a..ba4a341 100755
+--- a/src/optim/loransac.h
++++ b/src/optim/loransac.h
+@@ -88,7 +88,7 @@ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::LORANSAC(
+ 
+ template <typename Estimator, typename LocalEstimator, typename SupportMeasurer,
+           typename Sampler>
+-typename LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Report
++typename RANSAC<Estimator, SupportMeasurer, Sampler>::Report
+ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Estimate(
+     const std::vector<typename Estimator::X_t>& X,
+     const std::vector<typename Estimator::Y_t>& Y) {
