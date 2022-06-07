@@ -19,11 +19,13 @@ class AliceVisionConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
                "with_cuda": [True, False],
-               "with_popsift": [True, False]
+               "with_popsift": [True, False],
+               "with_opengv": [True, False]
     }
     default_options = { "shared": False,
                         "with_cuda": False,
-                        "with_popsift": True
+                        "with_popsift": False,
+                        "with_opengv": False
     }
     exports_sources = ["CMakeLists.txt", "patches/*"]
     _source_subfolder = "source_subfolder"
@@ -67,7 +69,7 @@ class AliceVisionConan(ConanFile):
         cmake.definitions["BUILD_SHARED_LIBS"] = "ON" if self.options.shared else "OFF"
         cmake.definitions["ALICEVISION_REQUIRE_CERES_WITH_SUITESPARSE"] = "OFF" # ASE to valid
         cmake.definitions["AV_BUILD_POPSIFT"] = "ON" if self.options.with_popsift else "OFF"
-        cmake.definitions["AV_BUILD_OPENGV"] = "OFF"  # ASE to valid
+        cmake.definitions["AV_BUILD_OPENGV"] = "ON" if self.options.with_opengv else "OFF"
         cmake.definitions["ALICEVISION_USE_CUDA"] = "ON" if self.options.with_cuda else "OFF"
 
         if not tools.os_info.is_windows:
@@ -96,15 +98,5 @@ class AliceVisionConan(ConanFile):
             self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib", cuda_platform))
                         
         self.cpp_info.libs = tools.collect_libs(self)
-
-
-#    def package(self):
-#        
-#        if self.settings.os == 'Android':
-#            if not self.options.shared:
-#                self.cpp_info.includedirs.append(
-#                    os.path.join('sdk', 'native', 'jni', 'include'))
-#                self.cpp_info.libdirs.append(
-#                    os.path.join('sdk', 'native', 'staticlibs', self._android_arch))
 
 

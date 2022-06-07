@@ -1,0 +1,6 @@
+sources:
+  "master":
+    git: https://github.com/laurentkneip/opengv.git
+
+requirements:
+  - "eigen/3.4.0"

@@ -17,6 +17,6 @@ requirements:
   - "openexr/2.5.7"
   - "openimageio/2.3.13.0@conan-solar/boost_1_76"
   - "popsift/1.0.0-rc3@conan-solar/stable"
-  #- "opengv/cci.20200806"
+  - "opengv/master"
   - "geogram/1.7.7"
   - "zlib/1.2.12"
