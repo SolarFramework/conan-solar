@@ -34,6 +34,7 @@ class OpenImageIOConan(ConanFile):
         "with_openvdb": [True, False],
         "with_ptex": [True, False],
         "with_libwebp": [True, False],
+        "with_tools": [True, False],
     }
 
     default_options = {
@@ -55,6 +56,7 @@ class OpenImageIOConan(ConanFile):
         "with_openvdb": False, # FIXME: broken on M1
         "with_ptex": True,
         "with_libwebp": True,
+        "with_tools": True,
     }
 
     _cmake = None
@@ -72,6 +74,7 @@ class OpenImageIOConan(ConanFile):
             return self._cmake
 
         self._cmake = CMake(self)
+
 
         # CMake options
         self._cmake.definitions["CMAKE_DEBUG_POSTFIX"] = "" # Needed for 2.3.x.x+ versions
@@ -108,6 +111,12 @@ class OpenImageIOConan(ConanFile):
         self._cmake.definitions["USE_FREETYPE"] = self.options.with_freetype
         self._cmake.definitions["USE_LIBWEBP"] = self.options.with_libwebp
         self._cmake.definitions["USE_OPENJPEG"] = self.options.with_openjpeg
+
+        if self.settings.os == 'Android':
+            self._cmake.definitions["COMPILER_SUPPORTS_ATOMIC_WITHOUT_LIBATOMIC_EXITCODE"] = "0"
+            self._cmake.definitions["COMPILER_SUPPORTS_ATOMIC_WITHOUT_LIBATOMIC_EXITCODE__TRYRUN_OUTPUT"] = ""
+
+        self._cmake.definitions["OIIO_BUILD_TOOLS"] = self.options.with_tools
 
         if self.options.with_openvdb:
             self._cmake.definitions["CMAKE_CXX_STANDARD"] = 14
