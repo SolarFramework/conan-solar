@@ -109,7 +109,7 @@ class OpenImageIOConan(ConanFile):
         self._cmake.definitions["USE_QT"] = False
         self._cmake.definitions["USE_LIBPNG"] = self.options.with_libpng
         self._cmake.definitions["USE_FREETYPE"] = self.options.with_freetype
-        self._cmake.definitions["USE_LIBWEBP"] = self.options.with_libwebp
+        self._cmake.definitions["USE_WEBP"] = self.options.with_libwebp
         self._cmake.definitions["USE_OPENJPEG"] = self.options.with_openjpeg
 
         if self.settings.os == 'Android':
