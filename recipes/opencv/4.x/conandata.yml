@@ -35,3 +35,6 @@ patches:
       base_path: "source_subfolder"
     - patch_file: "patches/0002-openexr.patch"
       base_path: "source_subfolder"
+  "4.5.5":
+    - patch_file: "patches/objDetect_with_optionnal_dnn.patch"
+      base_path: "source_subfolder"
