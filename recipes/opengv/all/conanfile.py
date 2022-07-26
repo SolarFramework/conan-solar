@@ -15,7 +15,7 @@ required_conan_version = ">=1.29.1"
 class OpengvConan(ConanFile):
     
     name = "opengv"
-    license = "MPLv2 license"
+    license = "BSD-3-Clause"
     homepage = "https://laurentkneip.github.io/opengv/"
     description = "OpenGV library"
     url = "https://github.com/Solar-Framework/conan-solar"
@@ -40,6 +40,8 @@ class OpengvConan(ConanFile):
 
         cmake = CMake(self)
         cmake.definitions["BUILD_TESTS"] = "OFF"
+        cmake.definitions["BUILD_POSITION_INDEPENDENT_CODE"] = "OFF"
+        cmake.definitions["BUILD_SHARED_LIBS"] = "OFF"
         cmake.configure(build_folder=self._build_subfolder)
         cmake.build()
         cmake.install()

@@ -67,7 +67,7 @@ class AliceVisionConan(ConanFile):
 
         cmake = CMake(self)
         cmake.definitions["BUILD_SHARED_LIBS"] = "ON" if self.options.shared else "OFF"
-        cmake.definitions["ALICEVISION_REQUIRE_CERES_WITH_SUITESPARSE"] = "OFF" # ASE to valid
+        cmake.definitions["ALICEVISION_REQUIRE_CERES_WITH_SUITESPARSE"] = "OFF"
         cmake.definitions["AV_BUILD_POPSIFT"] = "ON" if self.options.with_popsift else "OFF"
         cmake.definitions["AV_BUILD_OPENGV"] = "ON" if self.options.with_opengv else "OFF"
         cmake.definitions["ALICEVISION_USE_CUDA"] = "ON" if self.options.with_cuda else "OFF"
@@ -99,4 +99,19 @@ class AliceVisionConan(ConanFile):
                         
         self.cpp_info.libs = tools.collect_libs(self)
 
+    def requirements(self):
+
+        self.requires("alembic/1.8.3")
+        self.requires("boost/1.76.0")
+        self.requires("eigen/3.4.0")
+        self.requires("ceres-solver/2.0.0")
+        self.requires("flann/1.9.1@conan-solar/stable")
+        self.requires("openexr/2.5.7")
+        self.requires("openimageio/2.3.13.0@conan-solar/boost_1_76")
+        self.requires("geogram/1.7.7")
+        self.requires("zlib/1.2.12")
+        if self.options.with_popsift :
+            self.requires("popsift/1.0.0-rc3@conan-solar/stable")
+        if self.options.with_opengv :
+            self.requires("opengv/master")
 
