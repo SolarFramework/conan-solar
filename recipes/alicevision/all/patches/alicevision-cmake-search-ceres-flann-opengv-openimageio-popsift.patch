@@ -1,5 +1,5 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 118281d65..75c7ec120 100644
+index 118281d65..04cccf096 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -41,8 +41,8 @@ function(trilean_option NAME DESCRIPTION DEFAULT_VALUE)
@@ -87,6 +87,15 @@ index 118281d65..75c7ec120 100644
  endif()
  
  # ==============================================================================
+@@ -600,7 +608,7 @@ set(ALICEVISION_HAVE_POPSIFT 0)
+ 
+ if(ALICEVISION_BUILD_SFM)
+   if(NOT ALICEVISION_USE_POPSIFT STREQUAL "OFF")
+-    find_package(PopSift CONFIG)
++    find_package(PopSift)
+ 
+     if(PopSift_FOUND)
+       set(ALICEVISION_HAVE_POPSIFT 1)
 @@ -620,7 +628,7 @@ set(ALICEVISION_HAVE_OPENGV 0)
  
  if(ALICEVISION_BUILD_SFM)

@@ -4,6 +4,6 @@ sources:
 
 patches:
   "v2.4.0":
-    - patch_file: "../patches/alicevision-cmake-search-ceres-flann-opengv-openimageio.patch"
+    - patch_file: "../patches/alicevision-cmake-search-ceres-flann-opengv-openimageio-popsift.patch"
     - patch_file: "../patches/alicevision-cmake-fix-win-pthread-include-error.patch"
     - patch_file: "../patches/alicevision-cmake-search-geogram-lib.patch"
