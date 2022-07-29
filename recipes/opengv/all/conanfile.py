@@ -42,6 +42,11 @@ class OpengvConan(ConanFile):
         cmake.definitions["BUILD_TESTS"] = "OFF"
         cmake.definitions["BUILD_POSITION_INDEPENDENT_CODE"] = "OFF"
         cmake.definitions["BUILD_SHARED_LIBS"] = "OFF"
+
+        if tools.os_info.is_windows:
+            print("/!\\ WARNING: remove cpu optimization for Windows /!\\")
+            cmake.definitions["CMAKE_CXX_FLAGS_RELEASE"] = "/Od"
+
         cmake.configure(build_folder=self._build_subfolder)
         cmake.build()
         cmake.install()
