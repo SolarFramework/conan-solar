@@ -8,7 +8,7 @@ index 118281d65..04cccf096 100644
  # C++11
 -set(CMAKE_CXX_STANDARD 11)
 -set(CMAKE_CXX_STANDARD_REQUIRED ON)
-+# set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 14)
 +# set(CMAKE_CXX_STANDARD_REQUIRED ON)
  
  # ==============================================================================
