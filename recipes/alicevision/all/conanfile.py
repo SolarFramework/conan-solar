@@ -62,6 +62,7 @@ class AliceVisionConan(ConanFile):
         self.options['openimageio'].with_opencolorio = False
         self.options['openimageio'].with_opencv = False
         self.options['openimageio'].with_ptex = False
+        self.options['openimageio'].with_tbb = False
 
     def build(self):
 
@@ -71,6 +72,7 @@ class AliceVisionConan(ConanFile):
         cmake.definitions["AV_BUILD_POPSIFT"] = "ON" if self.options.with_popsift else "OFF"
         cmake.definitions["AV_BUILD_OPENGV"] = "ON" if self.options.with_opengv else "OFF"
         cmake.definitions["ALICEVISION_USE_CUDA"] = "ON" if self.options.with_cuda else "OFF"
+        cmake.definitions["ALICEVISION_BUILD_DOC"] = "OFF"
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
@@ -114,4 +116,7 @@ class AliceVisionConan(ConanFile):
             self.requires("popsift/1.0.0-rc3@conan-solar/stable")
         if self.options.with_opengv :
             self.requires("opengv/master")
+        self.requires("coin-utils/2.11.4")
+        self.requires("coin-osi/0.108.6")
+        self.requires("coin-clp/1.17.6")
 

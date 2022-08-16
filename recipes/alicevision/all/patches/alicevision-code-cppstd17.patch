@@ -1,0 +1,419 @@
+diff --git a/src/aliceVision/hdr/sampling.cpp b/src/aliceVision/hdr/sampling.cpp
+index 925645116..812562549 100644
+--- a/src/aliceVision/hdr/sampling.cpp
++++ b/src/aliceVision/hdr/sampling.cpp
+@@ -5,6 +5,7 @@
+ // You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+ #include "sampling.hpp"
++#include <random>
+ 
+ #include <aliceVision/alicevision_omp.hpp>
+ #include <aliceVision/system/Logger.hpp>
+@@ -421,7 +422,11 @@ bool Sampling::extractSamplesFromImages(std::vector<ImageSample>& out_samples, c
+         if (item.second.size() > params.maxCountSample)
+         {
+             // Shuffle and ignore the exceeding samples
+-            std::random_shuffle(item.second.begin(), item.second.end());
++            //std::random_shuffle(item.second.begin(), item.second.end());
++            // https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error
++            std::random_device rd;
++            std::mt19937 g(rd());
++            std::shuffle(item.second.begin(), item.second.end(), g);
+             item.second.resize(params.maxCountSample);
+         }
+ 
+@@ -476,7 +481,11 @@ void Sampling::analyzeSource(std::vector<ImageSample> & samples, int channelQuan
+         if(item.second.size() > maxSamples)
+         {
+             // Shuffle and ignore the exceeding samples
+-            std::random_shuffle(item.second.begin(), item.second.end());
++            //std::random_shuffle(item.second.begin(), item.second.end());
++            // https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error
++            std::random_device rd;
++            std::mt19937 g(rd());
++            std::shuffle(item.second.begin(), item.second.end(), g);
+             item.second.resize(500);
+         }
+     }
+@@ -498,7 +507,11 @@ void Sampling::filter(size_t maxTotalPoints)
+             if (item.second.size() > limitPerGroup)
+             {
+                 // Shuffle and ignore the exceeding samples
+-                std::random_shuffle(item.second.begin(), item.second.end());
++                //std::random_shuffle(item.second.begin(), item.second.end());
++                // https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error
++                std::random_device rd;
++                std::mt19937 g(rd());
++                std::shuffle(item.second.begin(), item.second.end(), g);
+                 item.second.resize(limitPerGroup);
+             }
+ 
+diff --git a/src/aliceVision/mvsUtils/MultiViewParams.hpp b/src/aliceVision/mvsUtils/MultiViewParams.hpp
+index 03e18e3c8..d1af28703 100644
+--- a/src/aliceVision/mvsUtils/MultiViewParams.hpp
++++ b/src/aliceVision/mvsUtils/MultiViewParams.hpp
+@@ -19,17 +19,21 @@
+ #include <vector>
+ #include <map>
+ 
+-namespace aliceVision {
++namespace aliceVision
++{
+ 
+ namespace bpt = boost::property_tree;
+ 
+-namespace sfmData {
++namespace sfmData
++{
+ class SfMData;
+ } // namespace sfmData
+ 
+-namespace mvsUtils {
++namespace mvsUtils
++{
+ 
+-enum class EFileType {
++enum class EFileType
++{
+     P = 0,
+     K = 1,
+     iK = 2,
+@@ -100,13 +104,9 @@ public:
+ 
+     boost::property_tree::ptree userParams;
+ 
+-    MultiViewParams(const sfmData::SfMData& sfmData,
+-                    const std::string& imagesFolder = "",
+-                    const std::string& depthMapsFolder = "",
+-                    const std::string& depthMapsFilterFolder = "",
+-                    bool readFromDepthMaps = false,
+-                    int downscale = 1,
+-                    StaticVector<CameraMatrices>* cameras = nullptr);
++    MultiViewParams(const sfmData::SfMData& sfmData, const std::string& imagesFolder = "",
++                    const std::string& depthMapsFolder = "", const std::string& depthMapsFilterFolder = "",
++                    bool readFromDepthMaps = false, int downscale = 1, StaticVector<CameraMatrices>* cameras = nullptr);
+ 
+     ~MultiViewParams();
+ 
+@@ -115,103 +115,51 @@ public:
+         const Point3d p = CArr[camIndex] + (iCamArr[camIndex] * pix).normalize() * depth;
+         return p;
+     }
+-    inline const std::string& getImagePath(int index) const
+-    {
+-        return _imagesParams.at(index).path;
+-    }
++    inline const std::string& getImagePath(int index) const { return _imagesParams.at(index).path; }
+ 
+-    inline int getViewId(int index) const
+-    {
+-        return _imagesParams.at(index).viewId;
+-    }
++    inline int getViewId(int index) const { return _imagesParams.at(index).viewId; }
+ 
+-    inline int getOriginalWidth(int index) const
+-    {
+-        return _imagesParams.at(index).width;
+-    }
++    inline int getOriginalWidth(int index) const { return _imagesParams.at(index).width; }
+ 
+-    inline int getOriginalHeight(int index) const
+-    {
+-        return _imagesParams.at(index).height;
+-    }
++    inline int getOriginalHeight(int index) const { return _imagesParams.at(index).height; }
+ 
+-    inline int getOriginalSize(int index) const
+-    {
+-        return _imagesParams.at(index).size;
+-    }
++    inline int getOriginalSize(int index) const { return _imagesParams.at(index).size; }
+ 
+-    inline int getWidth(int index) const
+-    {
+-        return _imagesParams.at(index).width / getDownscaleFactor(index);
+-    }
++    inline int getWidth(int index) const { return _imagesParams.at(index).width / getDownscaleFactor(index); }
+ 
+-    inline int getHeight(int index) const
+-    {
+-        return _imagesParams.at(index).height / getDownscaleFactor(index);
+-    }
++    inline int getHeight(int index) const { return _imagesParams.at(index).height / getDownscaleFactor(index); }
+ 
+-    inline int getSize(int index) const
+-    {
+-        return _imagesParams.at(index).size / getDownscaleFactor(index);
+-    }
++    inline int getSize(int index) const { return _imagesParams.at(index).size / getDownscaleFactor(index); }
+ 
+-    inline const std::vector<ImageParams>& getImagesParams() const
+-    {
+-        return _imagesParams;
+-    }
++    inline const std::vector<ImageParams>& getImagesParams() const { return _imagesParams; }
+ 
+-    inline const ImageParams& getImageParams(int i) const
+-    {
+-        return _imagesParams.at(i);
+-    }
++    inline const ImageParams& getImageParams(int i) const { return _imagesParams.at(i); }
+ 
+-    inline int getDownscaleFactor(int index) const
+-    {
+-        return _imagesScale.at(index) * _processDownscale;
+-    }
++    inline int getDownscaleFactor(int index) const { return _imagesScale.at(index) * _processDownscale; }
+ 
+-    inline int getProcessDownscale() const
+-    {
+-        return _processDownscale;
+-    }
++    inline int getProcessDownscale() const { return _processDownscale; }
+ 
+-    inline int getMaxImageWidth() const
+-    {
+-        return _maxImageWidth;
+-    }
++    inline int getMaxImageWidth() const { return _maxImageWidth; }
+ 
+-    inline int getMaxImageHeight() const
+-    {
+-        return _maxImageHeight;
+-    }
++    inline int getMaxImageHeight() const { return _maxImageHeight; }
+ 
+-    inline int getNbCameras() const
+-    {
+-        return _imagesParams.size();
+-    }
++    inline int getNbCameras() const { return _imagesParams.size(); }
+ 
+-    inline int getIndexFromViewId(IndexT viewId) const
+-    {
+-        return _imageIdsPerViewId.at(viewId);
+-    }
++    inline int getIndexFromViewId(IndexT viewId) const { return _imageIdsPerViewId.at(viewId); }
+ 
+-    inline float getMinViewAngle() const
+-    {
+-        return _minViewAngle;
+-    }
++    inline float getMinViewAngle() const { return _minViewAngle; }
+ 
+-    inline float getMaxViewAngle() const
+-    {
+-        return _maxViewAngle;
+-    }
++    inline float getMaxViewAngle() const { return _maxViewAngle; }
+ 
+     inline std::vector<double> getOriginalP(int index) const
+     {
+-        std::vector<double> p44; // projection matrix (4x4) scale 1
++        std::vector<double> p44;                 // projection matrix (4x4) scale 1
+         const Matrix3x4& p34 = camArr.at(index); // projection matrix (3x4) scale = getDownscaleFactor()
+         const int downscale = getDownscaleFactor(index);
+         p44.assign(p34.m, p34.m + 12);
+-        std::transform(p44.begin(), p44.begin() + 8, p44.begin(), std::bind1st(std::multiplies<double>(),downscale));
++        // std::transform(p44.begin(), p44.begin() + 8, p44.begin(), std::bind1st(std::multiplies<double>(),downscale));
++        std::transform(p44.begin(), p44.begin() + 8, p44.begin(),
++                       [downscale](double d) { return d* downscale; });
+         p44.push_back(0);
+         p44.push_back(0);
+         p44.push_back(0);
+@@ -219,26 +167,18 @@ public:
+         return p44;
+     }
+ 
+-    inline const std::string& getDepthMapsFolder() const
+-    {
+-        return _depthMapsFolder;
+-    }
++    inline const std::string& getDepthMapsFolder() const { return _depthMapsFolder; }
+ 
+-    inline const std::string& getDepthMapsFilterFolder() const
+-    {
+-        return _depthMapsFilterFolder;
+-    }
++    inline const std::string& getDepthMapsFilterFolder() const { return _depthMapsFilterFolder; }
+ 
+-    inline const sfmData::SfMData& getInputSfMData() const
+-    {
+-        return _sfmData;
+-    }
++    inline const sfmData::SfMData& getInputSfMData() const { return _sfmData; }
+ 
+     const std::map<std::string, std::string>& getMetadata(int index) const;
+ 
+     bool is3DPointInFrontOfCam(const Point3d* X, int rc) const;
+ 
+-    void getMinMaxMidNbDepth(int index, float& min, float& max, float& mid, std::size_t& nbDepths, float percentile = 0.999f) const;
++    void getMinMaxMidNbDepth(int index, float& min, float& max, float& mid, std::size_t& nbDepths,
++                             float percentile = 0.999f) const;
+     void getPixelFor3DPoint(Point2d* out, const Point3d& X, const Matrix3x4& P) const;
+     void getPixelFor3DPoint(Point2d* out, const Point3d& X, int rc) const;
+     void getPixelFor3DPoint(Pixel* out, const Point3d& X, int rc) const;
+@@ -246,7 +186,8 @@ public:
+     double getCamPixelSize(const Point3d& x0, int cam, float d) const;
+     double getCamPixelSizeRcTc(const Point3d& p, int rc, int tc, float d) const;
+     double getCamPixelSizePlaneSweepAlpha(const Point3d& p, int rc, int tc, int scale, int step) const;
+-    double getCamPixelSizePlaneSweepAlpha(const Point3d& p, int rc, StaticVector<int>* tcams, int scale, int step) const;
++    double getCamPixelSizePlaneSweepAlpha(const Point3d& p, int rc, StaticVector<int>* tcams, int scale,
++                                          int step) const;
+ 
+     double getCamsMinPixelSize(const Point3d& x0, std::vector<unsigned short>* tcams) const;
+     double getCamsMinPixelSize(const Point3d& x0, StaticVector<int>& tcams) const;
+@@ -256,7 +197,8 @@ public:
+     bool isPixelInImage(const Pixel& pix, int camId) const;
+     bool isPixelInImage(const Point2d& pix, int camId) const;
+     bool isPixelInImage(const Point2d& pix, int camId, int margin) const;
+-    void decomposeProjectionMatrix(Point3d& Co, Matrix3x3& Ro, Matrix3x3& iRo, Matrix3x3& Ko, Matrix3x3& iKo, Matrix3x3& iPo, const Matrix3x4& P) const;
++    void decomposeProjectionMatrix(Point3d& Co, Matrix3x3& Ro, Matrix3x3& iRo, Matrix3x3& Ko, Matrix3x3& iKo,
++                                   Matrix3x3& iPo, const Matrix3x4& P) const;
+ 
+     /**
+      * @brief findCamsWhichIntersectsHexahedron
+@@ -264,7 +206,8 @@ public:
+      * @param minMaxDepthsFileName
+      * @return
+      */
+-    StaticVector<int> findCamsWhichIntersectsHexahedron(const Point3d hexah[8], const std::string& minMaxDepthsFileName) const;
++    StaticVector<int> findCamsWhichIntersectsHexahedron(const Point3d hexah[8],
++                                                        const std::string& minMaxDepthsFileName) const;
+ 
+     /**
+      * @brief findCamsWhichIntersectsHexahedron
+@@ -281,16 +224,9 @@ public:
+      */
+     StaticVector<int> findNearestCamsFromLandmarks(int rc, int nbNearestCams) const;
+ 
++    inline void setMinViewAngle(float minViewAngle) { _minViewAngle = minViewAngle; }
+ 
+-    inline void setMinViewAngle(float minViewAngle)
+-    {
+-      _minViewAngle = minViewAngle;
+-    }
+-
+-    inline void setMaxViewAngle(float maxViewAngle)
+-    {
+-      _maxViewAngle = maxViewAngle;
+-    }
++    inline void setMaxViewAngle(float maxViewAngle) { _maxViewAngle = maxViewAngle; }
+ 
+ private:
+     /// image params list (width, height, size)
+@@ -314,7 +250,7 @@ private:
+     /// minimum view angle
+     float _minViewAngle = 2.0f;
+     /// maximum view angle
+-    float _maxViewAngle = 70.0f;  // WARNING: may be too low, especially when using seeds from SfM
++    float _maxViewAngle = 70.0f; // WARNING: may be too low, especially when using seeds from SfM
+     /// input sfmData
+     const sfmData::SfMData& _sfmData;
+ 
+diff --git a/src/aliceVision/sfmData/colorize.cpp b/src/aliceVision/sfmData/colorize.cpp
+index ddf0197d1..4c7483945 100644
+--- a/src/aliceVision/sfmData/colorize.cpp
++++ b/src/aliceVision/sfmData/colorize.cpp
+@@ -92,7 +92,11 @@ void colorizeTracks(SfMData& sfmData)
+   // create an unsorted index container
+   std::vector<int> unsortedIndexes(sortedViewsCardinal.size()) ;
+   std::iota(std::begin(unsortedIndexes), std::end(unsortedIndexes), 0);
+-  std::random_shuffle(unsortedIndexes.begin(), unsortedIndexes.end());
++  //https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error
++  std::random_device rd;
++  std::mt19937 g(rd());
++  std::shuffle(unsortedIndexes.begin(), unsortedIndexes.end(), g);
++  //std::random_shuffle(unsortedIndexes.begin(), unsortedIndexes.end());
+ 
+   // landmark colorization
+ #pragma omp parallel for
+diff --git a/src/aliceVision/track/TracksBuilder.cpp b/src/aliceVision/track/TracksBuilder.cpp
+index 681bf2b6d..e6f60f6da 100644
+--- a/src/aliceVision/track/TracksBuilder.cpp
++++ b/src/aliceVision/track/TracksBuilder.cpp
+@@ -155,8 +155,14 @@ void TracksBuilder::filter(bool clearForks, std::size_t minTrackLength, bool mul
+     }
+   }
+ 
+-  std::for_each(set_classToErase.begin(), set_classToErase.end(),
+-    std::bind1st(std::mem_fun(&UnionFindObject::eraseClass), _d->tracksUF.get()));
++  //std::for_each(set_classToErase.begin(), set_classToErase.end(),
++    //std::bind1st(std::mem_fun(&UnionFindObject::eraseClass), _d->tracksUF.get()));
++	//std::bind(std::mem_fun(&UnionFindObject::eraseClass), _d->tracksUF.get()));
++
++
++	// SLE inspired from https://stackoverflow.com/questions/61354553/using-mem-fn-instead-of-mem-fun
++	UnionFindObject* tUF = _d->tracksUF.get();
++	std::for_each(set_classToErase.begin(), set_classToErase.end(), [tUF](int cls) {tUF->eraseClass(cls);});
+ }
+ 
+ bool TracksBuilder::exportToStream(std::ostream& os)
+diff --git a/src/aliceVision/track/tracksUtils.cpp b/src/aliceVision/track/tracksUtils.cpp
+index 988bcc529..3e354b211 100644
+--- a/src/aliceVision/track/tracksUtils.cpp
++++ b/src/aliceVision/track/tracksUtils.cpp
+@@ -224,6 +224,19 @@ bool getFeatureIdInViewPerTrack(const TracksMap& allTracks,
+   return !out_featId->empty();
+ }
+ 
++/*
++ bool trackEqual(std::size_t val, std::size_t id)
++{
++    return (id == val);
++}
++
++ bool operation(const std::pair<std::size_t, Track>& val, size_t id,
++               int (*function)(std::size_t, std::size_t))
++{
++     return function(val.first, id);
++}
++*/
++
+ void tracksToIndexedMatches(const TracksMap& tracks,
+                                    const std::vector<IndexT>& filterIndex,
+                                    std::vector<IndMatch>* out_index)
+@@ -234,9 +247,12 @@ void tracksToIndexedMatches(const TracksMap& tracks,
+ 
+   for(std::size_t i = 0; i < filterIndex.size(); ++i)
+   {
+-    // retrieve the track information from the current index i.
+-    TracksMap::const_iterator itF = std::find_if(tracks.begin(), tracks.end(), FunctorMapFirstEqual(filterIndex[i]));
+ 
++	// SLETODO
++    // retrieve the track information from the current index i.
++    //TracksMap::const_iterator itF = std::find_if(tracks.begin(), tracks.end(), FunctorMapFirstEqual(filterIndex[i]));
++      TracksMap::const_iterator itF = std::find_if(tracks.begin(), tracks.end(), std::function<bool(const std::pair<std::size_t, Track>&)>([i](const std::pair<std::size_t, Track>& val) { return i == val.first; }));
++	
+     // the current track.
+     const Track& map_ref = itF->second;
+ 
+diff --git a/src/aliceVision/track/tracksUtils.hpp b/src/aliceVision/track/tracksUtils.hpp
+index 53c25d04c..babb9d942 100644
+--- a/src/aliceVision/track/tracksUtils.hpp
++++ b/src/aliceVision/track/tracksUtils.hpp
+@@ -8,7 +8,6 @@
+ #pragma once
+ #include <aliceVision/track/Track.hpp>
+ 
+-
+ namespace aliceVision {
+ namespace track {
+ 
+@@ -113,6 +112,7 @@ bool getFeatureIdInViewPerTrack(const TracksMap& allTracks,
+                                        std::vector<FeatureId>* out_featId);
+ 
+ 
++/*
+ struct FunctorMapFirstEqual : public std::unary_function <TracksMap , bool>
+ {
+   std::size_t id;
+@@ -124,6 +124,7 @@ struct FunctorMapFirstEqual : public std::unary_function <TracksMap , bool>
+     return ( id == val.first);
+   }
+ };
++*/
+ 
+ /**
+  * @brief Convert a trackId to a vector of indexed Matches.

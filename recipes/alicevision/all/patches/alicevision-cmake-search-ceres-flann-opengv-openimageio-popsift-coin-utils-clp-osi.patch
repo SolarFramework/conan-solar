@@ -1,0 +1,208 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 118281d65..d9f07fa83 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -41,8 +41,8 @@ function(trilean_option NAME DESCRIPTION DEFAULT_VALUE)
+ endfunction()
+ 
+ # C++11
+-set(CMAKE_CXX_STANDARD 11)
+-set(CMAKE_CXX_STANDARD_REQUIRED ON)
++# set(CMAKE_CXX_STANDARD 11)
++# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # ==============================================================================
+ # AliceVision build options
+@@ -203,14 +203,14 @@ endif()
+ # ==============================================================================
+ # Check C++11 support
+ # ==============================================================================
+-include(CXX11)
+-check_for_cxx11_compiler(CXX11_COMPILER)
++# include(CXX11)
++# check_for_cxx11_compiler(CXX11_COMPILER)
+ 
+-if(NOT CXX11_COMPILER)
+-  message(FATAL_ERROR "The compiler does not support the CXX11 standard.")
+-endif(NOT CXX11_COMPILER)
+-set(CMAKE_CXX_STANDARD 11)
+-set(CMAKE_CXX_STANDARD_REQUIRED ON)
++# if(NOT CXX11_COMPILER)
++#   message(FATAL_ERROR "The compiler does not support the CXX11 standard.")
++# endif(NOT CXX11_COMPILER)
++# set(CMAKE_CXX_STANDARD 11)
++# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # ==============================================================================
+ # Enable code coverage generation (only with GCC)
+@@ -318,6 +318,7 @@ if(OPENIMAGEIO_FOUND OR OpenImageIO_FOUND)
+     # Add DL dependency on linux
+     set(OPENIMAGEIO_LIBRARIES "${OPENIMAGEIO_LIBRARIES};dl")
+   endif()
++  set(OPENIMAGEIO_LIBRARIES ${OPENIMAGEIO_LIBRARIES} ${OpenImageIO_LIBS})
+ else()
+   message(SEND_ERROR "Failed to find OpenImageIO.")
+ endif()
+@@ -370,10 +371,13 @@ if(ALICEVISION_BUILD_SFM)
+     message(STATUS "By default, Ceres required SuiteSparse to ensure best performances. if you explicitly need to build without it, you can use the option: -DALICEVISION_REQUIRE_CERES_WITH_SUITESPARSE=OFF")
+     find_package(Ceres QUIET REQUIRED COMPONENTS SuiteSparse CONFIG)
+   else()
+-    find_package(Ceres CONFIG QUIET CONFIG)
++    find_package(Ceres QUIET REQUIRED)
+   endif()
+ 
+   if(Ceres_FOUND)
++    if(Ceres_LIBRARIES)
++      list(APPEND CERES_LIBRARIES ${Ceres_LIBRARIES})
++    endif()
+     message(STATUS "Ceres include dirs ${CERES_INCLUDE_DIRS}")
+     message(STATUS "Ceres libraries ${CERES_LIBRARIES}")
+     if(ALICEVISION_REQUIRE_CERES_WITH_SUITESPARSE)
+@@ -404,15 +408,19 @@ endif()
+ # - external if FLANN_INCLUDE_DIR_HINTS and a valid Flann setup is found
+ # ==============================================================================
+ if(ALICEVISION_BUILD_SFM)
+-  if(NOT DEFINED FLANN_INCLUDE_DIR_HINTS)
+-    set(FLANN_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/flann/src/cpp)
+-    set(ALICEVISION_USE_INTERNAL_FLANN ON)
+-  endif()
+-  find_package(Flann QUIET)
+-  if(NOT FLANN_FOUND OR ALICEVISION_USE_INTERNAL_FLANN)
+-    set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/flann/src/cpp)
+-    set(FLANN_LIBRARY flann_cpp_s)
+-  endif()
++#  if(NOT DEFINED FLANN_INCLUDE_DIR_HINTS)
++#    set(FLANN_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/flann/src/cpp)
++#    set(ALICEVISION_USE_INTERNAL_FLANN ON)
++#  endif()
++#  find_package(Flann QUIET)
++#  if(NOT FLANN_FOUND OR ALICEVISION_USE_INTERNAL_FLANN)
++#    set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/flann/src/cpp)
++#    set(FLANN_LIBRARY flann_cpp_s)
++#  endif()
++  set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY} ${CMAKE_MODULE_PATH})
++  find_package(Flann REQUIRED)
++  set(FLANN_LIBRARY ${Flann_LIBRARIES})
++  set(FLANN_INCLUDE_DIRS ${Flann_INCLUDE_DIR})
+ endif()
+ 
+ # ==============================================================================
+@@ -422,15 +430,20 @@ endif()
+ # - external if COINUTILS_INCLUDE_DIR_HINTS and a valid CoinUtils setup is found
+ # ==============================================================================
+ if(ALICEVISION_BUILD_SFM)
+-  if(NOT DEFINED COINUTILS_INCLUDE_DIR_HINTS)
+-    set(COINUTILS_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/CoinUtils/src/)
+-    set(ALICEVISION_USE_INTERNAL_COINUTILS ON)
+-  endif()
+-  find_package(CoinUtils QUIET)
+-  if(NOT COINUTILS_FOUND OR ALICEVISION_USE_INTERNAL_COINUTILS)
+-    set(COINUTILS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/CoinUtils/src/)
+-    set(COINUTILS_LIBRARY lib_CoinUtils)
+-  endif()
++  # if(NOT DEFINED COINUTILS_INCLUDE_DIR_HINTS)
++    # set(COINUTILS_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/CoinUtils/src/)
++    # set(ALICEVISION_USE_INTERNAL_COINUTILS ON)
++  # endif()
++  # find_package(CoinUtils QUIET)
++  # if(NOT COINUTILS_FOUND OR ALICEVISION_USE_INTERNAL_COINUTILS)
++    # set(COINUTILS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/CoinUtils/src/)
++    # set(COINUTILS_LIBRARY lib_CoinUtils)
++  # endif()
++  set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY} ${CMAKE_MODULE_PATH})
++  find_package(CoinUtils REQUIRED)
++  set(COINUTILS_LIBRARY ${coinutils_LIBRARIES})
++  set(COINUTILS_INCLUDE_DIRS ${coinutils_INCLUDE_DIRS})
++  add_definitions(-DHAVE_CONFIG_H)
+ endif()
+ 
+ ## ==============================================================================
+@@ -440,17 +453,21 @@ endif()
+ ## - external if CLP_INCLUDE_DIR_HINTS and a valid Clp setup is found
+ ## ==============================================================================
+ if(ALICEVISION_BUILD_SFM)
+-  if(NOT DEFINED CLP_INCLUDE_DIR_HINTS)
+-    set(CLP_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Clp/src/)
+-    set(ALICEVISION_USE_INTERNAL_CLP ON)
+-  endif()
+-  find_package(Clp QUIET)
+-  if(NOT CLP_FOUND OR ALICEVISION_USE_INTERNAL_CLP)
+-    set(CLP_INCLUDE_DIRS
+-       ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Clp/src/
+-       ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Clp/src/OsiClp/)
+-    set(CLP_LIBRARIES lib_clp lib_OsiClpSolver)
+-  endif()
++  # if(NOT DEFINED CLP_INCLUDE_DIR_HINTS)
++    # set(CLP_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Clp/src/)
++    # set(ALICEVISION_USE_INTERNAL_CLP ON)
++  # endif()
++  # find_package(Clp QUIET)
++  # if(NOT CLP_FOUND OR ALICEVISION_USE_INTERNAL_CLP)
++    # set(CLP_INCLUDE_DIRS
++       # ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Clp/src/
++       # ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Clp/src/OsiClp/)
++    # set(CLP_LIBRARIES lib_clp lib_OsiClpSolver)
++  # endif()
++  set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY} ${CMAKE_MODULE_PATH})
++  find_package(Clp REQUIRED)
++  set(CLP_LIBRARIES ${clp_LIBRARIES})
++  set(CLP_INCLUDE_DIRS ${clp_INCLUDE_DIRS})
+ endif()
+ 
+ # ==============================================================================
+@@ -460,15 +477,19 @@ endif()
+ # - external if OSI_INCLUDE_DIR_HINTS and a valid Osi setup is found
+ # ==============================================================================
+ if(ALICEVISION_BUILD_SFM)
+-  if(NOT DEFINED OSI_INCLUDE_DIR_HINTS)
+-    set(OSI_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Osi/src/)
+-    set(ALICEVISION_USE_INTERNAL_OSI ON)
+-  endif()
+-  find_package(Osi QUIET)
+-  if(NOT OSI_FOUND OR ALICEVISION_USE_INTERNAL_OSI)
+-    set(OSI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Osi/src/Osi/)
+-    set(OSI_LIBRARY lib_Osi)
+-  endif()
++  # if(NOT DEFINED OSI_INCLUDE_DIR_HINTS)
++    # set(OSI_INCLUDE_DIR_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Osi/src/)
++    # set(ALICEVISION_USE_INTERNAL_OSI ON)
++  # endif()
++  # find_package(Osi QUIET)
++  # if(NOT OSI_FOUND OR ALICEVISION_USE_INTERNAL_OSI)
++    # set(OSI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/osi_clp/Osi/src/Osi/)
++    # set(OSI_LIBRARY lib_Osi)
++  # endif()
++  set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY} ${CMAKE_MODULE_PATH})
++  find_package(Osi REQUIRED)
++  set(OSI_LIBRARY ${osi_LIBRARIES})
++  set(OSI_INCLUDE_DIRS ${osi_INCLUDE_DIRS})
+ endif()
+ 
+ # ==============================================================================
+@@ -600,7 +621,7 @@ set(ALICEVISION_HAVE_POPSIFT 0)
+ 
+ if(ALICEVISION_BUILD_SFM)
+   if(NOT ALICEVISION_USE_POPSIFT STREQUAL "OFF")
+-    find_package(PopSift CONFIG)
++    find_package(PopSift)
+ 
+     if(PopSift_FOUND)
+       set(ALICEVISION_HAVE_POPSIFT 1)
+@@ -620,7 +641,7 @@ set(ALICEVISION_HAVE_OPENGV 0)
+ 
+ if(ALICEVISION_BUILD_SFM)
+   if(NOT ALICEVISION_USE_OPENGV STREQUAL "OFF")
+-    find_package(opengv 1.0 CONFIG)
++    find_package(opengv 1.0)
+     if(opengv_FOUND)
+       set(ALICEVISION_HAVE_OPENGV 1)
+       message(STATUS "OpenGV ${opengv_VERSION} found.")
+@@ -667,7 +688,7 @@ endif()
+ # GEOGRAM
+ # ==============================================================================
+ if(ALICEVISION_BUILD_MVS)
+-  find_package(Geogram REQUIRED)
++  find_package(geogram REQUIRED)
+   message(STATUS "Geogram: ${GEOGRAM_LIBRARY}, ${GEOGRAM_INCLUDE_DIR}")
+ endif()
+ 
