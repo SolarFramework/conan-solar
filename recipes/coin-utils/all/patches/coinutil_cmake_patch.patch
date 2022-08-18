@@ -1,6 +1,6 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 00000000..bb97bb11
+index 00000000..8e76cd74
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,97 @@
@@ -61,14 +61,14 @@ index 00000000..bb97bb11
 +endif(APPLE)
 +
 +# ZLIB
-+if(NOT TARGET ZLIB::ZLIB)
-+  find_package(ZLIB)
-+endif()
-+if(ZLIB_FOUND OR TARGET ZLIB::ZLIB)
-+  message(STATUS "Use zlib")
-+  set(HAVE_ZLIB_H "1" CACHE INTERNAL "Use zlib")
-+  set(COIN_HAS_ZLIB "1" CACHE INTERNAL "Use zlib")
-+endif()
++# if(NOT TARGET ZLIB::ZLIB)
++  # find_package(ZLIB)
++# endif()
++# if(ZLIB_FOUND OR TARGET ZLIB::ZLIB)
++  # message(STATUS "Use zlib")
++  # set(HAVE_ZLIB_H "1" CACHE INTERNAL "Use zlib")
++  # set(COIN_HAS_ZLIB "1" CACHE INTERNAL "Use zlib")
++# endif()
 +
 +# PThread
 +set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -104,7 +104,7 @@ index 00000000..bb97bb11
 \ No newline at end of file
 diff --git a/CoinUtils/CMakeLists.txt b/CoinUtils/CMakeLists.txt
 new file mode 100644
-index 00000000..d00633d7
+index 00000000..0104e515
 --- /dev/null
 +++ b/CoinUtils/CMakeLists.txt
 @@ -0,0 +1,170 @@
@@ -257,9 +257,9 @@ index 00000000..d00633d7
 +else()
 +  target_compile_features(CoinUtils PUBLIC cxx_std_11)
 +endif()
-+if(TARGET ZLIB::ZLIB)
-+  target_link_libraries(CoinUtils PRIVATE	ZLIB::ZLIB)
-+endif()
++#if(TARGET ZLIB::ZLIB)
++#  target_link_libraries(CoinUtils PRIVATE	ZLIB::ZLIB)
++#endif()
 +if(CMAKE_USE_PTHREADS_INIT)
 +  target_link_libraries(CoinUtils PRIVATE	Threads::Threads)
 +endif()
