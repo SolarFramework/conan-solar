@@ -110,13 +110,13 @@ class AliceVisionConan(ConanFile):
         self.requires("flann/1.9.1@conan-solar/stable")
         self.requires("openexr/2.5.7")
         self.requires("openimageio/2.3.13.0@conan-solar/boost_1_76")
-        self.requires("geogram/1.7.7")
+        self.requires("geogram/1.7.7@conan-solar/stable")
         self.requires("zlib/1.2.12")
         if self.options.with_popsift :
             self.requires("popsift/1.0.0-rc3@conan-solar/stable")
         if self.options.with_opengv :
             self.requires("opengv/master")
-        self.requires("coin-utils/2.11.4")
-        self.requires("coin-osi/0.108.6")
-        self.requires("coin-clp/1.17.6")
+        self.requires("coin-utils/2.11.4@conan-solar/stable")
+        self.requires("coin-osi/0.108.6@conan-solar/stable")
+        self.requires("coin-clp/1.17.6@conan-solar/stable")
 

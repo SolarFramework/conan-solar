@@ -57,8 +57,8 @@ class CoinClpConan(ConanFile):
             # del self.options.fPIC
 
     def requirements(self):
-        self.requires("coin-utils/2.11.4")
-        self.requires("coin-osi/0.108.6")
+        self.requires("coin-utils/2.11.4@conan-solar/stable")
+        self.requires("coin-osi/0.108.6@conan-solar/stable")
 
     # def validate(self):
         # if self.settings.os == "Windows" and self.options.shared:

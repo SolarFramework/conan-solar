@@ -9,7 +9,7 @@ then conan recipe updated
 recipe has been patched for disable bind2nd (removed in cpp-std 17)
 
 # use
-conan create all 0.108.6@ -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=False
+conan create all 0.108.6@conan-solar/stable -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=False
 
 # TODO
 

@@ -7,7 +7,7 @@ build changed from autotools to CMake with https://github.com/coin-or/Clp/pull/1
 then conan recipe updated 
 
 # use
-conan create all 1.17.6@ -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=False
+conan create all 1.17.6@conan-solar/stable -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=False
 
 # TODO
 
