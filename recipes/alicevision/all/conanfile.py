@@ -52,18 +52,6 @@ class AliceVisionConan(ConanFile):
         arch = str(self.settings.arch)
         return tools.to_android_abi(arch)
 
-    def configure(self):
-        self.options['openimageio'].with_ffmpeg = False
-        self.options['openimageio'].with_freetype = False
-        self.options['openimageio'].with_giflib = False
-        self.options['openimageio'].with_hdf5 = False
-        self.options['openimageio'].with_libheif = False
-        self.options['openimageio'].with_libwebp = False
-        self.options['openimageio'].with_opencolorio = False
-        self.options['openimageio'].with_opencv = False
-        self.options['openimageio'].with_ptex = False
-        self.options['openimageio'].with_tbb = False
-
     def build(self):
 
         cmake = CMake(self)
