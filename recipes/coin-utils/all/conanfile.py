@@ -85,7 +85,7 @@ class CoinUtilsConan(ConanFile):
         
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
-        os.rename("coinutils-releases-{}".format(self.version), self._source_subfolder)
+        os.rename("CoinUtils-releases-{}".format(self.version), self._source_subfolder)
 
     # @contextlib.contextmanager
     # def _build_context(self):
