@@ -57,7 +57,7 @@ class CoinOsiConan(ConanFile):
             # del self.options.fPIC
 
     def requirements(self):
-        self.requires("coin-utils/2.11.4")
+        self.requires("coin-utils/2.11.4@conan-solar/stable")
 
     # def build_requirements(self):
         # self.build_requires("gnu-config/cci.20201022")

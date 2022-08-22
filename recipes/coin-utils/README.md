@@ -7,7 +7,7 @@ build changed from autotools to CMake with https://github.com/coin-or/CoinUtils/
 then conan recipe updated 
 
 # use
-conan create all 2.11.4@ -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=False
+conan create all 2.11.4@conan-solar/stable -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=False
 
 # TODO
 

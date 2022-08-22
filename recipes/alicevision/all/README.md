@@ -10,14 +10,14 @@ conan create all v2.4.0@ -tf None -s compiler.cppstd=14 -s build_type=Debug --bu
 conan create all v2.4.0@ -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o with_popsift=True -o popsift:shared=True -o with_opengv=True
 
 # command lines validate on Window
-conan create all v2.4.0@ -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o with_popsift=False -o popsift:shared=True -o with_opengv=True
-conan create all v2.4.0@ -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o with_popsift=True -o popsift:shared=True -o with_opengv=False
-conan create all v2.4.0@ -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o with_popsift=False -o popsift:shared=True -o with_opengv=False
-conan create all v2.4.0@ -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o with_popsift=True -o popsift:shared=True -o with_opengv=True
+conan create all v2.4.0@conan-solar/stable -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o boost:zlib=False -o boost:bzip2=False -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o openimageio:with_ffmpeg=False -o openimageio:with_freetype=False -o openimageio:with_giflib=False -o openimageio:with_hdf5=False -o openimageio:with_libheif=False -o openimageio:with_libwebp=False -o openimageio:with_opencolorio=False -o openimageio:with_opencv=False -o openimageio:with_ptex=False -o openimageio:with_tools=False -o with_popsift=False -o with_opengv=True
+conan create all v2.4.0@conan-solar/stable -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o boost:zlib=False -o boost:bzip2=False -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o openimageio:with_ffmpeg=False -o openimageio:with_freetype=False -o openimageio:with_giflib=False -o openimageio:with_hdf5=False -o openimageio:with_libheif=False -o openimageio:with_libwebp=False -o openimageio:with_opencolorio=False -o openimageio:with_opencv=False -o openimageio:with_ptex=False -o openimageio:with_tools=False -o with_popsift=True -o popsift:shared=True -o with_opengv=False
+conan create all v2.4.0@conan-solar/stable -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o boost:zlib=False -o boost:bzip2=False -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o openimageio:with_ffmpeg=False -o openimageio:with_freetype=False -o openimageio:with_giflib=False -o openimageio:with_hdf5=False -o openimageio:with_libheif=False -o openimageio:with_libwebp=False -o openimageio:with_opencolorio=False -o openimageio:with_opencv=False -o openimageio:with_ptex=False -o openimageio:with_tools=False -o with_popsift=False -o with_opengv=False
+conan create all v2.4.0@conan-solar/stable -tf None -s compiler.cppstd=14 -s build_type=Debug --build=missing -o shared=True -o with_cuda=True -o boost:shared=True -o boost:zlib=False -o boost:bzip2=False -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o openimageio:with_ffmpeg=False -o openimageio:with_freetype=False -o openimageio:with_giflib=False -o openimageio:with_hdf5=False -o openimageio:with_libheif=False -o openimageio:with_libwebp=False -o openimageio:with_opencolorio=False -o openimageio:with_opencv=False -o openimageio:with_ptex=False -o openimageio:with_tools=False -o with_popsift=True -o popsift:shared=True -o with_opengv=True
 
 
 # Test Cpp-std 17
-conan create all v2.4.0@ -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=True -o with_cuda=False -o boost:shared=True -o flann:shared=False -o ceres-solver:shared=True -o geogram:shared=True -o openimageio:shared=True -o with_popsift=False -o popsift:shared=True -o with_opengv=False -o openimageio:with_tbb=False
+conan create all v2.4.0@conan-solar/stable -tf None -s compiler.cppstd=17 -s build_type=Debug --build=missing -o shared=True -o with_cuda=False -o boost:shared=True -o boost:zlib=False -o boost:bzip2=False -o flann:shared=False -o ceres-solver:shared=True -o openimageio:shared=True -o openimageio:with_ffmpeg=False -o openimageio:with_freetype=False -o openimageio:with_giflib=False -o openimageio:with_hdf5=False  -o openimageio:with_libheif=False -o openimageio:with_libwebp=False -o openimageio:with_opencolorio=False -o openimageio:with_opencv=False -o openimageio:with_ptex=False -o openimageio:with_tools=False -o with_popsift=True -o popsift:shared=True -o geogram:shared=True -o with_opengv=False
 
 # changes and fix history :
 
@@ -25,14 +25,15 @@ conan create all v2.4.0@ -tf None -s compiler.cppstd=17 -s build_type=Debug --bu
 
 	- ```self.options['openimageio'].with_tbb = False``` :	 otherwise issue on build	
 	- ```cmake.definitions["ALICEVISION_BUILD_DOC"] = "OFF"``` : not mandatory (issue on build?)
+	- ```cmake.definitions["ALICEVISION_BUILD_SOFTWARE"] = "OFF"``` : not mandatory 
         
 	- add conan dependencies (then remove internal dependencies in CMakeLists) :
 	
-		```self.requires("coin-utils/2.11.4")```
+		```self.requires("coin-utils/2.11.4@conan-solar/stable")```
 
-        ```self.requires("coin-osi/0.108.6")```
+        ```self.requires("coin-osi/0.108.6@conan-solar/stable")```
 
-        ```self.requires("coin-clp/1.17.6")``` 
+        ```self.requires("coin-clp/1.17.6@conan-solar/stable")``` 
 
 - patches :
 	- alicevision-cmake-helpers.patch : part of old alicevision-cmake-search-ceres-flann-opengv-openimageio-popsift.patch for isolate Helpers.cmake changes
