@@ -72,12 +72,21 @@ class AliceVisionConan(ConanFile):
         cmake.definitions["AV_BUILD_POPSIFT"] = "ON" if self.options.with_popsift else "OFF"
         cmake.definitions["AV_BUILD_OPENGV"] = "ON" if self.options.with_opengv else "OFF"
         cmake.definitions["ALICEVISION_USE_CUDA"] = "ON" if self.options.with_cuda else "OFF"
+
+        # build issue (win and linux)
         cmake.definitions["ALICEVISION_BUILD_DOC"] = "OFF"
+
+        # not used and build issue on Linux !
+        cmake.definitions["ALICEVISION_BUILD_SOFTWARE"] = "OFF"
 
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
 
         cmake.configure(build_folder=self._build_subfolder)
+
+        # internal cpp compiler error on Linux!
+        if not tools.os_info.is_windows:
+            cmake.parallel = False
         cmake.build()
         cmake.install()
 
