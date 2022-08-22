@@ -61,7 +61,8 @@ class AliceVisionConan(ConanFile):
         cmake.definitions["AV_BUILD_OPENGV"] = "ON" if self.options.with_opengv else "OFF"
         cmake.definitions["ALICEVISION_USE_CUDA"] = "ON" if self.options.with_cuda else "OFF"
         cmake.definitions["ALICEVISION_BUILD_DOC"] = "OFF"
-
+        cmake.definitions["ALICEVISION_BUILD_SOFTWARE"] = "OFF"
+        
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = True
 
