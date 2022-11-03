@@ -112,11 +112,16 @@ class ColmapConan(ConanFile):
                                      os.path.join(self.package_folder,"include","colmap","lib")]
         self.cpp_info.libdirs = [os.path.join(self.package_folder,"lib","colmap")]
         
-        if self.options.with_cuda and self.settings.compiler == 'Visual Studio':
-            cuda_platform = {'x86': 'Win32',
-                             'x86_64': 'x64'}.get(str(self.settings.arch))
-            cuda_path = os.environ.get('CUDA_PATH')
-            self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib", cuda_platform))
+        if self.options.with_cuda:
+            if self.settings.os == 'Windows':
+                cuda_platform = {'x86': 'Win32',
+                                 'x86_64': 'x64'}.get(str(self.settings.arch))
+                cuda_path = os.environ.get('CUDA_PATH')
+                self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib", cuda_platform))
+            
+            if self.settings.os == 'Linux':
+                cuda_path = os.environ.get('CUDA_PATH')
+                self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib"))
                         
         self.cpp_info.libs = tools.collect_libs(self)
 
