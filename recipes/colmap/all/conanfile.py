@@ -118,10 +118,11 @@ class ColmapConan(ConanFile):
                                  'x86_64': 'x64'}.get(str(self.settings.arch))
                 cuda_path = os.environ.get('CUDA_PATH')
                 self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib", cuda_platform))
+                print ("-------------------- libdirs=", self.cpp_info.libdirs)
             
             if self.settings.os == 'Linux':
                 cuda_path = os.environ.get('CUDA_PATH')
-                self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib"))
+                self.cpp_info.libdirs.append(os.path.join(cuda_path, "lib64"))
                         
         self.cpp_info.libs = tools.collect_libs(self)
 
