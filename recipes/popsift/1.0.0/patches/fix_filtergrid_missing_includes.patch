@@ -1,0 +1,16 @@
+diff --git a/src/popsift/s_filtergrid.cu b/src/popsift/s_filtergrid.cu
+index 078eb11..a766c2d 100644
+--- a/src/popsift/s_filtergrid.cu
++++ b/src/popsift/s_filtergrid.cu
+@@ -19,8 +19,11 @@
+ #if ! POPSIFT_IS_DEFINED(POPSIFT_DISABLE_GRID_FILTER)
+ 
+ #include <thrust/copy.h>
++#include <thrust/count.h>
+ #include <thrust/device_vector.h>
+ #include <thrust/execution_policy.h>
++#include <thrust/host_vector.h>
++#include <thrust/iterator/constant_iterator.h>
+ #include <thrust/iterator/discard_iterator.h>
+ #include <thrust/sequence.h>
+ #include <thrust/sort.h>

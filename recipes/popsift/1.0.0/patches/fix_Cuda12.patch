@@ -1,0 +1,22 @@
+diff --git a/cmake/ChooseCudaCC.cmake b/cmake/ChooseCudaCC.cmake
+index 425e8bd..2302f77 100755
+--- a/cmake/ChooseCudaCC.cmake
++++ b/cmake/ChooseCudaCC.cmake
+@@ -79,9 +79,15 @@ function(chooseCudaCC SUPPORTED_CC SUPPORTED_GENCODE_FLAGS)
+   # Shortening the lists saves a lot of compile time.
+   #
+   set(CUDA_MIN_CC 20)
+-  set(CUDA_MAX_CC 86)
+-  if(CUDA_VERSION VERSION_GREATER_EQUAL 11.1)
++  set(CUDA_MAX_CC 90)
++  if(CUDA_VERSION_MAJOR GREATER_EQUAL 12)
++    set(CUDA_MIN_CC 50)
++  elseif(CUDA_VERSION VERSION_GREATER_EQUAL 11.8)
+     set(CUDA_MIN_CC 35)
++    set(CUDA_MAX_CC 89)
++  elseif(CUDA_VERSION VERSION_GREATER_EQUAL 11.1)
++    set(CUDA_MIN_CC 35)
++    set(CUDA_MAX_CC 86)
+   elseif(CUDA_VERSION_MAJOR GREATER_EQUAL 11)
+     set(CUDA_MIN_CC 35)
+     set(CUDA_MAX_CC 80)

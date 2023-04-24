@@ -1,18 +1,71 @@
-From 122e8268410d7546490357aa87d35aed7f6cbb18 Mon Sep 17 00:00:00 2001
+From 701d5012eb6199aeef9b455553c6ca041f36fb32 Mon Sep 17 00:00:00 2001
 From: "BCOM\\jroyan" <jerome.royan@b-com.com>
-Date: Tue, 4 May 2021 19:36:35 +0200
-Subject: [PATCH] Fix issue related to MSVC runtime library
+Date: Wed, 29 Mar 2023 11:43:31 +0200
+Subject: [PATCH] Fix runtime issue on MSVC
 
 ---
- CMakeLists.txt | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ CMakeLists.txt | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f39f2fe..772ac91 100755
+index 9735bc2..7e492ba 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -140,9 +140,10 @@ if(MSVC)
+@@ -17,6 +17,7 @@ option(PopSift_USE_NORMF "The __normf function computes Euclidean distance on la
+ option(PopSift_NVCC_WARNINGS "Switch on several additional warning for CUDA nvcc" OFF)
+ option(PopSift_USE_TEST_CMD "Add testing step for functional verification" OFF)
+ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
++option(BUILD_WITH_STATIC_CRT "Enables use of statically linked CRT for statically linked PopSift" OFF)
+ 
+ if(PopSift_USE_POSITION_INDEPENDENT_CODE AND NOT MSVC)
+   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+@@ -35,7 +36,7 @@ else()
+ endif()
+ 
+ # ensure the proper linker flags when building the static version on MSVC
+-if(MSVC AND NOT BUILD_SHARED_LIBS)
++if(MSVC AND NOT BUILD_SHARED_LIBS AND BUILD_WITH_STATIC_CRT)
+   foreach(config "DEBUG" "RELEASE" "MINSIZEREL" "RELWITHDEBINFO")
+     string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+     string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+@@ -51,9 +52,12 @@ endif()
+ # ==============================================================================
+ include(GNUInstallDirs)
+ 
+-
+-if(BUILD_SHARED_LIBS)
+-  message(STATUS "BUILD_SHARED_LIBS ON")
++if(NOT BUILD_SHARED_LIBS AND BUILD_WITH_STATIC_CRT)
++  message(STATUS "BUILD_SHARED_LIBS OFF with BUILD_WITH_STATIC_CRT ${BUILD_WITH_STATIC_CRT}")
++  option(CUDA_USE_STATIC_CUDA_RUNTIME "Use the static version of the CUDA runtime library if available" ON)
++  set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
++else()
++  message(STATUS "BUILD_SHARED_LIBS ON with BUILD_WITH_STATIC_CRT ${BUILD_WITH_STATIC_CRT}")
+   # Need to declare CUDA_USE_STATIC_CUDA_RUNTIME as an option to ensure that it is not overwritten in FindCUDA.
+   option(CUDA_USE_STATIC_CUDA_RUNTIME "Use the static version of the CUDA runtime library if available" OFF)
+   set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
+@@ -61,10 +65,6 @@ if(BUILD_SHARED_LIBS)
+   set(CUDA_cudart_static_LIBRARY 0)
+   # Auto-build dll exports on Windows
+   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+-else()
+-  message(STATUS "BUILD_SHARED_LIBS OFF")
+-  option(CUDA_USE_STATIC_CUDA_RUNTIME "Use the static version of the CUDA runtime library if available" ON)
+-  set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
+ endif()
+ 
+ # Require threads because of std::thread.
+@@ -129,15 +129,16 @@ endif()
+ # this is to ensure that on MSVC the flags for the linker are properly propagate even to the intermediate
+ # linking step. This seems not the case e.g. on vcpkg using ninja build.
+ if(MSVC)
+-  if(BUILD_SHARED_LIBS)
+-    set(PopSift_MVSC_LINKER "/MD")
+-  else()
++  if(NOT BUILD_SHARED_LIBS AND BUILD_WITH_STATIC_CRT)
      set(PopSift_MVSC_LINKER "/MT")
++  else()
++    set(PopSift_MVSC_LINKER "/MD")
    endif()
    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 -      set(PopSift_MVSC_LINKER "${PopSift_MVSC_LINKER}d")
@@ -24,6 +77,14 @@ index f39f2fe..772ac91 100755
  endif()
  
  # default stream per-thread implies that each host thread has one non-synchronizing 0-stream
+@@ -233,6 +234,7 @@ message("Building configuration:\n")
+ message(STATUS "PopSift version: " ${PROJECT_VERSION})
+ message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
+ message(STATUS "Build Shared libs: " ${BUILD_SHARED_LIBS})
++message(STATUS "Enables use of statically linked CRT: " ${BUILD_WITH_STATIC_CRT})
+ message(STATUS "Build examples: " ${PopSift_BUILD_EXAMPLES})
+ message(STATUS "Build documentation: " ${PopSift_BUILD_DOCS})
+ message(STATUS "Generate position independent code: " ${CMAKE_POSITION_INDEPENDENT_CODE})
 -- 
 2.29.2.windows.2
 

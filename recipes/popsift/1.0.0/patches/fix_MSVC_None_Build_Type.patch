@@ -1,0 +1,74 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7e492ba..7c491ef 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -16,15 +16,20 @@ option(PopSift_USE_GRID_FILTER "Switch off grid filtering to massively reduce co
+ option(PopSift_USE_NORMF "The __normf function computes Euclidean distance on large arrays. Fast but stability is uncertain." OFF)
+ option(PopSift_NVCC_WARNINGS "Switch on several additional warning for CUDA nvcc" OFF)
+ option(PopSift_USE_TEST_CMD "Add testing step for functional verification" OFF)
++option(PopSift_NO_DEPRECATED_CUDA_SM_WARNINGS "Suppress warnings about soon to be deprecated cuda SM" ON)
+ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+ option(BUILD_WITH_STATIC_CRT "Enables use of statically linked CRT for statically linked PopSift" OFF)
+ 
++message(STATUS "Build type 0: " ${CMAKE_BUILD_TYPE})
++
+ if(PopSift_USE_POSITION_INDEPENDENT_CODE AND NOT MSVC)
+   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ endif()
+ 
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+ 
++message(STATUS "Build type 1: " ${CMAKE_BUILD_TYPE})
++
+ # set(CMAKE_BUILD_TYPE Debug)
+ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+   set(CMAKE_BUILD_TYPE Release)
+@@ -105,6 +110,10 @@ endif()
+ 
+ set(CUDA_SEPARABLE_COMPILATION ON)
+ 
++if(PopSift_NO_DEPRECATED_CUDA_SM_WARNINGS)
++  list(APPEND CUDA_NVCC_FLAGS "-Wno-deprecated-gpu-targets")
++endif()
++
+ if(UNIX AND NOT APPLE)
+   list(APPEND CUDA_NVCC_FLAGS         "-Xcompiler;-rdynamic")
+   # set(CUDA_NVCC_FLAGS       "${CUDA_NVCC_FLAGS};-Xptxas;-v")
+@@ -116,10 +125,8 @@ endif()
+ # The following if should not be necessary, but apparently there is a bug in FindCUDA.cmake that
+ # generate an empty string in the nvcc command line causing the compilation to fail.
+ # see https://gitlab.kitware.com/cmake/cmake/issues/16411
+-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+-  message(STATUS "Building in debug mode")
+-  list(APPEND CUDA_NVCC_FLAGS_DEBUG   "-G")
+-endif()
++
++list(APPEND CUDA_NVCC_FLAGS_DEBUG   "-G")
+ list(APPEND CUDA_NVCC_FLAGS_RELEASE "-O3")
+ 
+ if(PopSift_USE_POSITION_INDEPENDENT_CODE AND NOT MSVC)
+@@ -134,11 +141,8 @@ if(MSVC)
+   else()
+     set(PopSift_MVSC_LINKER "/MD")
+   endif()
+-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+-    list(APPEND CUDA_NVCC_FLAGS_DEBUG   -Xcompiler ${PopSift_MVSC_LINKER}d)
+-  else()
+-    list(APPEND CUDA_NVCC_FLAGS_RELEASE   -Xcompiler ${PopSift_MVSC_LINKER})
+-  endif()
++  list(APPEND CUDA_NVCC_FLAGS_DEBUG   -Xcompiler ${PopSift_MVSC_LINKER}d)
++  list(APPEND CUDA_NVCC_FLAGS_RELEASE   -Xcompiler ${PopSift_MVSC_LINKER})
+ endif()
+ 
+ # default stream per-thread implies that each host thread has one non-synchronizing 0-stream
+@@ -155,6 +159,10 @@ if(CUDA_VERSION VERSION_GREATER_EQUAL "7.5")
+   endif()
+ endif()
+ 
++message(STATUS "CUDA_NVCC_FLAGS : ${CUDA_NVCC_FLAGS}")
++message(STATUS "CUDA_NVCC_FLAGS_RELEASE : ${CUDA_NVCC_FLAGS_RELEASE}")
++message(STATUS "CUDA_NVCC_FLAGS_DEBUG : ${CUDA_NVCC_FLAGS_DEBUG}")
++
+ set(PopSift_CXX_STANDARD 14) # Thrust/CUB requires C++14 starting with CUDA SDK 11
+ if(CUDA_VERSION_MAJOR LESS_EQUAL 8)
+   set(PopSift_CXX_STANDARD 11)

@@ -4,7 +4,15 @@ sources:
       sha256: 4EA6DF4A85133F78540DBFBF3AB7A1F583831E4D4F68CDBA2002E8D26C060D95
 patches:
   "1.0.0-rc3":
-    - patch_file: "patches/suppress_deprecated_cuda_sm_warnings.patch"
-      base_path: "source_subfolder"
     - patch_file: "patches/fix_MSVC_runtime_library_bug.patch"
-      base_path: "source_subfolder"      
+      patch_description: "Fix issue with runtime library with msvc"
+      patch_type: "conan"
+    - patch_file: "patches/fix_filtergrid_missing_includes.patch"
+      patch_description: "Fix missing includes for filtergrid"
+      patch_type: "conan"
+    - patch_file: "patches/fix_Cuda12.patch"
+      patch_description: "Fix for Cuda 12"
+      patch_type: "conan"
+    - patch_file: "patches/fix_MSVC_None_Build_Type.patch"
+      patch_description: "Fix issue with MSVC where CMAKE_BUILD_TYPE equals None"
+      patch_type: "conan"
