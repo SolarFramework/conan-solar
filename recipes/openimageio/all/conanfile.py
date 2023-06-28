@@ -94,7 +94,7 @@ class OpenImageIOConan(ConanFile):
     def requirements(self):
         # Required libraries
         self.requires("zlib/1.2.13")
-        self.requires("boost/1.78.0")
+        self.requires("boost/1.76.0")
         self.requires("libtiff/4.4.0")
         self.requires("openexr/3.1.5")
         if self.options.with_libjpeg == "libjpeg":
@@ -125,7 +125,7 @@ class OpenImageIOConan(ConanFile):
         if self.options.with_dicom:
             self.requires("dcmtk/3.6.6")
         if self.options.with_ffmpeg:
-            self.requires("ffmpeg/5.1")
+            self.requires("ffmpeg/4.4")
         # TODO: Field3D dependency
         if self.options.with_giflib:
             self.requires("giflib/5.2.1")
