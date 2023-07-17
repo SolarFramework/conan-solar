@@ -1,0 +1,12 @@
+sources:
+  "20230223":
+    - url: "https://github.com/RainerKuemmerle/g2o/archive/refs/tags/20230223_git.tar.gz"
+      sha256: "C8CF002F636CE2E83FC96F5E8257BE4020CF1AE9F6A9D71838EC024F4D8A16CF"
+  "20200410":
+    - url: "https://github.com/RainerKuemmerle/g2o/archive/refs/tags/20200410_git.tar.gz"
+      sha256: "B79EB1407AE7F2A9E6A002BB4B41D65402C185855DB41A9EF4A6E3B42ABAEC4C"
+patches:
+  "20230223":
+    - patch_file: "patches/fix_std_min_max_msvc.patch"
+      patch_description: "add algorithm.h to fix std::min / max issue on MSVC"
+      patch_type: "conan"
