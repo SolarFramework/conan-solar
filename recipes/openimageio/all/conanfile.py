@@ -94,13 +94,13 @@ class OpenImageIOConan(ConanFile):
     def requirements(self):
         # Required libraries
         self.requires("zlib/1.2.13")
-        self.requires("boost/1.76.0")
-        self.requires("libtiff/4.4.0")
-        self.requires("openexr/3.1.5")
+        self.requires("boost/1.78.0")
+        self.requires("libtiff/4.5.1")
+        self.requires("openexr/3.1.7")
         if self.options.with_libjpeg == "libjpeg":
             self.requires("libjpeg/9e")
         elif self.options.with_libjpeg == "libjpeg-turbo":
-            self.requires("libjpeg-turbo/2.1.4")
+            self.requires("libjpeg-turbo/2.1.5")
         self.requires("pugixml/1.12.1")
         self.requires("libsquish/1.15")
         self.requires("tsl-robin-map/1.0.1")
@@ -108,9 +108,9 @@ class OpenImageIOConan(ConanFile):
 
         # Optional libraries
         if self.options.with_libpng:
-            self.requires("libpng/1.6.39")
+            self.requires("libpng/1.6.40")
         if self.options.with_freetype:
-            self.requires("freetype/2.12.1")
+            self.requires("freetype/2.13.0")
         if self.options.with_hdf5:
             self.requires("hdf5/1.12.1")
         if self.options.with_opencolorio:
@@ -119,13 +119,13 @@ class OpenImageIOConan(ConanFile):
             else:
                 self.requires("opencolorio/2.1.0")
         if self.options.with_opencv:
-            self.requires("opencv/4.5.5")
+            self.requires("opencv/4.7.0")
         if self.options.with_tbb:
             self.requires("onetbb/2021.7.0")
         if self.options.with_dicom:
             self.requires("dcmtk/3.6.6")
         if self.options.with_ffmpeg:
-            self.requires("ffmpeg/4.4")
+            self.requires("ffmpeg/5.1")
         # TODO: Field3D dependency
         if self.options.with_giflib:
             self.requires("giflib/5.2.1")
@@ -140,7 +140,7 @@ class OpenImageIOConan(ConanFile):
         if self.options.with_ptex:
             self.requires("ptex/2.4.0")
         if self.options.with_libwebp:
-            self.requires("libwebp/1.2.4")
+            self.requires("libwebp/1.3.1")
         # TODO: R3DSDK dependency
         # TODO: Nuke dependency
 
