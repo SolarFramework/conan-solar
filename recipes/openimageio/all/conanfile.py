@@ -90,7 +90,7 @@ class OpenImageIOConan(ConanFile):
         self.requires("zlib/1.2.13")
         self.requires("boost/1.78.0")
         self.requires("libtiff/4.5.1")
-        self.requires("openexr/2.5.7")
+        self.requires("openexr/3.1.7")
         if self.options.with_libjpeg == "libjpeg":
             self.requires("libjpeg/9e")
         elif self.options.with_libjpeg == "libjpeg-turbo":
@@ -113,13 +113,13 @@ class OpenImageIOConan(ConanFile):
             else:
                 self.requires("opencolorio/2.1.0")
         if self.options.with_opencv:
-            self.requires("opencv/4.5.5")
+            self.requires("opencv/4.7.0")
         if self.options.with_tbb:
             self.requires("onetbb/2021.7.0")
         if self.options.with_dicom:
             self.requires("dcmtk/3.6.6")
         if self.options.with_ffmpeg:
-            self.requires("ffmpeg/4.4")
+            self.requires("ffmpeg/5.1")
         # TODO: Field3D dependency
         if self.options.with_giflib:
             self.requires("giflib/5.2.1")
