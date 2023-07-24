@@ -77,9 +77,29 @@ class CubaConan(ConanFile):
         tc.variables["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.get_safe("fPIC", True)
         if self.options.cuda_arch_bin:
             tc.variables["CUDA_ARCH"] = self.options.cuda_arch_bin
-        
+
         if is_msvc(self):
-            tc.variables["BUILD_WITH_STATIC_CRT"] = is_msvc_static_runtime(self)
+            # set runtimes.
+            if is_msvc_static_runtime(self):
+                self.output.info("static runtime, cuba build will use flag /MT (or /MTd in debug mode)")
+                tc.variables["CUDA_NVCC_RELEASE"] = "/MT;-O3"
+                tc.variables["CUDA_NVCC_DEBUG"] = "/MTd;-O0; -G"
+                tc.variables["CUDA_NVCC_MINSIZEREL"] = "/MT; -Os"
+                tc.variables["CUDA_NVCC_RELWITHDEBINFO"] = "/MT;-O2;-G"
+                tc.variables["CMAKE_CXX_FLAGS_RELEASE"] = "/MT"
+                tc.variables["CMAKE_CXX_FLAGS_DEBUG"] = "/MTd"
+                tc.variables["CMAKE_CXX_FLAGS_MINSIZEREL"] = "/MT"
+                tc.variables["CMAKE_CXX_FLAGS_RELWITHDEBINFO"] = "/MT"
+            else:
+                self.output.info("dynamic runtime, cuba build will use flag /MD (or /MDd in debug mode)")
+                tc.variables["CUDA_NVCC_RELEASE"] = "/MD;-O3"
+                tc.variables["CUDA_NVCC_DEBUG"] = "/MDd;-O0; -G"
+                tc.variables["CUDA_NVCC_MINSIZEREL"] = "/MD; -Os"
+                tc.variables["CUDA_NVCC_RELWITHDEBINFO"] = "/MD;-O2;-G"
+                tc.variables["CMAKE_CXX_FLAGS_RELEASE"] = "/MD"
+                tc.variables["CMAKE_CXX_FLAGS_DEBUG"] = "/MDd"
+                tc.variables["CMAKE_CXX_FLAGS_MINSIZEREL"] = "/MD"
+                tc.variables["CMAKE_CXX_FLAGS_RELWITHDEBINFO"] = "/MD"
         
         tc.generate()
         
