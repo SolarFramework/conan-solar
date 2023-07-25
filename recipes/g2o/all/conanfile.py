@@ -93,6 +93,8 @@ class g2oConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = collect_libs(self)
+        # add pre-compiled definition to use Ceres provided in g2o/EXTERNAL/ceres
+        self.cpp_info.defines = ["G2O_USE_VENDORED_CERES=1"]
 
     def package(self):
         copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
