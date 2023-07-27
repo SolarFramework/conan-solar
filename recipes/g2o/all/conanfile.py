@@ -57,7 +57,7 @@ class g2oConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        self.requires("eigen/3.3.9@")
+        self.requires("eigen/3.4.0@")
 
     def validate(self):
         if self.options.shared and is_msvc(self) and is_msvc_static_runtime(self):
@@ -93,6 +93,8 @@ class g2oConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = collect_libs(self)
+        # add pre-compiled definition to use Ceres provided in g2o/EXTERNAL/ceres
+        self.cpp_info.defines = ["G2O_USE_VENDORED_CERES=1"]
 
     def package(self):
         copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
