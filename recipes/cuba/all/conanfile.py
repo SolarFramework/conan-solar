@@ -74,7 +74,9 @@ class CubaConan(ConanFile):
         tc.variables["WITH_G2O"] = 'OFF'
         tc.variables["ENABLE_SAMPLES"] = 'OFF'
         tc.variables["USE_FLOAT32"] = self.options.float32
-        tc.variables["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.get_safe("fPIC", True)
+        
+        tc.variables["CUDA_NVCC_FLAGS"] = "--expt-relaxed-constexpr"
+
         if self.options.cuda_arch_bin:
             tc.variables["CUDA_ARCH"] = self.options.cuda_arch_bin
 
@@ -100,6 +102,8 @@ class CubaConan(ConanFile):
                 tc.variables["CMAKE_CXX_FLAGS_DEBUG"] = "/MDd"
                 tc.variables["CMAKE_CXX_FLAGS_MINSIZEREL"] = "/MD"
                 tc.variables["CMAKE_CXX_FLAGS_RELWITHDEBINFO"] = "/MD"
+        elif self.options.fPIC:
+            tc.variables["CUDA_NVCC_FLAGS"] += " --compiler-options -fPIC"
         
         tc.generate()
         
