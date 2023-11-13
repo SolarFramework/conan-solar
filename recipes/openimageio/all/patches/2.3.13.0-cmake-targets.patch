@@ -1,35 +1,5 @@
-From 26b44089024e599763531588ae0c88534c4d3d2c Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?J=C3=A9rome=20ROYAN?= <jroyan@b-com.local>
-Date: Thu, 24 Mar 2022 16:30:33 +0100
-Subject: [PATCH] update for conan recipe
-
----
- CMakeLists.txt                      |   4 +-
- src/cmake/compiler.cmake            |   2 +-
- src/cmake/externalpackages.cmake    | 126 +++++++++++++++++-----------
- src/dds.imageio/CMakeLists.txt      |   6 +-
- src/dicom.imageio/CMakeLists.txt    |   4 +-
- src/ffmpeg.imageio/CMakeLists.txt   |  10 +--
- src/gif.imageio/CMakeLists.txt      |   4 +-
- src/heif.imageio/CMakeLists.txt     |   5 +-
- src/igrep/CMakeLists.txt            |   2 +-
- src/iinfo/CMakeLists.txt            |   2 +-
- src/include/CMakeLists.txt          |   3 +
- src/jpeg.imageio/CMakeLists.txt     |   4 +-
- src/jpeg2000.imageio/CMakeLists.txt |   6 +-
- src/libOpenImageIO/CMakeLists.txt   |  37 ++++----
- src/libutil/CMakeLists.txt          |  16 ++--
- src/oiiotool/CMakeLists.txt         |   8 +-
- src/openexr.imageio/CMakeLists.txt  |   6 +-
- src/openvdb.imageio/CMakeLists.txt  |   7 +-
- src/ptex.imageio/CMakeLists.txt     |   4 +-
- src/raw.imageio/CMakeLists.txt      |   6 +-
- src/tiff.imageio/CMakeLists.txt     |   4 +-
- src/webp.imageio/CMakeLists.txt     |   3 +-
- 22 files changed, 151 insertions(+), 118 deletions(-)
-
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 676a7936..e675834e 100644
+index 676a79360..e675834e5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -119,7 +119,7 @@ message(STATUS "Setting Namespace to: ${PROJ_NAMESPACE_V}")
@@ -51,7 +21,7 @@ index 676a7936..e675834e 100644
  endif ()
  
 diff --git a/src/cmake/compiler.cmake b/src/cmake/compiler.cmake
-index 185a3fb7..189d5d4a 100644
+index 185a3fb74..189d5d4a2 100644
 --- a/src/cmake/compiler.cmake
 +++ b/src/cmake/compiler.cmake
 @@ -92,7 +92,7 @@ if (NOT MSVC)
@@ -64,7 +34,7 @@ index 185a3fb7..189d5d4a 100644
          # been switched off by default, which we may do in release
          # branches.
 diff --git a/src/cmake/externalpackages.cmake b/src/cmake/externalpackages.cmake
-index 83a1773f..c8a952ca 100644
+index 83a1773f6..c426120d0 100644
 --- a/src/cmake/externalpackages.cmake
 +++ b/src/cmake/externalpackages.cmake
 @@ -46,7 +46,7 @@ endif ()
@@ -349,8 +319,14 @@ index 83a1773f..c8a952ca 100644
          message (STATUS "Downloading local fmtlib/fmt")
          set (FMT_INSTALL_DIR "${PROJECT_SOURCE_DIR}/ext/fmt")
          set (FMT_GIT_REPOSITORY "https://github.com/fmtlib/fmt")
+@@ -354,4 +384,4 @@ macro (find_or_download_fmt)
+ endmacro()
+ 
+ find_or_download_fmt()
+-include_directories (${FMT_INCLUDES})
++include_directories (${fmt_INCLUDE_DIRS})
 diff --git a/src/dds.imageio/CMakeLists.txt b/src/dds.imageio/CMakeLists.txt
-index f98e447f..b69ec696 100644
+index f98e447fb..b69ec696e 100644
 --- a/src/dds.imageio/CMakeLists.txt
 +++ b/src/dds.imageio/CMakeLists.txt
 @@ -2,11 +2,11 @@
@@ -369,7 +345,7 @@ index f98e447f..b69ec696 100644
  else ()
      # No external libsquish was found -- use the embedded version.
 diff --git a/src/dicom.imageio/CMakeLists.txt b/src/dicom.imageio/CMakeLists.txt
-index b62024ee..390594e1 100644
+index b62024eea..390594e19 100644
 --- a/src/dicom.imageio/CMakeLists.txt
 +++ b/src/dicom.imageio/CMakeLists.txt
 @@ -4,8 +4,8 @@
@@ -384,7 +360,7 @@ index b62024ee..390594e1 100644
  else ()
      message (WARNING "DICOM plugin will not be built, no DCMTK")
 diff --git a/src/ffmpeg.imageio/CMakeLists.txt b/src/ffmpeg.imageio/CMakeLists.txt
-index 58402060..86716acd 100644
+index 58402060e..86716acdc 100644
 --- a/src/ffmpeg.imageio/CMakeLists.txt
 +++ b/src/ffmpeg.imageio/CMakeLists.txt
 @@ -2,13 +2,13 @@
@@ -407,7 +383,7 @@ index 58402060..86716acd 100644
      message (STATUS "FFmpeg not found: ffmpeg plugin will not be built")
  endif()
 diff --git a/src/gif.imageio/CMakeLists.txt b/src/gif.imageio/CMakeLists.txt
-index 292a8aba..63216150 100644
+index 292a8aba1..63216150d 100644
 --- a/src/gif.imageio/CMakeLists.txt
 +++ b/src/gif.imageio/CMakeLists.txt
 @@ -4,8 +4,8 @@
@@ -422,7 +398,7 @@ index 292a8aba..63216150 100644
  else()
      message (WARNING "GIF plugin will not be built")
 diff --git a/src/heif.imageio/CMakeLists.txt b/src/heif.imageio/CMakeLists.txt
-index ece763a2..accb9ba8 100644
+index ece763a27..accb9ba8a 100644
 --- a/src/heif.imageio/CMakeLists.txt
 +++ b/src/heif.imageio/CMakeLists.txt
 @@ -2,10 +2,9 @@
@@ -439,7 +415,7 @@ index ece763a2..accb9ba8 100644
  else ()
      message (WARNING "heif plugin will not be built")
 diff --git a/src/igrep/CMakeLists.txt b/src/igrep/CMakeLists.txt
-index 2b0311c3..434fcc41 100644
+index 2b0311c32..434fcc41b 100644
 --- a/src/igrep/CMakeLists.txt
 +++ b/src/igrep/CMakeLists.txt
 @@ -3,5 +3,5 @@
@@ -450,7 +426,7 @@ index 2b0311c3..434fcc41 100644
 +                                     #${Boost_LIBRARIES} # because regex
                        )
 diff --git a/src/iinfo/CMakeLists.txt b/src/iinfo/CMakeLists.txt
-index 2b0311c3..434fcc41 100644
+index 2b0311c32..434fcc41b 100644
 --- a/src/iinfo/CMakeLists.txt
 +++ b/src/iinfo/CMakeLists.txt
 @@ -3,5 +3,5 @@
@@ -461,7 +437,7 @@ index 2b0311c3..434fcc41 100644
 +                                     #${Boost_LIBRARIES} # because regex
                        )
 diff --git a/src/include/CMakeLists.txt b/src/include/CMakeLists.txt
-index 3fe63bb8..73f50214 100644
+index 3fe63bb83..73f50214c 100644
 --- a/src/include/CMakeLists.txt
 +++ b/src/include/CMakeLists.txt
 @@ -56,17 +56,20 @@ install (FILES ${detail_headers}
@@ -485,8 +461,25 @@ index 3fe63bb8..73f50214 100644
  
  if (NOT USE_EXTERNAL_PUGIXML)
      set (pugixml_headers
+diff --git a/src/include/OpenImageIO/detail/fmt.h b/src/include/OpenImageIO/detail/fmt.h
+index 12ecd2ca1..8877d75cd 100644
+--- a/src/include/OpenImageIO/detail/fmt.h
++++ b/src/include/OpenImageIO/detail/fmt.h
+@@ -34,9 +34,9 @@
+ #    pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+ #endif
+ 
+-#include <OpenImageIO/detail/fmt/format.h>
+-#include <OpenImageIO/detail/fmt/ostream.h>
+-#include <OpenImageIO/detail/fmt/printf.h>
++#include <fmt/format.h>
++#include <fmt/ostream.h>
++#include <fmt/printf.h>
+ 
+ #if OIIO_GNUC_VERSION >= 70000
+ #    pragma GCC diagnostic pop
 diff --git a/src/jpeg.imageio/CMakeLists.txt b/src/jpeg.imageio/CMakeLists.txt
-index c3289d9e..e27b227c 100644
+index c3289d9ee..e27b227c5 100644
 --- a/src/jpeg.imageio/CMakeLists.txt
 +++ b/src/jpeg.imageio/CMakeLists.txt
 @@ -3,5 +3,5 @@
@@ -498,7 +491,7 @@ index c3289d9e..e27b227c 100644
 +                 # INCLUDE_DIRS ${JPEG_INCLUDE_DIRS}
 +                 LINK_LIBRARIES JPEG::JPEG)
 diff --git a/src/jpeg2000.imageio/CMakeLists.txt b/src/jpeg2000.imageio/CMakeLists.txt
-index 1f47269b..b88de4e2 100644
+index 1f47269bf..b88de4e28 100644
 --- a/src/jpeg2000.imageio/CMakeLists.txt
 +++ b/src/jpeg2000.imageio/CMakeLists.txt
 @@ -2,10 +2,10 @@
@@ -516,7 +509,7 @@ index 1f47269b..b88de4e2 100644
  else()
      message (WARNING "Jpeg-2000 plugin will not be built")
 diff --git a/src/libOpenImageIO/CMakeLists.txt b/src/libOpenImageIO/CMakeLists.txt
-index 312ae44c..d618f1d2 100644
+index 312ae44c5..d618f1d2d 100644
 --- a/src/libOpenImageIO/CMakeLists.txt
 +++ b/src/libOpenImageIO/CMakeLists.txt
 @@ -125,37 +125,42 @@ target_link_libraries (OpenImageIO
@@ -579,7 +572,7 @@ index 312ae44c..d618f1d2 100644
  
  if (WIN32)
 diff --git a/src/libutil/CMakeLists.txt b/src/libutil/CMakeLists.txt
-index 15ea5aa6..6499448f 100644
+index 15ea5aa67..6499448f5 100644
 --- a/src/libutil/CMakeLists.txt
 +++ b/src/libutil/CMakeLists.txt
 @@ -14,19 +14,19 @@ target_include_directories (OpenImageIO_Util
@@ -611,7 +604,7 @@ index 15ea5aa6..6499448f 100644
          )
  
 diff --git a/src/oiiotool/CMakeLists.txt b/src/oiiotool/CMakeLists.txt
-index 39f7fd1a..a491deb0 100644
+index 39f7fd1a2..a491deb06 100644
 --- a/src/oiiotool/CMakeLists.txt
 +++ b/src/oiiotool/CMakeLists.txt
 @@ -4,8 +4,8 @@
@@ -628,7 +621,7 @@ index 39f7fd1a..a491deb0 100644
 +                        OpenEXR::OpenEXR
                        )
 diff --git a/src/openexr.imageio/CMakeLists.txt b/src/openexr.imageio/CMakeLists.txt
-index a508ba4c..7f0d9261 100644
+index a508ba4ca..b38fb686a 100644
 --- a/src/openexr.imageio/CMakeLists.txt
 +++ b/src/openexr.imageio/CMakeLists.txt
 @@ -11,8 +11,8 @@ if (OIIO_USE_EXR_C_API AND TARGET OpenEXR::OpenEXRCore)
@@ -644,7 +637,7 @@ index a508ba4c..7f0d9261 100644
      DEFINITIONS ${openexr_defs}
      )
 diff --git a/src/openvdb.imageio/CMakeLists.txt b/src/openvdb.imageio/CMakeLists.txt
-index 18f05019..11607bcb 100644
+index 18f050191..11607bcb6 100644
 --- a/src/openvdb.imageio/CMakeLists.txt
 +++ b/src/openvdb.imageio/CMakeLists.txt
 @@ -2,11 +2,8 @@
@@ -662,7 +655,7 @@ index 18f05019..11607bcb 100644
 +                     LINK_LIBRARIES OpenVDB::OpenVDB TBB::TBB)
  endif()
 diff --git a/src/ptex.imageio/CMakeLists.txt b/src/ptex.imageio/CMakeLists.txt
-index d7f0a958..cde60237 100644
+index d7f0a9582..cde60237b 100644
 --- a/src/ptex.imageio/CMakeLists.txt
 +++ b/src/ptex.imageio/CMakeLists.txt
 @@ -2,8 +2,8 @@
@@ -677,7 +670,7 @@ index d7f0a958..cde60237 100644
                       DEFINITIONS "-DUSE_PTEX")
  endif ()
 diff --git a/src/raw.imageio/CMakeLists.txt b/src/raw.imageio/CMakeLists.txt
-index 9301dd6f..290e0fb5 100644
+index 9301dd6f8..290e0fb59 100644
 --- a/src/raw.imageio/CMakeLists.txt
 +++ b/src/raw.imageio/CMakeLists.txt
 @@ -4,9 +4,9 @@
@@ -694,7 +687,7 @@ index 9301dd6f..290e0fb5 100644
      message (WARNING "Raw plugin will not be built")
  endif ()
 diff --git a/src/tiff.imageio/CMakeLists.txt b/src/tiff.imageio/CMakeLists.txt
-index 912a32df..fb366ed4 100644
+index 912a32df7..fb366ed48 100644
 --- a/src/tiff.imageio/CMakeLists.txt
 +++ b/src/tiff.imageio/CMakeLists.txt
 @@ -3,6 +3,6 @@
@@ -707,7 +700,7 @@ index 912a32df..fb366ed4 100644
 +                 LINK_LIBRARIES TIFF::TIFF JPEG::JPEG
                                  ZLIB::ZLIB)
 diff --git a/src/webp.imageio/CMakeLists.txt b/src/webp.imageio/CMakeLists.txt
-index 4fbaeb02..d800a0e6 100644
+index 4fbaeb02f..d800a0e67 100644
 --- a/src/webp.imageio/CMakeLists.txt
 +++ b/src/webp.imageio/CMakeLists.txt
 @@ -4,8 +4,7 @@
@@ -720,23 +713,3 @@ index 4fbaeb02..d800a0e6 100644
                       DEFINITIONS "-DUSE_WEBP=1")
  else ()
      message (STATUS "WebP plugin will not be built")
-diff --git a/src/include/OpenImageIO/detail/fmt.h b/src/include/OpenImageIO/detail/fmt.h
-index 12ecd2ca..8877d75c 100644
---- a/src/include/OpenImageIO/detail/fmt.h
-+++ b/src/include/OpenImageIO/detail/fmt.h
-@@ -34,9 +34,9 @@
- #    pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
- #endif
- 
--#include <OpenImageIO/detail/fmt/format.h>
--#include <OpenImageIO/detail/fmt/ostream.h>
--#include <OpenImageIO/detail/fmt/printf.h>
-+#include <fmt/format.h>
-+#include <fmt/ostream.h>
-+#include <fmt/printf.h>
- 
- #if OIIO_GNUC_VERSION >= 70000
- #    pragma GCC diagnostic pop
--- 
-2.29.2.windows.2
-
