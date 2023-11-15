@@ -7,3 +7,6 @@ patches:
     - patch_file: "patches/2.0.0_addGainThreshold.patch"
       patch_description: "Add a gain threshold to the optimization"
       patch_type: "conan"
+    - patch_file: "patches/2.0.0_configureCudaArch.patch"
+      patch_description: "Allow to set the targeted CUDA Architecture"
+      patch_type: "conan"
