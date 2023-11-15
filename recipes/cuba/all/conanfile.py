@@ -28,7 +28,7 @@ class CubaConan(ConanFile):
         "shared": False,
         "fPIC": True,
         "float32": False,
-        "cuda_arch_bin": None,
+        "cuda_arch_bin": "Auto",
     }
 
     short_paths = True
