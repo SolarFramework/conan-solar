@@ -53,7 +53,7 @@ class CubaConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        self.requires("eigen/3.3.9", transitive_headers=True)
+        self.requires("eigen/3.4.0", transitive_headers=True)
 
     def validate(self):
         if self.options.shared and is_msvc(self) and is_msvc_static_runtime(self):
