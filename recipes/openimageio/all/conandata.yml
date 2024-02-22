@@ -13,7 +13,7 @@ sources:
     sha256: "78F5754F1A9EB8215D66CA62A2963B87FC2B91465CB181DFC4EF73CA3ED76ADB"
   "2.4.7.1":
     url: "https://github.com/OpenImageIO/oiio/archive/refs/tags/v2.4.7.1.tar.gz"
-    sha256: "fd298f71e44c6776863db4b37c4a1388dba0d2eb37378afea95ab07a7cd6ecd4"
+    sha256: "a3dc6fdb3693eb5f1e22191e41c05800a4944f3c76daffe90bd203f956180126"
 patches:
   "2.2.7.0":
     - patch_file: "patches/2.2.7.0-cmake-targets.patch"
