@@ -1,4 +1,4 @@
-conan create . opencv/4.7.0@conan-solar/1_1_0 --build=missing -tf None -o with_ffmpeg=False
-conan create . opencv/4.7.0@conan-solar/1_1_0 --build=missing -tf None -s build_type=Debug -o with_ffmpeg=False
-conan create . opencv/4.7.0@conan-solar/1_1_0 --build=missing -tf None -o with_ffmpeg=False -o contrib=True -o with_cuda=True -o with_cublas=True -o with_cudnn=True -o dnn=True -o dnn_cuda=True
-conan create . opencv/4.7.0@conan-solar/1_1_0 --build=missing -tf None -s build_type=Debug -o with_ffmpeg=False -o contrib=True -o with_cuda=True -o with_cublas=True -o with_cudnn=True -o dnn=True -o dnn_cuda=True
+conan create . --name=opencv --version=4.7.0 --user=conan-solar --channel=1_2_0 -tf "" --build=missing -s compiler.cppstd=17 -o with_ffmpeg=False
+conan create . --name=opencv --version=4.7.0 --user=conan-solar --channel=1_2_0 -tf "" --build=missing -s compiler.cppstd=17 -s build_type=Debug -o with_ffmpeg=False
+conan create . --name=opencv --version=4.7.0 --user=conan-solar --channel=1_2_0 -tf "" --build=missing -s compiler.cppstd=17 -o with_ffmpeg=False -o opencv/*:contrib=True -o opencv/*:with_cuda=True -o opencv/*:with_cublas=True -o opencv/*:with_cudnn=True -o opencv/*:dnn=True -o opencv/*:dnn_cuda=True
+conan create . --name=opencv --version=4.7.0 --user=conan-solar --channel=1_2_0 -tf "" --build=missing -s compiler.cppstd=17 -s build_type=Debug -o with_ffmpeg=False -o opencv/*:contrib=True -o opencv/*:with_cuda=True -o opencv/*:with_cublas=True -o opencv/*:with_cudnn=True -o opencv/*:dnn=True -o opencv/*:dnn_cuda=True
