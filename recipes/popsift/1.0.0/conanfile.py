@@ -59,7 +59,19 @@ class PopsiftConan(ConanFile):
         
         if is_msvc(self):
             tc.variables["BUILD_WITH_STATIC_CRT"] = is_msvc_static_runtime(self)
-        
+            if not is_msvc_static_runtime(self):
+                self.output.info("Dynamic runtime, NVCC will use flag /MD (or /MDd in debug mode)")
+                tc.variables["CUDA_NVCC_RELEASE"] = "/MD;-O2"
+                tc.variables["CUDA_NVCC_DEBUG"] = "/MDd;-Od; -G"
+                tc.variables["CUDA_NVCC_MINSIZEREL"] = "/MD; -O1"
+                tc.variables["CUDA_NVCC_RELWITHDEBINFO"] = "/MD;-O2;-G"
+            else:
+                self.output.info("Static runtime, NVCC will use flag /MT (or /MTd in debug mode)")
+                tc.variables["CUDA_NVCC_RELEASE"] = "/MT;-O2"
+                tc.variables["CUDA_NVCC_DEBUG"] = "/MTd;-Od; -G"
+                tc.variables["CUDA_NVCC_MINSIZEREL"] = "/MT; -O1"
+                tc.variables["CUDA_NVCC_RELWITHDEBINFO"] = "/MT;-O2;-G"
+                  
         tc.generate()
 
         CMakeDeps(self).generate()
