@@ -1,2 +1,2 @@
-conan create . cuba/2.0.0@conan-solar/1_1_0 -tf None --build=missing
-conan create . cuba/2.0.0@conan-solar/1_1_0 -tf None --build=missing -s build_type=Debug
+conan create . --name cuba --version 2.1.0 --channel conan-solar --user 1_2_0 -tf "" --build=missing
+conan create . --name cuba --version 2.1.0 --channel conan-solar --user 1_2_0 -tf "" --build=missing -s build_type=Debug
