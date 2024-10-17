@@ -1,4 +1,10 @@
 sources:
+  "3.10":
+      url: https://github.com/colmap/colmap/archive/3.10.tar.gz
+      sha256: 61850F323E201AB6A1ABBFB0E4A8B3BA1C4CEDBF55E0A5716BDEA1DF8AE1813A
+  "3.9.1":
+      url: https://github.com/colmap/colmap/archive/3.9.1.tar.gz
+      sha256: F947AD80802BAA8F00F30F26D316D8C608AB2626465EAC1C81CF325D57879862
   "3.8":
       url: https://github.com/colmap/colmap/archive/3.8.tar.gz
       sha256: 02288F8F61692FE38049D65608ED832B31246E7792692376AFB712FA4CEF8775
@@ -6,14 +12,23 @@ sources:
       url: https://github.com/colmap/colmap/archive/3.7.tar.gz
       sha256: CEB7CCA204550D65B890CD0082C66F4BC69193DAF9DA64616D8147A46B76CC55
 patches:
+  "3.10":
+  - patch_file: "patches/patch_colmap_3_10.patch"
+    patch_description: "Change depencies to lower_case"
+    patch_type: "conan"
+  "3.9.1":
+  - patch_file: "patches/patch_colmap_3_9_1.patch"
+    patch_description: "Change depencies to lower_case"
+    patch_type: "conan"
   "3.8":
   - patch_file: "patches/patch_colmap_3_8.patch"
-    base_path: source_subfolder
+    patch_type: "conan"
   "3.7":
   - patch_file: "patches/patch_colmap_3_7.patch"
-    base_path: source_subfolder
+    patch_type: "conan"
   - patch_file: "patches/GUI_ENABLED_param_patch.patch"
-    base_path: source_subfolder
+    patch_type: "conan"
   - patch_file: "patches/msvc2017_patch.patch"
-    base_path: source_subfolder
+    patch_type: "conan"
+
     
