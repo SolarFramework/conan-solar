@@ -1,8 +1,8 @@
 diff --git a/cmake/FindDependencies.cmake b/cmake/FindDependencies.cmake
-index 2dfaccc7..c28f59fd 100644
+index 2c9af311..5526a090 100644
 --- a/cmake/FindDependencies.cmake
 +++ b/cmake/FindDependencies.cmake
-@@ -12,14 +12,14 @@ find_package(Boost ${COLMAP_FIND_TYPE} COMPONENTS
+@@ -15,14 +15,14 @@ find_package(Boost ${COLMAP_FIND_TYPE} COMPONENTS
  
  find_package(Eigen3 ${COLMAP_FIND_TYPE})
  
@@ -22,7 +22,7 @@ index 2dfaccc7..c28f59fd 100644
  if(DEFINED glog_VERSION_MAJOR)
    # Older versions of glog don't export version variables.
    add_definitions("-DGLOG_VERSION_MAJOR=${glog_VERSION_MAJOR}")
-@@ -31,7 +31,7 @@ find_package(SQLite3 ${COLMAP_FIND_TYPE})
+@@ -34,7 +34,7 @@ find_package(SQLite3 ${COLMAP_FIND_TYPE})
  set(OpenGL_GL_PREFERENCE GLVND)
  find_package(OpenGL ${COLMAP_FIND_TYPE})
  
@@ -31,7 +31,7 @@ index 2dfaccc7..c28f59fd 100644
  
  find_package(Git)
  
-@@ -64,7 +64,7 @@ if(CGAL_ENABLED)
+@@ -67,7 +67,7 @@ if(CGAL_ENABLED)
      set(CGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE TRUE)
      # We do not use CGAL data. This prevents an unnecessary warning by CMake.
      set(CGAL_DATA_DIR "unused")
@@ -41,10 +41,10 @@ index 2dfaccc7..c28f59fd 100644
  
  if(CGAL_FOUND)
 diff --git a/src/colmap/feature/CMakeLists.txt b/src/colmap/feature/CMakeLists.txt
-index 13b78e4b..fb03a8d7 100644
+index c5da882f..7d4251da 100644
 --- a/src/colmap/feature/CMakeLists.txt
 +++ b/src/colmap/feature/CMakeLists.txt
-@@ -65,8 +65,8 @@ COLMAP_ADD_LIBRARY(
+@@ -66,8 +66,8 @@ COLMAP_ADD_LIBRARY(
          colmap_sensor
          colmap_vlfeat
          Eigen3::Eigen

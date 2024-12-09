@@ -19,6 +19,7 @@ class ColmapConan(ConanFile):
     package_type = "library"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
+               "fPIC": [True, False],
                "with_cuda": [True, False],
                "cuda_arch": [None, "ANY"],
                "with_openmp": [True, False],
@@ -28,6 +29,7 @@ class ColmapConan(ConanFile):
                "with_gui": [True, False],
                "with_cgal": [True, False]}
     default_options = {"shared": False,
+                       "fPIC": True,
                        "with_cuda": False,
                        "cuda_arch": "all-major",
                        "with_openmp": True,
@@ -52,8 +54,6 @@ class ColmapConan(ConanFile):
             del self.options.fPIC
 
     def configure(self):
-        if self.options.shared:
-            self.options.rm_safe("fPIC")
         #use glog for ceres, instead there are some conflicts between miniglog of ceres and glog of colmap
         self.options["ceres-solver"].use_glog = True
         self.options["ceres-solver"].use_gflags = True
@@ -65,23 +65,24 @@ class ColmapConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        self.requires("ceres-solver/2.2.0")
+        self.requires("ceres-solver/2.1.0")
         #glog directly from ceres
         #gflags directly from ceres
       
         self.requires("boost/1.84.0")
-        self.requires("freeimage/3.18.0")
+        #use a freeImage without openexr and libtiff using openexr as freeimage is not compatible with openexr 3.x.x -> conflicts with openimageio
+        self.requires("freeimage/3.18.0@conan-solar/without_openexr")
         
         #Qt for GUI - pb when no GUI
         if self.options.with_gui:
-            self.requires("qt/5.15.2")
+            self.requires("qt/6.7.3")
         #No GUI then no opengl => currently pb : must have opengl dependency in source code
         if self.options.with_opengl:
             self.requires("glew/2.2.0")
             self.requires("opengl/system")
 
         # Flann : Conan solar recipe : same as Conan center recipe with cpp-std 17 patch
-        self.requires("flann/1.9.2@")
+        self.requires("flann/1.9.2@", transitive_headers=True)
 
         self.requires("sqlite3/3.46.0@")
         self.requires("metis/5.2.1@")
@@ -90,8 +91,8 @@ class ColmapConan(ConanFile):
             self.requires("cgal/5.6.1@")
     
     def validate(self):
-        if self.options.shared and is_msvc(self) and is_msvc_static_runtime(self):
-            raise ConanInvalidConfiguration("Visual Studio with static runtime is not supported for shared library.")
+        if self.options.shared:
+            raise ConanInvalidConfiguration("Colmap does not provide shared build mode.")
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version], destination=self.source_folder, strip_root=True)
@@ -112,19 +113,18 @@ class ColmapConan(ConanFile):
         os.remove(os.path.join(self.source_folder, "cmake/FindLZ4.cmake"))
         
         tc = CMakeToolchain(self)
-        tc.variables["BUILD_SHARED_LIBS"] = "ON" if self.options.shared else "OFF"
-        tc.variables["BOOST_STATIC"] = True
-        tc.variables["CGAL_ENABLED"] = bool(self.options.get_safe("with_cgal", False))
-        tc.variables["OPENGL_ENABLED"] = self.options.get_safe("with_opengl", False)
-        tc.variables["OPENMP_ENABLED"] = self.options.get_safe("with_openmp", False)
-        tc.variables["CUDA_ENABLED"] = self.options.get_safe("with_cuda", False)
-        tc.variables["PROFILING_ENABLED"] = self.options.get_safe("with_profiling", False)
-        tc.variables["TEST_ENABLED"] = self.options.get_safe("with_test", False)
-        tc.variables["SIMD_ENABLED"] = True
-        tc.variables["GUI_ENABLED"] = self.options.get_safe("with_gui", False)
+        tc.cache_variables["BUILD_SHARED_LIBS"] = bool(self.options.get_safe("shared", False))
+        tc.cache_variables["BOOST_STATIC"] = True
+        tc.cache_variables["CGAL_ENABLED"] = bool(self.options.get_safe("with_cgal", False))
+        tc.cache_variables["OPENGL_ENABLED"] = self.options.get_safe("with_opengl", False)
+        tc.cache_variables["OPENMP_ENABLED"] = self.options.get_safe("with_openmp", False)
+        tc.cache_variables["CUDA_ENABLED"] = self.options.get_safe("with_cuda", False)
+        tc.cache_variables["PROFILING_ENABLED"] = self.options.get_safe("with_profiling", False)
+        tc.cache_variables["TEST_ENABLED"] = self.options.get_safe("with_test", False)
+        tc.cache_variables["SIMD_ENABLED"] = True
+        tc.cache_variables["GUI_ENABLED"] = self.options.get_safe("with_gui", False)
         #build for recent CUDA_ARCHS
-        tc.variables["CMAKE_CUDA_ARCHITECTURES"] = self.options.cuda_arch
-        tc.variables["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.get_safe("fPIC", True)
+        tc.variables["CMAKE_CUDA_ARCHITECTURES"] = self.options.cuda_arch        
 
         tc.generate()
         deps = CMakeDeps(self)

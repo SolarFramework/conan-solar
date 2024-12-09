@@ -1,4 +1,7 @@
 sources:
+  "3.11.0":
+      url: https://github.com/colmap/colmap/archive/3.11.0.tar.gz
+      sha256: 8DA471B0F5BAA3BDD940F1778FFE338738EB47B90B4D03DCD8DA6B9810014844
   "3.10":
       url: https://github.com/colmap/colmap/archive/3.10.tar.gz
       sha256: 61850F323E201AB6A1ABBFB0E4A8B3BA1C4CEDBF55E0A5716BDEA1DF8AE1813A
@@ -12,6 +15,10 @@ sources:
       url: https://github.com/colmap/colmap/archive/3.7.tar.gz
       sha256: CEB7CCA204550D65B890CD0082C66F4BC69193DAF9DA64616D8147A46B76CC55
 patches:
+  "3.11.0":
+  - patch_file: "patches/patch_colmap_3_11.patch"
+    patch_description: "Change depencies to lower_case"
+    patch_type: "conan"
   "3.10":
   - patch_file: "patches/patch_colmap_3_10.patch"
     patch_description: "Change depencies to lower_case"
