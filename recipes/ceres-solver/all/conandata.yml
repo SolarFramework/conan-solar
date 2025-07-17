@@ -1,7 +1,7 @@
 sources:
-  "master":
-    url: "http://github.com/ceres-solver/ceres-solver/archive/refs/heads/master.tar.gz"
-    sha256: "B793ECEA445F0749386A8F25E5BCA388849B7A8E62A54850BCD81D0E0969B647"
+  "commit8c50a34":
+    url: "http://github.com/ceres-solver/ceres-solver/archive/8c50a34a1cac220ab2e7e2093b35b0db7e2a6e9b.tar.gz"
+    sha256: "2B33A5823D59EECC39A219D146895A31A75B2A71660438DC55D1F87B24173209"
   "2.2.0":
     url: "http://ceres-solver.org/ceres-solver-2.2.0.tar.gz"
     sha256: "48b2302a7986ece172898477c3bcd6deb8fb5cf19b3327bc49969aad4cede82d"
@@ -15,6 +15,10 @@ sources:
     url: "http://ceres-solver.org/ceres-solver-1.14.0.tar.gz"
     sha256: "4744005fc3b902fed886ea418df70690caa8e2ff6b5a90f3dd88a3d291ef8e8e"
 patches:
+  "commit8c50a34":
+    - patch_file: "patches/fix-abseil-version.patch"
+      patch_description: "Fix limited version of abseil"
+      patch_type: "conan"
   "2.2.0":
     - patch_file: "patches/2.2.0-0001-find-libraries-conan.patch"
       patch_description: "Robust dependencies handling"

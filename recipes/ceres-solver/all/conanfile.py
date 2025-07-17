@@ -106,7 +106,7 @@ class CeressolverConan(ConanFile):
             self.requires("glog/0.6.0", transitive_headers=True, transitive_libs=True)
         if self.options.get_safe("use_TBB"):
             self.requires("onetbb/2020.3")
-        if self.version == "master":
+        if self.version == "commit8c50a34":
             self.requires("abseil/[>=20240116.1 <=20250127.0]", transitive_headers=True, transitive_libs=True)
 
     def package_id(self):
@@ -230,7 +230,7 @@ class CeressolverConan(ConanFile):
             self.cpp_info.components["ceres"].requires.append("glog::glog")
         if self.options.get_safe("use_TBB"):
             self.cpp_info.components["ceres"].requires.append("onetbb::onetbb")
-        if self.version == "master":
+        if self.version == "commit8c50a34":
             self.cpp_info.components["ceres"].requires.append("abseil::abseil")
         
         if not self.options.shared:

@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index af932c6a..0b217a6a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -170,7 +170,7 @@ if (EXISTS "${Ceres_SOURCE_DIR}/third_party/abseil-cpp/CMakeLists.txt")
+   set(CERES_USE_SYSTEM_ABSL NO)
+ else()
+   message("-- ceres-solver/third_party/abseil-cpp is empty, so falling back to system installed abseil")
+-  find_package(absl REQUIRED 20240116)
++  find_package(absl REQUIRED 20240116...)
+   message("-- Found abseil version ${absl_VERSION}: ${absl_DIR}")
+   if (NOT absl_VERSION)
+     # In some installs, abseil will not export the version number, in
