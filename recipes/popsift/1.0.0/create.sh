@@ -1,6 +1,6 @@
 #!/bin/bash
-conan create . popsift/1.0.0-rc3@conan-solar/1_1_0 --build=missing -tf None
-conan create . popsift/1.0.0-rc3@conan-solar/1_1_0 --build=missing -tf None -s build_type=Debug
+conan create . --version 1.0.0-rc3 --user=conan-solar --channel 1_2_0 --build=missing -tf=""
+conan create . --version 1.0.0-rc3 --user=conan-solar --channel 1_2_0 --build=missing -tf="" -s build_type=Debug
 
 
 

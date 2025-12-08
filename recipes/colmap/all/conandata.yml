@@ -1,4 +1,10 @@
 sources:
+  "3.13":
+      url: https://github.com/colmap/colmap/archive/3.13.0.tar.gz
+      sha256: 98A8F8CF6358774BE223239A9B034CC9D55BF66C43F54FC6DDEA9128A1EE197A
+  "3.11.1":
+      url: https://github.com/colmap/colmap/archive/3.11.1.tar.gz
+      sha256: D2C20729AB5B1198E17725B720128F304F4CFAE5C0A8C20D75C0E9C5BDEE5860
   "3.11.0":
       url: https://github.com/colmap/colmap/archive/3.11.0.tar.gz
       sha256: 8DA471B0F5BAA3BDD940F1778FFE338738EB47B90B4D03DCD8DA6B9810014844
@@ -15,17 +21,25 @@ sources:
       url: https://github.com/colmap/colmap/archive/3.7.tar.gz
       sha256: CEB7CCA204550D65B890CD0082C66F4BC69193DAF9DA64616D8147A46B76CC55
 patches:
+  "3.13":
+  - patch_file: "patches/patch_colmap_3_13.patch"
+    patch_description: "Change dependencies to lower_case"
+    patch_type: "conan"
+  "3.11.1":
+  - patch_file: "patches/patch_colmap_3_11.patch"
+    patch_description: "Change dependencies to lower_case"
+    patch_type: "conan"
   "3.11.0":
   - patch_file: "patches/patch_colmap_3_11.patch"
-    patch_description: "Change depencies to lower_case"
+    patch_description: "Change dependencies to lower_case"
     patch_type: "conan"
   "3.10":
   - patch_file: "patches/patch_colmap_3_10.patch"
-    patch_description: "Change depencies to lower_case"
+    patch_description: "Change dependencies to lower_case"
     patch_type: "conan"
   "3.9.1":
   - patch_file: "patches/patch_colmap_3_9_1.patch"
-    patch_description: "Change depencies to lower_case"
+    patch_description: "Change dependencies to lower_case"
     patch_type: "conan"
   "3.8":
   - patch_file: "patches/patch_colmap_3_8.patch"

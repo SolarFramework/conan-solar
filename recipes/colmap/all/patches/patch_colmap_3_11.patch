@@ -83,3 +83,15 @@ index 903a935c..309bcea7 100644
      PRIVATE_LINK_LIBS
          colmap_math
          colmap_estimators
+diff --git a/src/colmap/sfm/CMakeLists.txt b/src/colmap/sfm/CMakeLists.txt
+index 3b0ad439..611f304f 100644
+--- a/src/colmap/sfm/CMakeLists.txt
++++ b/src/colmap/sfm/CMakeLists.txt
+@@ -40,6 +40,7 @@ COLMAP_ADD_LIBRARY(
+         colmap_scene
+         colmap_estimators
+         colmap_util
++        Eigen3::Eigen  
+     PRIVATE_LINK_LIBS
+         colmap_geometry
+         colmap_image

@@ -57,6 +57,9 @@ class ColmapConan(ConanFile):
         #use glog for ceres, instead there are some conflicts between miniglog of ceres and glog of colmap
         self.options["ceres-solver"].use_glog = True
         self.options["ceres-solver"].use_gflags = True
+        
+        if (self.options.with_cuda):
+            self.options["ceres-solver"].use_CUDA = True
 
         #Colmap needs to link FreeImage in shared mode to automatically initialize plugins; http://graphics.stanford.edu/courses/cs148-10-summer/docs/FreeImage3131.pdf
         self.options["freeimage"].shared=True
@@ -66,12 +69,13 @@ class ColmapConan(ConanFile):
 
     def requirements(self):
         self.requires("ceres-solver/2.1.0")
+        
         #glog directly from ceres
         #gflags directly from ceres
       
         self.requires("boost/1.84.0")
         #use a freeImage without openexr and libtiff using openexr as freeimage is not compatible with openexr 3.x.x -> conflicts with openimageio
-        self.requires("freeimage/3.18.0@conan-solar/without_openexr")
+        self.requires("freeimage/3.18.0@")
         
         #Qt for GUI - pb when no GUI
         if self.options.with_gui:
@@ -82,7 +86,8 @@ class ColmapConan(ConanFile):
             self.requires("opengl/system")
 
         # Flann : Conan solar recipe : same as Conan center recipe with cpp-std 17 patch
-        self.requires("flann/1.9.2@", transitive_headers=True)
+        if (Version(self.version) < "3.13"):
+            requires("flann/1.9.2@", transitive_headers=True)
 
         self.requires("sqlite3/3.46.0@")
         self.requires("metis/5.2.1@")
@@ -109,15 +114,16 @@ class ColmapConan(ConanFile):
         os.remove(os.path.join(self.source_folder, "cmake/FindFreeImage.cmake"))
         os.remove(os.path.join(self.source_folder, "cmake/FindGlew.cmake"))
         os.remove(os.path.join(self.source_folder, "cmake/FindGlog.cmake"))
-        os.remove(os.path.join(self.source_folder, "cmake/FindFLANN.cmake"))
-        os.remove(os.path.join(self.source_folder, "cmake/FindLZ4.cmake"))
-        
+        if (Version(self.version) < "3.13"):
+            os.remove(os.path.join(self.source_folder, "cmake/FindFLANN.cmake"))
+            os.remove(os.path.join(self.source_folder, "cmake/FindLZ4.cmake"))
         tc = CMakeToolchain(self)
         tc.cache_variables["BUILD_SHARED_LIBS"] = bool(self.options.get_safe("shared", False))
         tc.cache_variables["BOOST_STATIC"] = True
         tc.cache_variables["CGAL_ENABLED"] = bool(self.options.get_safe("with_cgal", False))
         tc.cache_variables["OPENGL_ENABLED"] = self.options.get_safe("with_opengl", False)
         tc.cache_variables["OPENMP_ENABLED"] = self.options.get_safe("with_openmp", False)
+        tc.cache_variables["BLA_VENDOR"] = "Intel10_64lp"
         tc.cache_variables["CUDA_ENABLED"] = self.options.get_safe("with_cuda", False)
         tc.cache_variables["PROFILING_ENABLED"] = self.options.get_safe("with_profiling", False)
         tc.cache_variables["TEST_ENABLED"] = self.options.get_safe("with_test", False)
@@ -134,7 +140,7 @@ class ColmapConan(ConanFile):
         self._patch_sources()
         cmake = CMake(self)
         cmake.configure()
-        cmake.build()    
+        cmake.build()
 
     def package_info(self):
         self.cpp_info.libs = collect_libs(self)

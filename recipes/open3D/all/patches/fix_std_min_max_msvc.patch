@@ -1,0 +1,24 @@
+From b3d62a02043fee99ff12ea296597cc88b0b81a54 Mon Sep 17 00:00:00 2001
+From: "BCOM\\jroyan" <jerome.royan@b-com.com>
+Date: Mon, 17 Jul 2023 17:56:27 +0200
+Subject: [PATCH] Add algorithm to solve std min / max C2039 issue
+
+---
+ g2o/core/optimization_algorithm_factory.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/g2o/core/optimization_algorithm_factory.cpp b/g2o/core/optimization_algorithm_factory.cpp
+index b5cd4efb..37041e50 100644
+--- a/g2o/core/optimization_algorithm_factory.cpp
++++ b/g2o/core/optimization_algorithm_factory.cpp
+@@ -29,6 +29,7 @@
+ #include <cassert>
+ #include <iostream>
+ #include <typeinfo>
++#include <algorithm>
+ 
+ using namespace std;
+ 
+-- 
+2.29.2.windows.2
+

@@ -1,0 +1,4 @@
+sources:
+  "v0.19.0":
+    - url: "https://github.com/isl-org/Open3D/archive/refs/tags/v0.19.0.tar.gz"
+      sha256: "5CEDB0E093C6BACEAB801B903EB8E2558BC2B3999AC57762BF78A39D5E15394A"

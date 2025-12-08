@@ -1,0 +1,880 @@
+
+<html lang="en">
+    <head>
+        
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.18.1/vis.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.18.1/vis.min.css" rel="stylesheet" type="text/css"/>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            function showhideclass(id) {
+                var elements = document.getElementsByClassName(id)
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].style.display = (elements[i].style.display != 'none') ? 'none' : 'block';
+                }
+            }
+        </script>
+        <style>
+            @media print {
+                .noPrint {
+                    display: none;
+                }
+            }
+            .button {
+                background-color: #5555cc;
+                border: none;
+                color: white;
+                padding: 5px 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 18px;
+            }
+        </style>
+
+        <div style="width: 100%;">
+            <div id="mynetwork" style="float:left; width: 75%;"></div>
+                <div style="float:right;width:25%;">
+                <div id="details"  style="padding:10;" class="noPrint">Package info: no package selected</div>
+                <button onclick="javascript:showhideclass('controls')" class="button noPrint">
+                    Show / hide graph controls
+                </button>
+                <div id="controls" class="controls" style="padding:5; display:none"></div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+
+        <script type="text/javascript">
+            var nodes = new vis.DataSet([
+                    {
+                        id: 0,
+                        label: 'virtual',
+                        shape: 'box',
+                        color: { background: 'White'},
+                        fulllabel: '<h3>virtual</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 2420add2ef1dde3f637acd0da7c8e164018bc5c5</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 1,
+                        label: 'opencv/4.7.0',
+                        shape: 'box',
+                        color: { background: 'OrangeRed'},
+                        fulllabel: '<h3>opencv/4.7.0@conan-solar/1_1_0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 44a89bdffe5172ed8cf4e8b365b0060749f58131</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://opencv.org">https://opencv.org</a></li>' +
+                                   '    <li><b>license</b>: Apache-2.0</li>' +
+                                   '    <li><b>topics</b>: computer-vision, deep-learning, image-processing</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 2,
+                        label: 'ffmpeg/4.4',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>ffmpeg/4.4</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: fe7439da173cb52a50fee42f8f2f3eef491e16fb</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://ffmpeg.org">https://ffmpeg.org</a></li>' +
+                                   '    <li><b>license</b>: (&#39;LGPL-2.1-or-later&#39;, &#39;GPL-2.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: multimedia, audio, video, encoder, decoder, encoding, decoding, transcoding, multiplexer, demultiplexer, streaming</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 3,
+                        label: 'pulseaudio/14.2',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>pulseaudio/14.2</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: b90b781a6997c7a208e0fe1a8536b0cdba1f1c61</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://pulseaudio.org/">http://pulseaudio.org/</a></li>' +
+                                   '    <li><b>license</b>: LGPL-2.1</li>' +
+                                   '    <li><b>topics</b>: sound</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 4,
+                        label: 'libtool/2.4.7',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libtool/2.4.7</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 00ffeae55ec276f0fef26ad0ed5cd0191ca724ce</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.gnu.org/software/libtool/">https://www.gnu.org/software/libtool/</a></li>' +
+                                   '    <li><b>license</b>: (&#39;GPL-2.0-or-later&#39;, &#39;GPL-3.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: configure, library, shared, static</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 5,
+                        label: 'libsndfile/1.2.0',
+                        shape: 'box',
+                        color: { background: 'OrangeRed'},
+                        fulllabel: '<h3>libsndfile/1.2.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 61d1ffb7d20244e590906bf184531dc9bcbaf896</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://www.mega-nerd.com/libsndfile">http://www.mega-nerd.com/libsndfile</a></li>' +
+                                   '    <li><b>license</b>: LGPL-2.1</li>' +
+                                   '    <li><b>topics</b>: audio</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 6,
+                        label: 'freetype/2.13.0',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>freetype/2.13.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 7d544953cc6cdd1bd06a4e40fc9904c650a37eb2</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.freetype.org">https://www.freetype.org</a></li>' +
+                                   '    <li><b>license</b>: FTL</li>' +
+                                   '    <li><b>topics</b>: freetype, fonts</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 7,
+                        label: 'automake/1.16.5',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>automake/1.16.5</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 258f6f05ca54813b3d7180161753df7f9ccf7e1d</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.gnu.org/software/automake/">https://www.gnu.org/software/automake/</a></li>' +
+                                   '    <li><b>license</b>: (&#39;GPL-2.0-or-later&#39;, &#39;GPL-3.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: autotools, configure, build</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 8,
+                        label: 'vulkan-loader/1.3.239.0',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>vulkan-loader/1.3.239.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: d205549af4530632e9454a63efdd9f9b6f939479</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/KhronosGroup/Vulkan-Loader">https://github.com/KhronosGroup/Vulkan-Loader</a></li>' +
+                                   '    <li><b>license</b>: Apache-2.0</li>' +
+                                   '    <li><b>topics</b>: vulkan, loader, desktop, gpu</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 9,
+                        label: 'vorbis/1.3.7',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>vorbis/1.3.7</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 6dc8cd39c5b0e3955526ea49034a31dbe9d01a47</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://xiph.org/vorbis/">https://xiph.org/vorbis/</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: vorbis, audio, codec</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 10,
+                        label: 'protobuf/3.21.9',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>protobuf/3.21.9</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 774d45d697ce6041148f1cc945854892effde458</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/protocolbuffers/protobuf">https://github.com/protocolbuffers/protobuf</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: protocol-buffers, protocol-compiler, serialization, rpc, protocol-compiler</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 11,
+                        label: 'openssl/3.1.1',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>openssl/3.1.1</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 304480252b01879c8641f79a653b593b8f26cf9f</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/openssl/openssl">https://github.com/openssl/openssl</a></li>' +
+                                   '    <li><b>license</b>: Apache-2.0</li>' +
+                                   '    <li><b>topics</b>: ssl, tls, encryption, security</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 12,
+                        label: 'openexr/3.1.7',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>openexr/3.1.7</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 606c573128f6892ded59aa937fedc4b62495d71c</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/AcademySoftwareFoundation/openexr">https://github.com/AcademySoftwareFoundation/openexr</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: openexr, hdr, image, picture</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 13,
+                        label: 'libtiff/4.5.1',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libtiff/4.5.1</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: a73332c6b140c66d58d36010b1ab74bc97a83653</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://www.simplesystems.org/libtiff">http://www.simplesystems.org/libtiff</a></li>' +
+                                   '    <li><b>license</b>: MIT</li>' +
+                                   '    <li><b>topics</b>: tiff, image, bigtiff, tagged-image-file-format</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 14,
+                        label: 'libpng/1.6.40',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libpng/1.6.40</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 025ffc7158b5e62f5f3ed9af91d48958d216f972</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://www.libpng.org">http://www.libpng.org</a></li>' +
+                                   '    <li><b>license</b>: libpng-2.0</li>' +
+                                   '    <li><b>topics</b>: png, graphics, image</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 15,
+                        label: 'jasper/4.0.0',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>jasper/4.0.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: c129039b1e42fb073705ff73db2115412d8119d7</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://jasper-software.github.io/jasper">https://jasper-software.github.io/jasper</a></li>' +
+                                   '    <li><b>license</b>: JasPer-2.0</li>' +
+                                   '    <li><b>topics</b>: toolkit, coding, jpeg, images</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 16,
+                        label: 'flac/1.4.2',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>flac/1.4.2</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: b537b56a008a0420afdd94c2dffce1df50a8b7fd</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/xiph/flac">https://github.com/xiph/flac</a></li>' +
+                                   '    <li><b>license</b>: (&#39;BSD-3-Clause&#39;, &#39;GPL-2.0-or-later&#39;, &#39;LPGL-2.1-or-later&#39;, &#39;GFDL-1.2&#39;)</li>' +
+                                   '    <li><b>topics</b>: flac, codec, audio</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 17,
+                        label: 'autoconf/2.71',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>autoconf/2.71</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.gnu.org/software/autoconf/">https://www.gnu.org/software/autoconf/</a></li>' +
+                                   '    <li><b>license</b>: (&#39;GPL-2.0-or-later&#39;, &#39;GPL-3.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: configure, build</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 18,
+                        label: 'zstd/1.5.5',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>zstd/1.5.5</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 1e8f95ed1a9a9ef594f731500716088f6eb8bee6</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/facebook/zstd">https://github.com/facebook/zstd</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: zstandard, compression, algorithm, decoder</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 19,
+                        label: 'zlib/1.2.13',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>zlib/1.2.13</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://zlib.net">https://zlib.net</a></li>' +
+                                   '    <li><b>license</b>: Zlib</li>' +
+                                   '    <li><b>topics</b>: zlib, compression</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 20,
+                        label: 'xz_utils/5.4.2',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>xz_utils/5.4.2</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://tukaani.org/xz">https://tukaani.org/xz</a></li>' +
+                                   '    <li><b>license</b>: (&#39;Unlicense&#39;, &#39;LGPL-2.1-or-later&#39;, &#39;GPL-2.0-or-later&#39;, &#39;GPL-3.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: lzma, xz, compression</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 21,
+                        label: 'xorg/system',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>xorg/system</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.x.org/wiki/">https://www.x.org/wiki/</a></li>' +
+                                   '    <li><b>license</b>: MIT</li>' +
+                                   '    <li><b>topics</b>: x11, xorg</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 22,
+                        label: 'vulkan-headers/1.3.239.0',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>vulkan-headers/1.3.239.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/KhronosGroup/Vulkan-Headers">https://github.com/KhronosGroup/Vulkan-Headers</a></li>' +
+                                   '    <li><b>license</b>: Apache-2.0</li>' +
+                                   '    <li><b>topics</b>: vulkan-headers, vulkan</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 23,
+                        label: 'vdpau/system',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>vdpau/system</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.freedesktop.org/wiki/Software/VDPAU/">https://www.freedesktop.org/wiki/Software/VDPAU/</a></li>' +
+                                   '    <li><b>license</b>: MIT</li>' +
+                                   '    <li><b>topics</b>: hwaccel, video</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 24,
+                        label: 'vaapi/system',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>vaapi/system</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://01.org/linuxmedia/vaapi">https://01.org/linuxmedia/vaapi</a></li>' +
+                                   '    <li><b>license</b>: MIT</li>' +
+                                   '    <li><b>topics</b>: hwaccel, video</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 25,
+                        label: 'quirc/1.1',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>quirc/1.1</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: e5b7a82f86d999b0181a286b51976b32902a2c28</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/dlbeer/quirc">https://github.com/dlbeer/quirc</a></li>' +
+                                   '    <li><b>license</b>: ISC</li>' +
+                                   '    <li><b>topics</b>: qr, decoder</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 26,
+                        label: 'opus/1.3.1',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>opus/1.3.1</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: c889e7f8d2da25a0967139692fd28155a3910c9f</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://opus-codec.org">https://opus-codec.org</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: opus, audio, decoder, decoding, multimedia, sound</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 27,
+                        label: 'openjpeg/2.5.0',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>openjpeg/2.5.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/uclouvain/openjpeg">https://github.com/uclouvain/openjpeg</a></li>' +
+                                   '    <li><b>license</b>: BSD 2-Clause</li>' +
+                                   '    <li><b>topics</b>: jpeg2000, jp2, openjpeg, image, multimedia, format, graphics</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 28,
+                        label: 'openh264/2.3.1',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>openh264/2.3.1</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 12a1401e20dd033a2e489b213f1d365cbef7e6ea</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://www.openh264.org/">http://www.openh264.org/</a></li>' +
+                                   '    <li><b>license</b>: BSD-2-Clause</li>' +
+                                   '    <li><b>topics</b>: h264, codec, video, compression</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 29,
+                        label: 'ogg/1.3.5',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>ogg/1.3.5</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/xiph/ogg">https://github.com/xiph/ogg</a></li>' +
+                                   '    <li><b>license</b>: BSD-2-Clause</li>' +
+                                   '    <li><b>topics</b>: codec, audio, lossless</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 30,
+                        label: 'mpg123/1.31.2',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>mpg123/1.31.2</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 8e31ece6966077414c27453e6db9435ef82813d1</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://mpg123.org/">http://mpg123.org/</a></li>' +
+                                   '    <li><b>license</b>: (&#39;LGPL-2.1-or-later&#39;, &#39;GPL-2.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: mpeg, audio, player, decoder</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 31,
+                        label: 'm4/1.4.19',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>m4/1.4.19</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 24647d9fe8ec489125dfbae4b3ebefaf7581674c</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.gnu.org/software/m4/">https://www.gnu.org/software/m4/</a></li>' +
+                                   '    <li><b>license</b>: GPL-3.0-only</li>' +
+                                   '    <li><b>topics</b>: macro, preprocessor</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 32,
+                        label: 'libx265/3.4',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libx265/3.4</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 7c574aeec966c9953f61fa7414e1cd5eec356580</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.videolan.org/developers/x265.html">https://www.videolan.org/developers/x265.html</a></li>' +
+                                   '    <li><b>license</b>: (&#39;GPL-2.0-only&#39;, &#39;commercial&#39;)</li>' +
+                                   '    <li><b>topics</b>: x265, codec, video, H.265</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 33,
+                        label: 'libx264/cci.20220602',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libx264/cci.20220602</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: e8cffab19d24efd07c7c32199c01ab17420e1b42</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.videolan.org/developers/x264.html">https://www.videolan.org/developers/x264.html</a></li>' +
+                                   '    <li><b>license</b>: GPL-2.0</li>' +
+                                   '    <li><b>topics</b>: video, encoding</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 34,
+                        label: 'libwebp/1.3.1',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libwebp/1.3.1</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: ec17d365d82d936171699c4130c92bcc8b6f5f90</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://chromium.googlesource.com/webm/libwebp">https://chromium.googlesource.com/webm/libwebp</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: image, libwebp, webp, decoding, encoding</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 35,
+                        label: 'libvpx/1.11.0',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libvpx/1.11.0</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 4b3c6d196cb71c83885a4cde84c99771c19ae725</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.webmproject.org/code">https://www.webmproject.org/code</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: vpx, codec, web, VP8, VP9</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 36,
+                        label: 'libmp3lame/3.100',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libmp3lame/3.100</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://lame.sourceforge.net">http://lame.sourceforge.net</a></li>' +
+                                   '    <li><b>license</b>: LGPL-2.0</li>' +
+                                   '    <li><b>topics</b>: multimedia, audio, mp3, decoder, encoding, decoding</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 37,
+                        label: 'libjpeg/9e',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libjpeg/9e</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://ijg.org">http://ijg.org</a></li>' +
+                                   '    <li><b>license</b>: IJG</li>' +
+                                   '    <li><b>topics</b>: image, format, jpg, jpeg, picture, multimedia, graphics</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 38,
+                        label: 'libiconv/1.17',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libiconv/1.17</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.gnu.org/software/libiconv/">https://www.gnu.org/software/libiconv/</a></li>' +
+                                   '    <li><b>license</b>: LGPL-2.1-or-later</li>' +
+                                   '    <li><b>topics</b>: iconv, text, encoding, locale, unicode, conversion</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 39,
+                        label: 'libfdk_aac/2.0.2',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libfdk_aac/2.0.2</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 12a1401e20dd033a2e489b213f1d365cbef7e6ea</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://sourceforge.net/projects/opencore-amr/">https://sourceforge.net/projects/opencore-amr/</a></li>' +
+                                   '    <li><b>license</b>: https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE</li>' +
+                                   '    <li><b>topics</b>: multimedia, audio, fraunhofer, aac, decoder, encoding, decoding</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 40,
+                        label: 'libdeflate/1.18',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libdeflate/1.18</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/ebiggers/libdeflate">https://github.com/ebiggers/libdeflate</a></li>' +
+                                   '    <li><b>license</b>: MIT</li>' +
+                                   '    <li><b>topics</b>: compression, decompression, deflate, zlib, gzip</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 41,
+                        label: 'libcap/2.66',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libcap/2.66</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: dfbe50feef7f3c6223a476cd5aeadb687084a646</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://git.kernel.org/pub/scm/libs/libcap/libcap.git">https://git.kernel.org/pub/scm/libs/libcap/libcap.git</a></li>' +
+                                   '    <li><b>license</b>: (&#39;GPL-2.0-only&#39;, &#39;BSD-3-Clause&#39;)</li>' +
+                                   '    <li><b>topics</b>: capabilities</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 42,
+                        label: 'libalsa/1.2.7.2',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>libalsa/1.2.7.2</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 30b1dc656c82170e68989f5a539d6e3469561214</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/alsa-project/alsa-lib">https://github.com/alsa-project/alsa-lib</a></li>' +
+                                   '    <li><b>license</b>: LGPL-2.1-or-later</li>' +
+                                   '    <li><b>topics</b>: alsa, sound, audio, midi</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 43,
+                        label: 'jbig/20160605',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>jbig/20160605</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 3e46a2250aa0ec61108950304328fd94c0aed0c1</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/ImageMagick/jbig">https://github.com/ImageMagick/jbig</a></li>' +
+                                   '    <li><b>license</b>: GPL-2.0</li>' +
+                                   '    <li><b>topics</b>: jbig, imagemagick, window, graphic</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 44,
+                        label: 'imath/3.1.9',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>imath/3.1.9</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 12a1401e20dd033a2e489b213f1d365cbef7e6ea</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/AcademySoftwareFoundation/Imath">https://github.com/AcademySoftwareFoundation/Imath</a></li>' +
+                                   '    <li><b>license</b>: BSD-3-Clause</li>' +
+                                   '    <li><b>topics</b>: computer-graphics, matrix, openexr, 3d-vector</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 45,
+                        label: 'gtk/system',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>gtk/system</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: cc5e5ca8b619d2dffaaeae1e4924ae3ce085a8f1</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://www.gtk.org">https://www.gtk.org</a></li>' +
+                                   '    <li><b>license</b>: LGPL-2.1-or-later</li>' +
+                                   '    <li><b>topics</b>: gui, widget, graphical</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 46,
+                        label: 'eigen/3.3.9',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>eigen/3.3.9</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://eigen.tuxfamily.org">http://eigen.tuxfamily.org</a></li>' +
+                                   '    <li><b>license</b>: (&#39;MPL-2.0&#39;, &#39;LGPL-3.0-or-later&#39;)</li>' +
+                                   '    <li><b>topics</b>: algebra, linear-algebra, matrix, vector, numerical, header-only</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 47,
+                        label: 'bzip2/1.0.8',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>bzip2/1.0.8</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: c32092bf4d4bb47cf962af898e02823f499b017e</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="http://www.bzip.org">http://www.bzip.org</a></li>' +
+                                   '    <li><b>license</b>: bzip2-1.0.8</li>' +
+                                   '    <li><b>topics</b>: data-compressor, file-compression</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 48,
+                        label: 'brotli/1.0.9',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>brotli/1.0.9</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: e1dc2bcd4b907868f16d7f3b15e15c3bb07067f2</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/google/brotli">https://github.com/google/brotli</a></li>' +
+                                   '    <li><b>license</b>: (&#39;MIT&#39;,)</li>' +
+                                   '    <li><b>topics</b>: brotli, compression</li>' +
+                                   '</ul>'
+                    },
+                    {
+                        id: 49,
+                        label: 'ade/0.1.2a',
+                        shape: 'box',
+                        color: { background: 'SkyBlue'},
+                        fulllabel: '<h3>ade/0.1.2a</h3>' +
+                                   '<ul>' +
+                                   '    <li><b>id</b>: 12a1401e20dd033a2e489b213f1d365cbef7e6ea</li>' +
+                                   '    <li><b>url</b>: <a href="https://github.com/conan-io/conan-center-index">https://github.com/conan-io/conan-center-index</a></li>' +
+                                   '    <li><b>homepage</b>: <a href="https://github.com/opencv/ade">https://github.com/opencv/ade</a></li>' +
+                                   '    <li><b>license</b>: Apache-2.0</li>' +
+                                   '    <li><b>topics</b>: graphs, opencv</li>' +
+                                   '</ul>'
+                    }
+            ]);
+            var edges = new vis.DataSet([
+                    { from: 8, to: 22 },
+                    { from: 8, to: 21 },
+                    { from: 6, to: 14 },
+                    { from: 6, to: 19 },
+                    { from: 6, to: 47 },
+                    { from: 6, to: 48 },
+                    { from: 15, to: 37 },
+                    { from: 13, to: 19 },
+                    { from: 13, to: 40 },
+                    { from: 13, to: 20 },
+                    { from: 13, to: 37 },
+                    { from: 13, to: 43 },
+                    { from: 13, to: 18 },
+                    { from: 13, to: 34 },
+                    { from: 9, to: 29 },
+                    { from: 2, to: 19 },
+                    { from: 2, to: 47 },
+                    { from: 2, to: 20 },
+                    { from: 2, to: 38 },
+                    { from: 2, to: 6 },
+                    { from: 2, to: 27 },
+                    { from: 2, to: 28 },
+                    { from: 2, to: 9 },
+                    { from: 2, to: 26 },
+                    { from: 2, to: 33 },
+                    { from: 2, to: 32 },
+                    { from: 2, to: 35 },
+                    { from: 2, to: 36 },
+                    { from: 2, to: 39 },
+                    { from: 2, to: 34 },
+                    { from: 2, to: 11 },
+                    { from: 2, to: 42 },
+                    { from: 2, to: 21 },
+                    { from: 2, to: 3 },
+                    { from: 2, to: 24 },
+                    { from: 2, to: 23 },
+                    { from: 2, to: 8 },
+                    { from: 3, to: 38 },
+                    { from: 3, to: 5 },
+                    { from: 3, to: 41 },
+                    { from: 3, to: 4 },
+                    { from: 3, to: 42 },
+                    { from: 3, to: 21 },
+                    { from: 3, to: 11 },
+                    { from: 4, to: 7 },
+                    { from: 16, to: 29 },
+                    { from: 11, to: 19 },
+                    { from: 0, to: 1 },
+                    { from: 14, to: 19 },
+                    { from: 7, to: 17 },
+                    { from: 10, to: 19 },
+                    { from: 1, to: 19 },
+                    { from: 1, to: 37 },
+                    { from: 1, to: 15 },
+                    { from: 1, to: 14 },
+                    { from: 1, to: 12 },
+                    { from: 1, to: 13 },
+                    { from: 1, to: 46 },
+                    { from: 1, to: 2 },
+                    { from: 1, to: 34 },
+                    { from: 1, to: 25 },
+                    { from: 1, to: 45 },
+                    { from: 1, to: 10 },
+                    { from: 1, to: 49 },
+                    { from: 5, to: 29 },
+                    { from: 5, to: 9 },
+                    { from: 5, to: 16 },
+                    { from: 5, to: 26 },
+                    { from: 5, to: 30 },
+                    { from: 5, to: 36 },
+                    { from: 17, to: 31 },
+                    { from: 12, to: 19 },
+                    { from: 12, to: 44 }
+            ]);
+
+            var container = document.getElementById('mynetwork');
+            var controls = document.getElementById('controls');
+            var data = {
+                nodes: nodes,
+                edges: edges
+            };
+            var options = {
+                autoResize: true,
+                locale: 'en',
+                edges: {
+                    arrows: { to: {enabled: true} },
+                    smooth: { enabled: false}
+                },
+                nodes: {
+                    font: {'face': 'monospace', 'align': 'left'}
+                },
+                layout: {
+                    "hierarchical": {
+                        "enabled": true,
+                        "sortMethod": "directed",
+                        "direction": "UD",
+                        nodeSpacing: 200
+                    }
+                },
+                physics: {
+                    enabled: false,
+                },
+                configure: {
+                    enabled: true,
+                    filter: 'layout physics',
+                    showButton: false,
+                    container: controls
+                }
+            };
+            var network = new vis.Network(container, data, options);
+            network.on('click', function (properties) {
+                var ids = properties.nodes;
+                var clickedNodes = nodes.get(ids);
+                var control = document.getElementById("details");
+                if(clickedNodes[0]) {
+                    control.innerHTML = clickedNodes[0].fulllabel;
+                }
+                else {
+                    control.innerHTML = "<b>Package info</b>: No package selected";
+                }
+            });
+        </script>
+    </body>
+    <footer>
+        <div class="container-fluid">
+            <div class="info">
+                <p>
+                      Conan <b>v1.60.1</b> <script>document.write(new Date().getFullYear())</script> JFrog LTD. <a>https://conan.io</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+</html>

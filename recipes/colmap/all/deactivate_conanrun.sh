@@ -1,0 +1,1 @@
+. "/home/jroyan/Dev/conan-solar/recipes/colmap/all/deactivate_conanrunenv-debug-x86_64.sh"
