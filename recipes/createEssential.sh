@@ -15,3 +15,7 @@ popd
 pushd ./ceres-sover/all
 ./create.sh
 popd
+
+pushd ./cuba/all
+./createLinux.sh
+popd
