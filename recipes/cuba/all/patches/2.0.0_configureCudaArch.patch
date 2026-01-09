@@ -1,0 +1,20 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 6eb55bc..ddbd98b 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -9,11 +9,11 @@ include_directories(${CUBA_INCLUDE_DIR})
+ find_package(CUDA REQUIRED)
+ include_directories(${CUDA_INCLUDE_DIRS})
+ 
+-CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS "Auto")
+-set(CUDA_ARCH "${ARCH_FLAGS}" CACHE STRING "Value of the NVCC -arch option." FORCE)
+-set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${CUDA_ARCH} -lineinfo")
++set(CUDA_ARCH "Auto" CACHE STRING "GPU arch flags for nvcc (Auto, Common, All, 2.0,..., 8.6, Fermi, ..., Pascal)")
++CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS ${CUDA_ARCH})
++set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${ARCH_FLAGS} -lineinfo")
+ 
+-message(STATUS "CUDA_ARCH: \"${CUDA_ARCH}\"")
++message(STATUS "ARCH_FLAGS: \"${ARCH_FLAGS}\"")
+ 
+ # Eigen
+ find_package(Eigen3 REQUIRED)

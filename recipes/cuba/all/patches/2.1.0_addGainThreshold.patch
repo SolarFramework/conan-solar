@@ -1,0 +1,37 @@
+diff --git a/include/cuda_bundle_adjustment.h b/include/cuda_bundle_adjustment.h
+index 483fcd9..82cc96f 100644
+--- a/include/cuda_bundle_adjustment.h
++++ b/include/cuda_bundle_adjustment.h
+@@ -99,8 +99,9 @@ public:
+ 
+ 	/** @brief Optimizes the graph.
+ 	@param niterations number of iterations for Levenberg-Marquardt algorithm.
++	@param gainThreshold gain threshold used in stop criteria (default value is 1e-5)
+ 	*/
+-	virtual void optimize(int niterations) = 0;
++	virtual void optimize(int niterations, double gainThreshold=1e-5) = 0;
+ 
+ 	/** @brief Clears the graph.
+ 	*/
+diff --git a/src/cuda_bundle_adjustment.cpp b/src/cuda_bundle_adjustment.cpp
+index 17a976c..c141487 100644
+--- a/src/cuda_bundle_adjustment.cpp
++++ b/src/cuda_bundle_adjustment.cpp
+@@ -790,7 +790,7 @@ public:
+ 		stats_.clear();
+ 	}
+ 
+-	void optimize(int niterations) override
++	void optimize(int niterations, double gainThreshold) override
+ 	{
+ 		const int maxq = 10;
+ 		const double tau = 1e-5;
+@@ -847,7 +847,7 @@ public:
+ 
+ 			stats_.push_back({ iteration, F });
+ 
+-			if (q == maxq || rho <= 0 || !std::isfinite(lambda))
++			if (q == maxq || rho <= 0 || !std::isfinite(lambda) || std::abs(F-iniF)/iniF < gainThreshold)
+ 				break;
+ 		}
+ 
