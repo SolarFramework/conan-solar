@@ -103,7 +103,7 @@ class GrpcConan(ConanFile):
         # transitive_headers=True because grpc headers include abseil headers
         # transitive_libs=True because generated code (grpc_cpp_plugin) require symbols from abseil
         if Version(self.version) > "1.65.0":
-            self.requires("protobuf/5.27.0", transitive_headers=True)
+            self.requires("protobuf/6.32.1", transitive_headers=True)
             self.requires("abseil/[>=20240116.1 <=20250127.0]", transitive_headers=True, transitive_libs=True)
         elif Version(self.version) >= "1.62.0" and Version(self.version) <= "1.65.0":
             self.requires("protobuf/5.27.0", transitive_headers=True)
