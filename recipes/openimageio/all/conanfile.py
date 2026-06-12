@@ -96,7 +96,7 @@ class OpenImageIOConan(ConanFile):
         self.requires("imath/[>3.1.9 <4]", transitive_headers=True)
         self.requires("openexr/[>=3.2.3 <4]")
         if self.options.with_libjpeg == "libjpeg":
-            self.requires("libjpeg/[>=9f]")
+            self.requires("libjpeg/[>=9e]")
         elif self.options.with_libjpeg == "libjpeg-turbo":
             self.requires("libjpeg-turbo/[>=3.0.2 <4]")
         if self.options.get_safe("with_libjxl"):
