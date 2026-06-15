@@ -1,0 +1,2 @@
+conan create . -s build_type=Debug --build=missing
+conan create . --build=missing
