@@ -2,3 +2,19 @@ sources:
   "v0.19.0":
     - url: "https://github.com/isl-org/Open3D/archive/refs/tags/v0.19.0.tar.gz"
       sha256: "5CEDB0E093C6BACEAB801B903EB8E2558BC2B3999AC57762BF78A39D5E15394A"
+#patches:
+  # "v0.19.0":
+    # - patch_file: "patches/fix_cmake_policy_zeromq.patch"
+      # patch_description: "Pass CMAKE_POLICY_VERSION_MINIMUM to zeromq ExternalProject"
+      # patch_type: "conan"
+    # - patch_file: "patches/fix_cmake_policy_zlib.patch"
+      # patch_description: "Pass CMAKE_POLICY_VERSION_MINIMUM to zlib ExternalProject"
+    # - patch_file: "patches/fix_cmake_policy_turbojpeg.patch"
+      # patch_description: "Pass CMAKE_POLICY_VERSION_MINIMUM to turbojpeg ExternalProject"
+      # - patch_file: "patches/fix_cmake_policy_libpng.patch"
+      # patch_description: "Pass CMAKE_POLICY_VERSION_MINIMUM to libpng ExternalProject"
+      
+patches:
+  "v0.19.0":
+    - patch_file: "patches/fix_cmake_policy_all_externals.patch"
+      patch_description: "Pass CMAKE_POLICY_VERSION_MINIMUM=3.5 to all ExternalProject dependencies"

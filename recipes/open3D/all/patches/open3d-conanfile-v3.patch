@@ -1,0 +1,110 @@
+--- a/conanfile.py
++++ b/conanfile.py
+@@ -53,6 +53,7 @@
+         "use_system_tinyobjloader": [True, False],
+         "use_system_msgpack": [True, False],
+         "use_system_zeromq": [True, False],
++        "use_system_liblzf": [True, False],
+      }
+     default_options = {
+         "shared": False,
+@@ -81,16 +82,18 @@
+                                       #  dans Open3D 0.19.0, zlib est piloté par USE_SYSTEM_PNG)
+         "use_system_libjpeg": True,
+         "use_system_jsoncpp": True,
+-        "use_system_glew": False,   # lié à BUILD_GUI (with_gui=False) -> inutile
+-        "use_system_glfw": False,   # lié à BUILD_GUI (with_gui=False) -> inutile
++        "use_system_glew": True,    # compilé même si BUILD_GUI=OFF (visualizer OpenGL "legacy" toujours buildé)
++        "use_system_glfw": True,    # idem : ext_glfw est téléchargé/compilé même avec BUILD_GUI=OFF
+         "use_system_assimp": True,
+         "use_system_qhullcpp": False,  # vendored : mismatch de composant CMake avec la recette Conan (libqhullcpp/*.h introuvable au build)
+-        "use_system_embree": False,    # vendored : idem (embree4/rtcore.h introuvable au build)
++        "use_system_embree": True,     # OK via renommage de cible CMakeDeps (embree::embree -> embree), voir generate()
+         "use_system_nanoflann": True,       # recherche KD-tree, cœur géométrie, toujours compilé
+         "use_system_tinygltf": True,        # I/O maillages glTF, toujours compilé
+         "use_system_tinyobjloader": True,   # I/O maillages OBJ, toujours compilé
+         "use_system_msgpack": True,         # module RPC (io::rpc), toujours compilé
+-        "use_system_zeromq": False,         # vendored : idem (zmq.hpp introuvable au build)
++        "use_system_zeromq": False,         # libzmq OK via pkg-config + injection include cppzmq (voir generate()),
++                                            # laissé vendored par défaut : passer à True pour tester
++        "use_system_liblzf": True,          # compression PCD, toujours compilé
+         # Contrainte transitive : onetbb exige hwloc en shared
+         "hwloc/*:shared": True,
+     }
+@@ -117,6 +120,7 @@
+         "use_system_tinyobjloader": ("tinyobjloader/2.0.0-rc10", "USE_SYSTEM_TINYOBJLOADER"),
+         "use_system_msgpack":       ("msgpack-cxx/7.0.0",     "USE_SYSTEM_MSGPACK"),
+         "use_system_zeromq":        (["zeromq/4.3.5", "cppzmq/4.10.0"], "USE_SYSTEM_ZEROMQ"),
++        "use_system_liblzf":        ("liblzf/3.6",            "USE_SYSTEM_LIBLZF"),
+     }
+ 
+     @property
+@@ -146,13 +150,21 @@
+                     self.requires(ref)
+ 
+         # tinygltf et assimp (via draco/autres) ne demandent pas la même version de stb -> on force la plus récente
++        if self.options.get_safe("use_system_zeromq"):
++            # libzmq est détecté via pkg-config (open3d_pkg_config_3rdparty_library
++            # SEARCH_ARGS libzmq) : le .pc généré par PkgConfigDeps couvre libzmq,
++            # mais zmq.hpp vient de cppzmq (header-only) qu'Open3D ne cherche jamais
++            # -> on injecte son include dir à la main.
++            cppzmq_inc = self.dependencies["cppzmq"].cpp_info.includedirs[0]
++            tc.extra_cxxflags.append(f'/I"{cppzmq_inc}"')
++
+         if self.options.get_safe("use_system_tinygltf"):
+             self.requires("stb/cci.20240531", override=True)
+ 
+     def build_requirements(self):
+-        # Open3D détecte curl via pkg-config (pas find_package classique) :
++        # Open3D détecte curl ET zeromq via pkg-config (pas find_package classique) :
+         # il faut donc l'exécutable pkg-config disponible, y compris sous Windows.
+-        if self.options.get_safe("use_system_curl"):
++        if self.options.get_safe("use_system_curl") or self.options.get_safe("use_system_zeromq"):
+             self.tool_requires("pkgconf/2.1.0")
+ 
+     def source(self):
+@@ -210,15 +222,42 @@
+             # <bzlib.h> introuvable. On neutralise la macro plutôt que de la traquer.
+             tc.extra_cxxflags.append("/UHAVE_BZIP2")
+ 
++        if self.options.get_safe("use_system_zeromq"):
++            # libzmq est détecté via pkg-config (open3d_pkg_config_3rdparty_library
++            # SEARCH_ARGS libzmq) : le .pc généré par PkgConfigDeps couvre libzmq,
++            # mais zmq.hpp vient de cppzmq (header-only) qu'Open3D ne cherche jamais
++            # -> on injecte son include dir à la main.
++            cppzmq_inc = self.dependencies["cppzmq"].cpp_info.includedirs[0]
++            tc.extra_cxxflags.append(f'/I"{cppzmq_inc}"')
++
++        if self.options.get_safe("use_system_tinygltf"):
++            # Le paquet Conan tinygltf est header-only. Open3D ne définit
++            # TINYGLTF_IMPLEMENTATION que dans sa branche vendored
++            # (3rdparty/find_dependencies.cmake : target_compile_definitions
++            # INTERFACE sur 3rdparty_tinygltf). En USE_SYSTEM_TINYGLTF, personne
++            # ne compile l'implémentation -> LNK2019 sur tous les symboles
++            # tinygltf:: au link des tools/apps. On réplique donc les defines
++            # de la branche vendored ; seul FileGLTF.cpp inclut tiny_gltf.h/stb,
++            # donc pas de risque de symboles dupliqués.
++            tc.preprocessor_definitions["TINYGLTF_IMPLEMENTATION"] = None
++            tc.preprocessor_definitions["STB_IMAGE_IMPLEMENTATION"] = None
++            tc.preprocessor_definitions["STB_IMAGE_WRITE_IMPLEMENTATION"] = None
++
+         tc.generate()
+ 
+         # Génère les *-config.cmake / *Config.cmake des dépendances Conan requises,
+         # pour que find_package() les trouve côté Open3D quand USE_SYSTEM_*=ON
+         deps = CMakeDeps(self)
++        # Open3D attend une cible `embree` SANS namespace
++        # (open3d_find_package_3rdparty_library ... TARGETS embree), alors que
++        # CMakeDeps génère `embree::embree` par défaut -> warning "Skipping
++        # undefined target embree" au configure, lib INTERFACE vide, et donc
++        # embree4/rtcore.h introuvable à la compilation.
++        deps.set_property("embree", "cmake_target_name", "embree")
+         deps.generate()
+ 
+-        if self.options.get_safe("use_system_curl"):
+-            # Open3D détecte curl via pkg-config (open3d_pkg_config_3rdparty_library),
++        if self.options.get_safe("use_system_curl") or self.options.get_safe("use_system_zeromq"):
++            # Open3D détecte curl et libzmq via pkg-config (open3d_pkg_config_3rdparty_library),
+             # pas via find_package() -> il faut aussi générer les .pc et exposer PKG_CONFIG_PATH
+             pkg = PkgConfigDeps(self)
+             pkg.generate()

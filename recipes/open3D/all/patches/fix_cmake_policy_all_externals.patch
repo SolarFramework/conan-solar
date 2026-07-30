@@ -1,0 +1,10 @@
+--- a/3rdparty/find_dependencies.cmake	2026-06-23 14:09:17.663507934 +0000
++++ b/3rdparty/find_dependencies.cmake	2026-06-23 14:09:17.678714979 +0000
+@@ -177,6 +177,7 @@
+     -DCMAKE_POLICY_DEFAULT_CMP0091:STRING=NEW
+     -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=${CMAKE_MSVC_RUNTIME_LIBRARY}
+     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
++    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+     )
+ # Keep 3rd party symbols hidden from Open3D user code. Do not use if 3rd party
+ # libraries throw exceptions that escape Open3D.
