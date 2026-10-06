@@ -114,7 +114,15 @@ class open3dConan(ConanFile):
         cmake.configure()
         cmake.build()
     def package_info(self):
-        self.cpp_info.libs = collect_libs(self)
+        #self.cpp_info.libs = collect_libs(self)
+
+        libs = collect_libs(self)
+        # ippcore doit venir après ipps/ippi/ippcc/ippcv
+        for l in ["Open3D_3rdparty_ipp_ippcore", "Open3D_3rdparty_ipp_ippcore_tl_tbb"]:
+            if l in libs:
+                libs.remove(l)
+                libs.append(l)
+        self.cpp_info.libs = libs
         
         if not self.options.shared:
             self.cpp_info.defines.append("OPEN3D_STATIC")        
