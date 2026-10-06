@@ -1,0 +1,9 @@
+sources:
+  "0.19.0":
+    url: "https://github.com/isl-org/Open3D/archive/refs/tags/v0.19.0.tar.gz"
+    sha256: "5cedb0e093c6baceab801b903eb8e2558bc2b3999ac57762bf78a39d5e15394a"
+patches:
+  "0.19.0":
+    - patch_file: "patches/0.19.0-0001-glfw-disable-wayland.patch"
+      patch_description: "Build the vendored GLFW against X11 only; the Wayland backend needs wayland-protocols dev packages that are not part of a build image"
+      patch_type: "portability"
