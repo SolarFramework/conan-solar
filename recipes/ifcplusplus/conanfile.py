@@ -1,6 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
-from conan.tools.files import get, copy, rmdir, mkdir
+from conan.tools.files import get, copy, rmdir, mkdir, replace_in_file
 import os
 
 
@@ -28,6 +28,40 @@ class IfcPlusPlusConan(ConanFile):
             url="https://github.com/ifcquery/ifcplusplus/archive/refs/tags/2.5.tar.gz",
             destination=self.source_folder,
             strip_root=True,
+        )
+        # Bug upstream : sur la branche non-MSVC, conv.to_bytes() reçoit un
+        # std::string alors qu'il attend un std::wstring (file_path était un
+        # wstring dans les anciennes versions). Comme file_path est déjà en
+        # UTF-8, la conversion est inutile — on ouvre le fichier directement.
+        # Ce code (GeomDebugDump.h) n'est compilé qu'en Debug, d'où l'absence
+        # d'erreur en Release et sous MSVC.
+        replace_in_file(
+            self,
+            os.path.join(self.source_folder, "IfcPlusPlus", "src",
+                         "ifcpp", "geometry", "GeomDebugDump.h"),
+            "#else\n"
+            "\t\tstd::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;\n"
+            "\t\tstd::string file_path8 = conv.to_bytes(file_path);\n"
+            "\t\tstd::ofstream ofs(file_path8, std::ofstream::out);\n"
+            "#endif",
+            "#else\n"
+            "\t\tstd::ofstream ofs(file_path, std::ofstream::out);\n"
+            "#endif",
+        )
+
+        # Bug upstream n°2 : GeomUtils.h forward-déclare dumpPolyline avec
+        # liaison externe, mais GeomDebugDump.h la définit `static`.
+        # MSVC tolère cette incohérence, GCC la rejette (extern puis static).
+        # On passe la définition en `inline` : compatible avec la déclaration
+        # et sans définition multiple entre les TU qui incluent le header.
+        replace_in_file(
+            self,
+            os.path.join(self.source_folder, "IfcPlusPlus", "src",
+                         "ifcpp", "geometry", "GeomDebugDump.h"),
+            "\tstatic void dumpPolyline(const std::vector<vec2>& vec_polyline, "
+            "const vec4& color, double lineThickness, bool move_dump_position, bool depthTestOff)",
+            "\tinline void dumpPolyline(const std::vector<vec2>& vec_polyline, "
+            "const vec4& color, double lineThickness, bool move_dump_position, bool depthTestOff)",
         )
 
     def generate(self):
