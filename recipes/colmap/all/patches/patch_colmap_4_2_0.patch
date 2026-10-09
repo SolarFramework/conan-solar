@@ -1,0 +1,65 @@
+diff --git a/cmake/FindDependencies.cmake b/cmake/FindDependencies.cmake
+index 3c0e259b..c35f1ade 100644
+--- a/cmake/FindDependencies.cmake
++++ b/cmake/FindDependencies.cmake
+@@ -74,7 +74,7 @@ find_package(Eigen3 ${COLMAP_FIND_TYPE})
+
+ find_package(OpenImageIO ${COLMAP_FIND_TYPE})
+
+-find_package(Metis ${COLMAP_FIND_TYPE})
++find_package(metis ${COLMAP_FIND_TYPE})
+
+ find_package(SQLite3 ${COLMAP_FIND_TYPE})
+ # Older CMake versions define SQLite::SQLite3 instead of SQLite3::SQLite3.
+@@ -85,7 +85,7 @@ endif()
+ set(OpenGL_GL_PREFERENCE GLVND)
+ find_package(OpenGL ${COLMAP_FIND_TYPE})
+
+-find_package(Glew ${COLMAP_FIND_TYPE})
++find_package(GLEW ${COLMAP_FIND_TYPE})
+
+ find_package(Git)
+
+@@ -115,7 +115,7 @@ if(NOT TARGET Ceres::ceres)
+         Ceres::ceres INTERFACE ${CERES_LIBRARIES})
+ endif()
+
+-find_package(Glog ${COLMAP_FIND_TYPE})
++find_package(glog ${COLMAP_FIND_TYPE})
+ if(DEFINED glog_VERSION_MAJOR)
+   # Older versions of glog don't export version variables.
+   list(APPEND COLMAP_COMPILE_DEFINITIONS GLOG_VERSION_MAJOR=${glog_VERSION_MAJOR})
+@@ -190,7 +190,7 @@ if(CGAL_ENABLED)
+     set(CGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE TRUE)
+     # We do not use CGAL data. This prevents an unnecessary warning by CMake.
+     set(CGAL_DATA_DIR "unused")
+-    find_package(CGAL ${COLMAP_FIND_TYPE})
++    find_package(cgal ${COLMAP_FIND_TYPE})
+ endif()
+
+ if(CGAL_FOUND)
+diff --git a/src/colmap/math/CMakeLists.txt b/src/colmap/math/CMakeLists.txt
+index 4f026ede..8245f109 100644
+--- a/src/colmap/math/CMakeLists.txt
++++ b/src/colmap/math/CMakeLists.txt
+@@ -48,7 +48,7 @@ COLMAP_ADD_LIBRARY(
+         Eigen3::Eigen
+     PRIVATE_LINK_LIBS
+         Boost::boost
+-        metis
++        metis::metis
+ )
+
+ COLMAP_ADD_TEST(
+diff --git a/src/colmap/sfm/CMakeLists.txt b/src/colmap/sfm/CMakeLists.txt
+index b1a9adaf..8c87bb70 100644
+--- a/src/colmap/sfm/CMakeLists.txt
++++ b/src/colmap/sfm/CMakeLists.txt
+@@ -42,6 +42,7 @@ COLMAP_ADD_LIBRARY(
+         colmap_scene
+         colmap_estimators
+         colmap_util
++        Eigen3::Eigen
+     PRIVATE_LINK_LIBS
+         colmap_geometry
+         colmap_image
