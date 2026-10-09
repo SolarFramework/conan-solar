@@ -1,4 +1,5 @@
 import os
+import shutil
 import textwrap
 
 from conan import ConanFile
@@ -203,6 +204,20 @@ class CeressolverConan(ConanFile):
     def _module_variables_file_rel_path(self):
         return os.path.join("lib", "cmake", f"conan-official-{self.name}-variables.cmake")
 
+    @property
+    def _cuda_toolkit_root(self):
+        # CUDA is consumed as a system dependency here (found via find_package(CUDAToolkit) at
+        # build time, same as the colmap recipe), not as a conan package, so we locate it the
+        # same way: CUDA_PATH/CUDAToolkit_ROOT env var, falling back to resolving nvcc on PATH.
+        cuda_path = os.environ.get("CUDAToolkit_ROOT") or os.environ.get("CUDA_PATH")
+        if cuda_path:
+            return cuda_path
+        nvcc = shutil.which("nvcc")
+        if nvcc:
+            # nvcc lives at <cuda_root>/bin/nvcc
+            return os.path.dirname(os.path.dirname(nvcc))
+        return None
+
     def package_info(self):
         self.cpp_info.set_property("cmake_file_name", "Ceres")
         self.cpp_info.set_property("cmake_target_name", "Ceres::ceres")
@@ -215,6 +230,14 @@ class CeressolverConan(ConanFile):
             libsuffix = "-debug"
         # TODO: back to global scope in conan v2 once cmake_find_package* generators removed
         self.cpp_info.components["ceres"].libs = [f"ceres{libsuffix}"]
+        if self.options.use_CUDA:
+            # Ceres' CUDA-enabled build compiles its own CUDA kernels (used by
+            # cuda_vector.cc/dense_cholesky.cc/dense_qr.cc, e.g. CudaSetZeroFP64,
+            # CudaDtDxpy, CudaFP64ToFP32, CudaDsxpy) into a *separate* static library
+            # (libceres_cuda_kernels[-debug].a) rather than folding them into libceres
+            # itself. It must be listed after "ceres" so the linker sees it once the
+            # unresolved references from libceres are already pending.
+            self.cpp_info.components["ceres"].libs.append(f"ceres_cuda_kernels{libsuffix}")
         self.cpp_info.components["ceres"].includedirs.append(os.path.join("include", "ceres"))
         if not self.options.use_glog:
             self.cpp_info.components["ceres"].includedirs.append(os.path.join("include", "ceres", "internal", "miniglog"))
@@ -232,7 +255,36 @@ class CeressolverConan(ConanFile):
             self.cpp_info.components["ceres"].requires.append("onetbb::onetbb")
         if self.version == "commit8c50a34":
             self.cpp_info.components["ceres"].requires.append("abseil::abseil")
-        
+
+        if self.options.use_CUDA:
+            # When built with USE_CUDA/CUDA, Ceres' own CUDA dense/sparse linear algebra
+            # backends (cuda_vector.cc, dense_cholesky.cc, dense_qr.cc, cuda_sparse_cholesky.cc,
+            # ...) call directly into cuBLAS/cuSOLVER/cuSPARSE/cuDSS. Ceres' upstream CMake
+            # config links these privately into the static ceres lib target, but that is not
+            # enough for a static consumer: without also declaring them here, a downstream
+            # executable linking Ceres::ceres (e.g. colmap) fails with "undefined reference to
+            # cublasCreate_v2/cusolverDn.../cusparse.../cudss..." at its own final link step.
+            cuda_libs = ["cudart", "cublas", "cusparse", "cusolver"]
+            if self.version == "commit8c50a34":
+                # cuDSS (NVIDIA's sparse direct solver) support landed on ceres-solver's master
+                # branch after the last tagged release (2.2.0); only this pinned master commit
+                # actually calls into it.
+                cuda_libs.append("cudss")
+            self.cpp_info.components["ceres"].system_libs.extend(cuda_libs)
+
+            cuda_root = self._cuda_toolkit_root
+            if cuda_root:
+                for lib_subdir in ("lib64", os.path.join("targets", "x86_64-linux", "lib"), "lib"):
+                    candidate = os.path.join(cuda_root, lib_subdir)
+                    if os.path.isdir(candidate):
+                        self.cpp_info.components["ceres"].libdirs.append(candidate)
+            if self.settings.os in ["Linux", "FreeBSD"]:
+                # cuDSS installs its own .so via the distro package (not under the CUDA toolkit
+                # tree) at this standard multiarch path on Debian/Ubuntu.
+                multiarch_libdir = "/usr/lib/x86_64-linux-gnu"
+                if os.path.isdir(multiarch_libdir):
+                    self.cpp_info.components["ceres"].libdirs.append(multiarch_libdir)
+
         if not self.options.shared:
             libcxx = stdcpp_library(self)
             if libcxx:
