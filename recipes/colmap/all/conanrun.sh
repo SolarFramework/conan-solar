@@ -1,1 +1,0 @@
-. "/home/jroyan/Dev/conan-solar/recipes/colmap/all/conanrunenv-debug-x86_64.sh"

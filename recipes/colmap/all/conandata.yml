@@ -1,4 +1,10 @@
 sources:
+  "4.2.0":
+      url: https://github.com/colmap/colmap/archive/4.2.0.tar.gz
+      sha256: B61731FB1A4A33609E64FB353FE589D483BE6A73878A5965B7D32AE23FB22FC5
+  "4.0.2":
+      url: https://github.com/colmap/colmap/archive/4.0.2.tar.gz
+      sha256: D220B54481B08212DCFE9E6DECA6E998546A462A80140C3BD4ED9318D8C74482
   "3.13":
       url: https://github.com/colmap/colmap/archive/3.13.0.tar.gz
       sha256: 98A8F8CF6358774BE223239A9B034CC9D55BF66C43F54FC6DDEA9128A1EE197A
@@ -21,6 +27,14 @@ sources:
       url: https://github.com/colmap/colmap/archive/3.7.tar.gz
       sha256: CEB7CCA204550D65B890CD0082C66F4BC69193DAF9DA64616D8147A46B76CC55
 patches:
+  "4.2.0":
+  - patch_file: "patches/patch_colmap_4_2_0.patch"
+    patch_description: "Change dependencies to lower_case"
+    patch_type: "conan"
+  "4.0.2":
+  - patch_file: "patches/patch_colmap_4_0_2.patch"
+    patch_description: "Change dependencies to lower_case"
+    patch_type: "conan"
   "3.13":
   - patch_file: "patches/patch_colmap_3_13.patch"
     patch_description: "Change dependencies to lower_case"

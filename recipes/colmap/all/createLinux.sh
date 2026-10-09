@@ -1,6 +1,6 @@
 #!/bin/bash
-conan create . --name colmap --version 3.13 --user conan-solar --channel stable -tf "" --build=missing -o freeimage/*:with_openexr=False -o freeimage/*:with_tiff=False -o *:with_cuda=True -o libglvnd/*:gles1=False -o libglvnd/*:gles2=False
-conan create . --name colmap --version 3.13 --user conan-solar --channel stable -tf "" --build=missing -o freeimage/*:with_openexr=False -o freeimage/*:with_tiff=False -o *:with_cuda=True -o libglvnd/*:gles1=False -o libglvnd/*:gles2=False -s build_type=Debug
+conan create . --name colmap --version 4.2.0 --user conan-solar --channel stable -tf "" --build=missing -o *:with_cuda=True -o libglvnd/*:gles1=False -o libglvnd/*:gles2=False -o openimageio/*:with_ffmpeg=False -o openimageio/*:with_freetype=False -o openimageio/*:with_giflib=False -o openimageio/*:with_openvdb=False -o openimageio/*:with_libheif=False -o openimageio/*:with_libjxl=False -o openimageio/*:with_opencv=False -o openimageio/*:with_ptex=False -o openimageio/*:with_openjpeg=False -o openimageio/*:with_libwebp=False -o openimageio/*:with_libultrahdr=False -o openimageio/*:with_openjph=False
+conan create . --name colmap --version 4.2.0 --user conan-solar --channel stable -tf "" --build=missing -o *:with_cuda=True -o libglvnd/*:gles1=False -o libglvnd/*:gles2=False  -o openimageio/*:with_ffmpeg=False -o openimageio/*:with_freetype=False -o openimageio/*:with_giflib=False -o openimageio/*:with_openvdb=False -o openimageio/*:with_libheif=False -o openimageio/*:with_libjxl=False -o openimageio/*:with_opencv=False -o openimageio/*:with_ptex=False -o openimageio/*:with_openjpeg=False -o openimageio/*:with_libwebp=False -o openimageio/*:with_libultrahdr=False -o openimageio/*:with_openjph=False -s build_type=Debug
 
 
 
